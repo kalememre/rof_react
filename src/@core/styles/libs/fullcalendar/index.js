@@ -260,7 +260,7 @@ const CalendarWrapper = styled(Box)(({ theme }) => {
       },
       '& .fc-daygrid-event-harness': {
         '& .fc-event': {
-          marginTop: 0,
+          marginTop: 2,
           fontWeight: 500,
           marginBottom: 0,
           borderRadius: 4,

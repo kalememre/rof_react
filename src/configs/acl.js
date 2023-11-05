@@ -9,7 +9,6 @@ export const AppAbility = Ability
  */
 const defineRulesFor = (role, subject, ability) => {
   const { can, rules } = new AbilityBuilder(AppAbility)
-  console.log('ability', ability);
   if (role === 'admin') {
     can('manage', 'all')
   } else if (role === 'client') {
@@ -19,7 +18,6 @@ const defineRulesFor = (role, subject, ability) => {
     // create rules for each filtered ability
     filtered.forEach(item => {
       can(ability[item], item)
-      console.log(ability[item], item)
     })
   } else {
     can(['read', 'create', 'update', 'delete'], subject)

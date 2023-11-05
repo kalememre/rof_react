@@ -1,16 +1,17 @@
 // ** Redux Imports
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-// ** Config
-import authConfig from 'src/configs/auth'
-
 // ** Axios Imports
 import axios from 'axios'
 
 
 // ** Get Leaves
-export const getLeaves = createAsyncThunk('appLeaves/getLeaves', async () => {
-    const response = await axios.get('/leaves/')
+export const getLeaves = createAsyncThunk('appLeaves/getLeaves', async (branch) => {
+    const response = await axios.get('/leaves/', {
+        params: {
+            branch: branch
+        }
+    })
 
     return response.data
 })
@@ -38,9 +39,11 @@ export const appLeavesSlice = createSlice({
         })
         builder.addCase(getLeaves.fulfilled, (state, action) => {
             state.leaves = action.payload
+            state.isLoading = false
         })
         builder.addCase(getLeaves.rejected, (state, action) => {
             state.error = action.error.message
+            state.isLoading = false
         })
     }
 })

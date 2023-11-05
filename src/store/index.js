@@ -4,11 +4,13 @@ import { configureStore } from '@reduxjs/toolkit'
 // ** Reducers
 import roster from 'src/store/apps/roster'
 import leaves from 'src/store/apps/leaves'
+import user from 'src/store/apps/user'
 
 export const store = configureStore({
     reducer: {
         roster,
         leaves,
+        user,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
