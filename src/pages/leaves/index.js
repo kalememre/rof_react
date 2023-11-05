@@ -23,6 +23,7 @@ import { getBranches, getRoles } from 'src/store/apps/user'
 import IconifyIcon from 'src/@core/components/icon'
 import { useTheme } from '@mui/material/styles'
 import ListUsers from 'src/views/components/list/ListUsers'
+import CardActionsRefresh from 'src/views/ui/cards/actions/CardActionsRefresh'
 
 // ** CalendarColors
 const calendarsColor = {
@@ -65,94 +66,15 @@ const LeavesPage = () => {
     return (
         <Fragment>
             {userAbility && (
-                <Card sx={{ position: 'relative', mb: 1 }}>
-                    <CardContent>
-                        <Grid container>
-
-                            <Grid
-                                item
-                                xs={12}
-                                sm={8}>
-
-                                <Typography variant='h5' sx={{ mb: 0.5 }}>
-                                    Filter Leaves by Branch
-                                </Typography>
-                                <Typography sx={{ mb: 3, color: 'text.secondary' }}>
-                                    Select a branch to view its leaves.
-                                </Typography>
-
-                                <FormControl sx={{ width: '75%' }}>
-                                    <InputLabel id='demo-simple-select-outlined-label'>
-                                        {isLoading ? 'Loading...' : 'Select Branch'}
-                                    </InputLabel>
-                                    <Select
-                                        label='Select Branch'
-                                        defaultValue=''
-                                        id='select_branch'
-                                        labelId='select_branch-label'
-                                        onChange={selectBranch}
-                                        disabled={isLoading}
-                                    >
-                                        <MenuItem value=''>
-                                            <em>None</em>
-                                        </MenuItem>
-                                        {branches?.map((branch, index) => (
-                                            <MenuItem key={index} value={branch.id}>
-                                                {branch.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid
-                                item
-                                xs={12}
-                                sm={4}
-                                sx={{
-                                    order: [1, 2],
-                                    textAlign: 'center',
-                                    '& img': {
-                                        height: '100px !important',
-                                        maxWidth: 'none !important',
-                                        [theme.breakpoints.up('xs')]: {
-                                            top: '50%',
-                                            position: 'absolute',
-                                            right: theme.spacing(6),
-                                            transform: 'translateY(-50%)'
-                                        }
-                                    }
-                                }}
-                            >
-                                <img src='/images/cards/graphic-illustration-2.png' alt='branch' />
-                            </Grid>
-                        </Grid>
-
-                    </CardContent>
-                    <Backdrop
-                        open={isLoading}
-                        sx={{
-                            position: 'absolute',
-                            color: 'common.white',
-                            zIndex: theme => theme.zIndex.mobileStepper - 1
-                        }}
-                    >
-                        <CircularProgress color='inherit' />
-                    </Backdrop>
-                </Card>
+                <CardActionsRefresh
+                    branches={branches}
+                    isLoading={isLoading}
+                    store={store}
+                    selectBranch={selectBranch}
+                />
 
             )}
-            <Accordion>
-                <AccordionSummary
-                    id='panel-header-1'
-                    aria-controls='panel-content-1'
-                    expandIcon={<IconifyIcon fontSize='1.25rem' icon='tabler:chevron-down' />}
-                >
-                    <Typography>Roles Color List</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <ListUsers roles={roles} />
-                </AccordionDetails>
-            </Accordion>
+            <ListUsers roles={roles} />
             <CalendarWrapper
                 className='app-calendar'
                 sx={{
