@@ -16,10 +16,10 @@ const isToday = date => {
   )
 }
 
-export const formatDate = (value, formatting = { month: 'short', day: 'numeric', year: 'numeric' }) => {
+export const formatDate = (value, formatting = { month: 'numeric', day: 'numeric', year: 'numeric' }) => {
   if (!value) return value
 
-  return new Intl.DateTimeFormat('en-US', formatting).format(new Date(value))
+  return new Intl.DateTimeFormat('en-GB', formatting).format(new Date(value))
 }
 
 // ** Returns short month of passed date

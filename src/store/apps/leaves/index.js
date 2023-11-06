@@ -4,6 +4,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // ** Axios Imports
 import axios from 'axios'
 
+import toast from 'react-hot-toast'
+
 
 // ** Get Leaves
 export const getLeaves = createAsyncThunk('appLeaves/getLeaves', async (branch) => {
@@ -39,10 +41,12 @@ export const appLeavesSlice = createSlice({
         })
         builder.addCase(getLeaves.fulfilled, (state, action) => {
             state.leaves = action.payload
+            toast.success('Successfully loaded holidays')
             state.isLoading = false
         })
         builder.addCase(getLeaves.rejected, (state, action) => {
             state.error = action.error.message
+            toast.error('Failed to load holidays')
             state.isLoading = false
         })
     }

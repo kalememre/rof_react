@@ -18,6 +18,7 @@ import HorizontalAppBarContent from './components/horizontal/AppBarContent'
 
 // ** Hook Import
 import { useSettings } from 'src/@core/hooks/useSettings'
+import { Box, Stack, Typography } from '@mui/material'
 
 const UserLayout = ({ children, contentHeightFixed }) => {
   // ** Hooks
@@ -39,6 +40,17 @@ const UserLayout = ({ children, contentHeightFixed }) => {
     settings.layout = 'vertical'
   }
 
+  const AppBrand = () => {
+    return (
+      <Stack direction='row' alignItems='center' justifyContent='center'>
+        {/* <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', m: 3 }}> */}
+        <img style={{ margin: 4 }} src='/images/rof4.png' alt='logo' width='50%' />
+        {/* <img style={{ margin: 5, alignSelf: 'center' }} src='/images/rof3.png' alt='logo' width='80%' /> */}
+        {/* </Box> */}
+      </Stack>
+    )
+  }
+
   return (
     <Layout
       hidden={hidden}
@@ -47,7 +59,8 @@ const UserLayout = ({ children, contentHeightFixed }) => {
       contentHeightFixed={contentHeightFixed}
       verticalLayoutProps={{
         navMenu: {
-          navItems: VerticalNavItems()
+          navItems: VerticalNavItems(),
+          branding: () => <AppBrand />
 
           // Uncomment the below line when using server-side menu in vertical layout and comment the above line
           // navItems: verticalMenuItems
@@ -78,7 +91,7 @@ const UserLayout = ({ children, contentHeightFixed }) => {
       })}
     >
       {children}
-      
+
     </Layout>
   )
 }

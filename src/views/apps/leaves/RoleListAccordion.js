@@ -41,7 +41,7 @@ const StyledList = styled(List)(({ theme }) => ({
   }
 }))
 
-const ListUsers = props => {
+const RoleListAccordion = props => {
   // ** Props
   const { roles } = props
 
@@ -56,8 +56,20 @@ const ListUsers = props => {
       </AccordionSummary>
       <AccordionDetails>
         <StyledList disablePadding>
+          <ListItem>
+            <ListItemAvatar >
+              <Icon icon='mdi:circle' fontSize='1.125rem' color='lightgray' />
+            </ListItemAvatar>
+            <div>
+              <ListItemText primary='Pending' />
+              <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                <Typography variant='caption' sx={{ color: 'text.disabled' }}>
+                  Ready to be approved
+                </Typography>
+              </Box>
+            </div>
+          </ListItem>
           {
-
             roles?.map((role, index) => {
               return (
 
@@ -83,4 +95,4 @@ const ListUsers = props => {
   )
 }
 
-export default ListUsers
+export default RoleListAccordion

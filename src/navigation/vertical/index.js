@@ -23,7 +23,7 @@ const navigation = () => {
       subject: 'can_access_roster_page',
     },
     {
-      title: 'Leaves',
+      title: 'Holidays',
       path: '/leaves',
       icon: 'tabler:beach',
       action: true,

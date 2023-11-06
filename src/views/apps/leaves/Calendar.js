@@ -1,5 +1,5 @@
 // ** React Import
-import { useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 
 // ** Full Calendar & it's Plugins
 import FullCalendar from '@fullcalendar/react'
@@ -12,20 +12,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 // ** Third Party Style Import
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import { Box, Stack, Typography } from '@mui/material'
-
-const blankEvent = {
-  title: '',
-  start: '',
-  end: '',
-  allDay: false,
-  url: '',
-  extendedProps: {
-    calendar: '',
-    guests: [],
-    location: '',
-    description: ''
-  }
-}
+import DialogHolidayDetail from './DialogHolidayDetail'
 
 const Calendar = props => {
 
@@ -50,14 +37,18 @@ const Calendar = props => {
       <Box p={1}>
         <Typography sx={{
           whiteSpace: 'initial',
-          textShadow: '1px 1px 1px rgba(0,0,0,0.3)',
+          textShadow: '1px 1px 1px rgba(0,0,0,0.5)',
           wordWrap: 'break-word'
-        }} color={'white'}>
+        }} color={event.extendedProps.approved ? 'white' : 'gray'} variant='h5'>
           {event.title}
         </Typography>
       </Box>
     )
   }
+
+  // ** Dialog Toggle
+  const [show, setShow] = useState(false)
+  const [event, setEvent] = useState(null)
 
   // ** Refs
   const calendarRef = useRef()
@@ -97,7 +88,8 @@ const Calendar = props => {
       //   ]
       // },
       eventClick({ event: clickedEvent }) {
-
+        setShow(true)
+        setEvent(clickedEvent)
       },
       customButtons: {
         sidebarToggle: {
@@ -121,7 +113,12 @@ const Calendar = props => {
     }
 
     // @ts-ignore
-    return <FullCalendar {...calendarOptions} />
+    return (
+      <Fragment>
+        <FullCalendar {...calendarOptions} />
+        <DialogHolidayDetail show={show} setShow={setShow} event={event} />
+      </Fragment>
+    )
   } else {
     return null
   }

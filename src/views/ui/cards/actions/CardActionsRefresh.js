@@ -20,10 +20,10 @@ const CardActionsRefresh = props => {
                         sm={8}>
 
                         <Typography variant='h5' sx={{ mb: 0.5 }}>
-                            Filter Leaves by Branch
+                            Filter Holidays by Branch
                         </Typography>
                         <Typography sx={{ mb: 3, color: 'text.secondary' }}>
-                            Select a branch to view its leaves.
+                            Select a branch to view its holidays
                         </Typography>
 
                         <FormControl sx={{ width: '75%' }}>
