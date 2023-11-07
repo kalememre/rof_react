@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles'
 
 const CardActionsRefresh = props => {
     // ** Props
-    const { branches, isLoading, store, selectBranch } = props
+    const { branches, isLoading, storeHolidays, selectBranch } = props
 
     // ** Hooks
     const theme = useTheme()
@@ -45,7 +45,7 @@ const CardActionsRefresh = props => {
 
             </CardContent>
             <Backdrop
-                open={isLoading || store.isLoading}
+                open={isLoading || storeHolidays.isLoading}
                 sx={{
                     position: 'absolute',
                     color: 'common.white',

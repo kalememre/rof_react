@@ -19,7 +19,7 @@ const Calendar = props => {
 
   // ** Props
   const {
-    store,
+    storeHolidays,
     dispatch,
     direction,
     updateEvent,
@@ -59,10 +59,10 @@ const Calendar = props => {
       setCalendarApi(calendarRef.current?.getApi())
     }
   }, [calendarApi, setCalendarApi])
-  if (store) {
+  if (storeHolidays) {
     const calendarOptions = {
       ref: calendarRef,
-      events: userAbility ? store.filteredLeaves : store.leaves,
+      events: userAbility ? storeHolidays.filteredHolidays : storeHolidays.holidays,
       eventContent: EventRender,
       plugins: [dayGridPlugin, timeGridPlugin, listPlugin, bootstrap5Plugin, interactionPlugin],
       initialView: 'dayGridMonth',

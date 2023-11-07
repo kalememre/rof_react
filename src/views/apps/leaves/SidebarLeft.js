@@ -18,11 +18,11 @@ import Icon from 'src/@core/components/icon'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import RoleListAccordion from './RoleListAccordion'
 import CardActionsRefresh from './CardActionsRefresh'
-import { toggleColor } from 'src/store/apps/leaves'
+import { toggleColor } from 'src/store/apps/holidays'
 
 const SidebarLeft = props => {
   const {
-    store,
+    storeHolidays,
     mdAbove,
     dispatch,
     branches,
@@ -70,7 +70,7 @@ const SidebarLeft = props => {
               <Checkbox
                 color={role.name}
                 sx={{ color: role.color }}
-                checked={store.selectedColors.includes(role.color)}
+                checked={storeHolidays.selectedColors.includes(role.color)}
                 onChange={(e) => dispatch(toggleColor(role.color))}
               />
             </ThemeProvider>
@@ -127,7 +127,7 @@ const SidebarLeft = props => {
         <CardActionsRefresh
           branches={branches}
           isLoading={isLoading}
-          store={store}
+          storeHolidays={storeHolidays}
           selectBranch={selectBranch}
         />
         <Divider sx={{ width: '100%', m: '0 !important' }} />
@@ -144,7 +144,7 @@ const SidebarLeft = props => {
 
                 color='secondary'
 
-                checked={store.selectedColors.includes('lightgray')}
+                checked={storeHolidays.selectedColors.includes('lightgray')}
                 onChange={(e) => dispatch(toggleColor('lightgray'))}
               />
             }

@@ -24,7 +24,7 @@ const navigation = () => {
     },
     {
       title: 'Holidays',
-      path: '/leaves',
+      path: '/holidays',
       icon: 'tabler:beach',
       action: true,
       subject: 'can_access_leave_page',

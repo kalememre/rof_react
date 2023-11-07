@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useSettings } from 'src/@core/hooks/useSettings'
 import CalendarWrapper from 'src/@core/styles/libs/fullcalendar'
 import Calendar from 'src/views/apps/leaves/Calendar'
-import { getLeaves } from 'src/store/apps/leaves'
+import { getHolidays } from 'src/store/apps/holidays'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
 import { getBranches, getRoles } from 'src/store/apps/user'
 import { useTheme } from '@mui/material/styles'
@@ -46,7 +46,7 @@ const LeavesPage = () => {
     // ** Hooks
     const { settings } = useSettings()
     const dispatch = useDispatch()
-    const store = useSelector(state => state.leaves)
+    const storeHolidays = useSelector(state => state.storeHolidays)
 
     // ** Vars
     const leftSidebarWidth = 300
@@ -54,11 +54,11 @@ const LeavesPage = () => {
     const { skin, direction } = settings
     const mdAbove = useMediaQuery(theme => theme.breakpoints.up('md'))
     useEffect(() => {
-        !userAbility ? dispatch(getLeaves()) : dispatch(getBranches())
+        !userAbility ? dispatch(getHolidays()) : dispatch(getBranches())
     }, [userAbility, dispatch])
 
     const selectBranch = (e) => {
-        dispatch(getLeaves(e.target.value))
+        dispatch(getHolidays(e.target.value))
     }
 
     return (
@@ -72,7 +72,7 @@ const LeavesPage = () => {
             >
                 {userAbility &&
                     <SidebarLeft
-                        store={store}
+                        storeHolidays={storeHolidays}
                         mdAbove={mdAbove}
                         dispatch={dispatch}
                         calendarApi={calendarApi}
@@ -104,7 +104,7 @@ const LeavesPage = () => {
                     }}
                 >
                     <Calendar
-                        store={store}
+                        storeHolidays={storeHolidays}
                         dispatch={dispatch}
                         direction={direction}
                         calendarApi={calendarApi}

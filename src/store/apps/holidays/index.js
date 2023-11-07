@@ -7,9 +7,9 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 
 
-// ** Get Leaves
-export const getLeaves = createAsyncThunk('appLeaves/getLeaves', async (branch) => {
-    const response = await axios.get('/leaves/', {
+// ** Get Holidays
+export const getHolidays = createAsyncThunk('appHolidays/getHolidays', async (branch) => {
+    const response = await axios.get('/holidays/', {
         params: {
             branch: branch
         }
@@ -18,20 +18,20 @@ export const getLeaves = createAsyncThunk('appLeaves/getLeaves', async (branch) 
     return response.data
 })
 
-// ** Add Leaves
+// ** Add Holidays
 
 
-// ** Update Leaves
+// ** Update Holidays
 
 
-// ** Delete Leaves
+// ** Delete Holidays
 
 
-export const appLeavesSlice = createSlice({
-    name: 'appLeaves',
+export const appHolidaysSlice = createSlice({
+    name: 'appHolidays',
     initialState: {
-        leaves: [],
-        filteredLeaves: [],
+        holidays: [],
+        filteredHolidays: [],
         selectedColors: [],
         error: null,
         isLoading: false,
@@ -45,21 +45,21 @@ export const appLeavesSlice = createSlice({
                 : [...state.selectedColors, color];
             state.selectedColors = updatedColors;
 
-            state.filteredLeaves = state.leaves.filter(leave => updatedColors.includes(leave.color))
+            state.filteredHolidays = state.holidays.filter(holidays => updatedColors.includes(holidays.color))
         }
     },
     extraReducers: builder => {
-        builder.addCase(getLeaves.pending, (state, action) => {
+        builder.addCase(getHolidays.pending, (state, action) => {
             state.isLoading = true
         })
-        builder.addCase(getLeaves.fulfilled, (state, action) => {
-            state.leaves = action.payload
-            state.filteredLeaves = action.payload
+        builder.addCase(getHolidays.fulfilled, (state, action) => {
+            state.holidays = action.payload
+            state.filteredHolidays = action.payload
             toast.success('Successfully loaded holidays')
             state.isLoading = false
-            state.selectedColors = action.payload.map(leave => leave.color)
+            state.selectedColors = action.payload.map(holidays => holidays.color)
         })
-        builder.addCase(getLeaves.rejected, (state, action) => {
+        builder.addCase(getHolidays.rejected, (state, action) => {
             state.error = action.error.message
             toast.error('Failed to load holidays')
             state.isLoading = false
@@ -67,6 +67,6 @@ export const appLeavesSlice = createSlice({
     }
 })
 
-export const { toggleColor } = appLeavesSlice.actions
+export const { toggleColor } = appHolidaysSlice.actions
 
-export default appLeavesSlice.reducer
+export default appHolidaysSlice.reducer
