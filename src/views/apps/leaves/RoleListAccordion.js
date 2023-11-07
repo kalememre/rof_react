@@ -46,52 +46,41 @@ const RoleListAccordion = props => {
   const { roles } = props
 
   return (
-    <Accordion>
-      <AccordionSummary
-        id='panel-header-1'
-        aria-controls='panel-content-1'
-        expandIcon={<IconifyIcon fontSize='1.25rem' icon='tabler:chevron-down' />}
-      >
-        <Typography>Roles Color List</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <StyledList disablePadding>
-          <ListItem>
-            <ListItemAvatar >
-              <Icon icon='mdi:circle' fontSize='1.125rem' color='lightgray' />
-            </ListItemAvatar>
-            <div>
-              <ListItemText primary='Pending' />
-              <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-                <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                  Ready to be approved
-                </Typography>
-              </Box>
-            </div>
-          </ListItem>
-          {
-            roles?.map((role, index) => {
-              return (
+    <StyledList disablePadding>
+      <ListItem>
+        <ListItemAvatar >
+          <Icon icon='mdi:circle' fontSize='1.125rem' color='lightgray' />
+        </ListItemAvatar>
+        <div>
+          <ListItemText primary='Pending' />
+          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Typography variant='caption' sx={{ color: 'text.disabled' }}>
+              Ready to be approved
+            </Typography>
+          </Box>
+        </div>
+      </ListItem>
+      {
+        roles?.map((role, index) => {
+          return (
 
-                <ListItem key={index}>
-                  <ListItemAvatar >
-                    <Icon icon='mdi:circle' fontSize='1.125rem' color={role.color} />
-                  </ListItemAvatar>
-                  <div>
-                    <ListItemText primary={role.name} />
-                    <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                        Total {role.users_quantity} users
-                      </Typography>
-                    </Box>
-                  </div>
-                </ListItem>
-              )
-            })
-          }
-        </StyledList>
-      </AccordionDetails>
-    </Accordion>
+            <ListItem key={index}>
+              <ListItemAvatar >
+                <Icon icon='mdi:circle' fontSize='1.125rem' color={role.color} />
+              </ListItemAvatar>
+              <div>
+                <ListItemText primary={role.name} />
+                <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <Typography variant='caption' sx={{ color: 'text.disabled' }}>
+                    Total {role.users_quantity} users
+                  </Typography>
+                </Box>
+              </div>
+            </ListItem>
+          )
+        })
+      }
+    </StyledList>
   )
 }
 

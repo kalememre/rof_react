@@ -24,6 +24,7 @@ const Calendar = props => {
     direction,
     updateEvent,
     calendarApi,
+    userAbility,
     calendarsColor,
     setCalendarApi,
     handleSelectEvent,
@@ -39,7 +40,7 @@ const Calendar = props => {
           whiteSpace: 'initial',
           textShadow: '1px 1px 1px rgba(0,0,0,0.5)',
           wordWrap: 'break-word'
-        }} color={event.extendedProps.approved ? 'white' : 'gray'} variant='h5'>
+        }} color={event.extendedProps.approved ? 'white' : 'darkgray'} variant='h5'>
           {event.title}
         </Typography>
       </Box>
@@ -59,13 +60,12 @@ const Calendar = props => {
     }
   }, [calendarApi, setCalendarApi])
   if (store) {
-    // ** calendarOptions(Props)
     const calendarOptions = {
       ref: calendarRef,
-      events: store.leaves.length ? store.leaves : [],
+      events: userAbility ? store.filteredLeaves : store.leaves,
       eventContent: EventRender,
       plugins: [dayGridPlugin, timeGridPlugin, listPlugin, bootstrap5Plugin, interactionPlugin],
-      initialView: 'dayGridWeek',
+      initialView: 'dayGridMonth',
       headerToolbar: {
         left: 'prev,next ,today',
         center: 'title',

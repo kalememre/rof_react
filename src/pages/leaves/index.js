@@ -18,8 +18,9 @@ import { AbilityContext } from 'src/layouts/components/acl/Can'
 import { getBranches, getRoles } from 'src/store/apps/user'
 import { useTheme } from '@mui/material/styles'
 import RoleListAccordion from 'src/views/apps/leaves/RoleListAccordion'
-import CardActionsRefresh from 'src/views/ui/cards/actions/CardActionsRefresh'
 import DialogHolidayDetail from 'src/views/apps/leaves/DialogHolidayDetail'
+import { useMediaQuery } from '@mui/material'
+import SidebarLeft from 'src/views/apps/leaves/SidebarLeft'
 
 // ** CalendarColors
 const calendarsColor = {
@@ -48,9 +49,11 @@ const LeavesPage = () => {
     const store = useSelector(state => state.leaves)
 
     // ** Vars
+    const leftSidebarWidth = 300
+    const addEventSidebarWidth = 400
     const { skin, direction } = settings
+    const mdAbove = useMediaQuery(theme => theme.breakpoints.up('md'))
     useEffect(() => {
-        dispatch(getRoles())
         !userAbility ? dispatch(getLeaves()) : dispatch(getBranches())
     }, [userAbility, dispatch])
 
@@ -60,16 +63,6 @@ const LeavesPage = () => {
 
     return (
         <Fragment>
-            {userAbility && (
-                <CardActionsRefresh
-                    branches={branches}
-                    isLoading={isLoading}
-                    store={store}
-                    selectBranch={selectBranch}
-                />
-
-            )}
-            <RoleListAccordion roles={roles} />
             <CalendarWrapper
                 className='app-calendar'
                 sx={{
@@ -77,6 +70,27 @@ const LeavesPage = () => {
                     ...(skin === 'bordered' && { border: theme => `1px solid ${theme.palette.divider}` })
                 }}
             >
+                {userAbility &&
+                    <SidebarLeft
+                        store={store}
+                        mdAbove={mdAbove}
+                        dispatch={dispatch}
+                        calendarApi={calendarApi}
+                        calendarsColor={calendarsColor}
+                        branches={branches}
+                        selectBranch={selectBranch}
+                        isLoading={isLoading}
+                        roles={roles}
+
+                    // leftSidebarOpen={leftSidebarOpen}
+                    // leftSidebarWidth={leftSidebarWidth}
+                    // handleSelectEvent={handleSelectEvent}
+                    // handleAllCalendars={handleAllCalendars}
+                    // handleCalendarsUpdate={handleCalendarsUpdate}
+                    // handleLeftSidebarToggle={handleLeftSidebarToggle}
+                    // handleAddEventSidebarToggle={handleAddEventSidebarToggle}
+                    />
+                }
                 <Box
                     sx={{
                         p: 6,
@@ -85,6 +99,8 @@ const LeavesPage = () => {
                         borderRadius: 1,
                         boxShadow: 'none',
                         backgroundColor: 'background.paper',
+                        ...(userAbility && mdAbove ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } : {})
+
                     }}
                 >
                     <Calendar
@@ -94,6 +110,7 @@ const LeavesPage = () => {
                         calendarApi={calendarApi}
                         calendarsColor={calendarsColor}
                         setCalendarApi={setCalendarApi}
+                        userAbility={userAbility}
                     />
                 </Box>
             </CalendarWrapper>
