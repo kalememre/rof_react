@@ -114,7 +114,7 @@ const App = props => {
             name='description'
             content={`${themeConfig.templateName} – Roster On Fire`}
           />
-          <meta name='keywords' content='Roster,Leaves,Work,Clock List' />
+          <meta name='keywords' content='Roster,Holidays,Work,Clock List' />
           <meta name='viewport' content='initial-scale=1, width=device-width' />
         </Head>
 

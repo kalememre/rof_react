@@ -49,7 +49,6 @@ const SidebarLeft = props => {
       }
     )
   })
-  console.log(colorsArr)
 
   const theme = createTheme({
     palette: {
@@ -61,21 +60,20 @@ const SidebarLeft = props => {
   const renderFilters = roles.length
     ? roles?.map((role, index) => {
       return (
-        <FormControlLabel
-          key={index}
-          label={role.name}
-          sx={{ '& .MuiFormControlLabel-label': { color: 'text.secondary' } }}
-          control={
-            <ThemeProvider theme={theme}>
+        <ThemeProvider key={index} theme={theme}>
+          <FormControlLabel
+            label={role.name}
+            sx={{ '& .MuiFormControlLabel-label': { color: 'text.secondary' } }}
+            control={
               <Checkbox
                 color={role.name}
                 sx={{ color: role.color }}
                 checked={storeHolidays.selectedColors.includes(role.color)}
                 onChange={(e) => dispatch(toggleColor(role.color))}
               />
-            </ThemeProvider>
-          }
-        />
+            }
+          />
+        </ThemeProvider>
       )
     })
     : null
@@ -140,10 +138,7 @@ const SidebarLeft = props => {
             sx={{ '& .MuiFormControlLabel-label': { color: 'text.secondary' } }}
             control={
               <Checkbox
-                defaultChecked
-
                 color='secondary'
-
                 checked={storeHolidays.selectedColors.includes('lightgray')}
                 onChange={(e) => dispatch(toggleColor('lightgray'))}
               />

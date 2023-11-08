@@ -12,15 +12,15 @@ import { useDispatch, useSelector } from 'react-redux'
 // ** Hooks
 import { useSettings } from 'src/@core/hooks/useSettings'
 import CalendarWrapper from 'src/@core/styles/libs/fullcalendar'
-import Calendar from 'src/views/apps/leaves/Calendar'
+import Calendar from 'src/views/apps/holidays/Calendar'
 import { getHolidays } from 'src/store/apps/holidays'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
 import { getBranches, getRoles } from 'src/store/apps/user'
 import { useTheme } from '@mui/material/styles'
-import RoleListAccordion from 'src/views/apps/leaves/RoleListAccordion'
-import DialogHolidayDetail from 'src/views/apps/leaves/DialogHolidayDetail'
+import RoleListAccordion from 'src/views/apps/holidays/RoleListAccordion'
+import DialogHolidayDetail from 'src/views/apps/holidays/DialogHolidayDetail'
 import { useMediaQuery } from '@mui/material'
-import SidebarLeft from 'src/views/apps/leaves/SidebarLeft'
+import SidebarLeft from 'src/views/apps/holidays/SidebarLeft'
 
 // ** CalendarColors
 const calendarsColor = {
@@ -31,14 +31,14 @@ const calendarsColor = {
     ETC: 'info'
 }
 
-const LeavesPage = () => {
+const HolidaysPage = () => {
 
     // ** States
-    const { roles, branches, isLoading } = useSelector(state => state.user)
+    const { roles, branches, isLoading } = useSelector(state => state.storeUsers)
 
     // ** Hooks
     const ability = useContext(AbilityContext)
-    const userAbility = ability.can(true, 'can_see_branch_leaves')
+    const userAbility = ability?.can(true, 'can_see_branch_holidays')
 
     // ** States
     const [calendarApi, setCalendarApi] = useState(null)
@@ -54,6 +54,7 @@ const LeavesPage = () => {
     const { skin, direction } = settings
     const mdAbove = useMediaQuery(theme => theme.breakpoints.up('md'))
     useEffect(() => {
+        dispatch(getRoles())
         !userAbility ? dispatch(getHolidays()) : dispatch(getBranches())
     }, [userAbility, dispatch])
 
@@ -81,14 +82,6 @@ const LeavesPage = () => {
                         selectBranch={selectBranch}
                         isLoading={isLoading}
                         roles={roles}
-
-                    // leftSidebarOpen={leftSidebarOpen}
-                    // leftSidebarWidth={leftSidebarWidth}
-                    // handleSelectEvent={handleSelectEvent}
-                    // handleAllCalendars={handleAllCalendars}
-                    // handleCalendarsUpdate={handleCalendarsUpdate}
-                    // handleLeftSidebarToggle={handleLeftSidebarToggle}
-                    // handleAddEventSidebarToggle={handleAddEventSidebarToggle}
                     />
                 }
                 <Box
@@ -117,9 +110,9 @@ const LeavesPage = () => {
         </Fragment>
     )
 }
-LeavesPage.acl = {
+HolidaysPage.acl = {
     action: true,
     subject: 'can_access_leave_page'
 }
 
-export default LeavesPage
+export default HolidaysPage

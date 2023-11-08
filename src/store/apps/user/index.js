@@ -21,14 +21,6 @@ export const getRoles = createAsyncThunk('appUser/getRoles', async (branch) => {
     return response.data
 })
 
-// ** Add Leaves
-
-
-// ** Update Leaves
-
-
-// ** Delete Leaves
-
 
 export const appUserSlice = createSlice({
     name: 'appUser',

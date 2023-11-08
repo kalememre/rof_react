@@ -33,7 +33,7 @@ const SecondPage = () => {
 
 SecondPage.acl = {
   action: true,
-  subject: 'can_approve_leaves'
+  subject: 'can_approve_holidays'
 }
 
 export default SecondPage

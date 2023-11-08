@@ -25,8 +25,9 @@ import CustomTextField from 'src/@core/components/mui/text-field'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 import { formatDate } from 'src/@core/utils/format'
-import { Alert, Backdrop, CircularProgress } from '@mui/material'
+import { Alert, Backdrop, CircularProgress, Stack } from '@mui/material'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
+import ListProgress from './ListProgress'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Fade ref={ref} {...props} />
@@ -53,7 +54,7 @@ const DialogHolidayDetail = props => {
 
   // ** States
   const ability = useContext(AbilityContext)
-  const userAbility = ability.can(true, 'can_approve_leaves')
+  const userAbility = ability.can(true, 'can_approve_holidays')
 
   const approvedStatus = event?.extendedProps?.approved
 
@@ -86,55 +87,7 @@ const DialogHolidayDetail = props => {
             Showing and editing holiday details for holiday
           </Typography>
         </Box>
-        <Grid container spacing={6}>
-          <Grid item xs={12}>
-            {approvedStatus ? (
-              <Alert severity='success'>This holiday has been approved</Alert>
-            ) : (
-              <Alert severity='warning'>This holiday is still pending approval</Alert>
-            )}
-          </Grid>
-          <Grid item xs={12}>
-            <CustomTextField
-              fullWidth
-              disabled
-              label='Full Name'
-              defaultValue={event?.title}
-            />
-          </Grid>
-          <Grid item sm={6} xs={12}>
-            <CustomTextField
-              fullWidth
-              disabled
-              label='Start Date'
-              defaultValue={formatDate(event?.start)}
-            />
-          </Grid>
-          <Grid item sm={6} xs={12}>
-            <CustomTextField
-              fullWidth
-              disabled
-              label='End Date'
-              defaultValue={formatDate(event?.end)}
-            />
-          </Grid>
-          <Grid item sm={6} xs={12}>
-            <CustomTextField
-              fullWidth
-              disabled
-              label='Created Date'
-              defaultValue={event?.extendedProps?.created_on}
-            />
-          </Grid>
-          <Grid item sm={6} xs={12}>
-            <CustomTextField
-              fullWidth
-              disabled
-              label='Approved Date'
-              defaultValue={approvedStatus ? formatDate(event?.extendedProps?.approved_on) : 'N/A'}
-            />
-          </Grid>
-        </Grid>
+        <ListProgress event={event} userAbility={userAbility} />
       </DialogContent>
       <DialogActions
         sx={{

@@ -13,6 +13,10 @@ import interactionPlugin from '@fullcalendar/interaction'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import { Box, Stack, Typography } from '@mui/material'
 import DialogHolidayDetail from './DialogHolidayDetail'
+import Iconify from '@iconify/iconify'
+
+// ** Icon Imports
+import Icon from 'src/@core/components/icon'
 
 const Calendar = props => {
 
@@ -35,12 +39,12 @@ const Calendar = props => {
   // ** Event Rendering
   const EventRender = ({ event }) => {
     return (
-      <Box p={1}>
+      <Box m={1}>
         <Typography sx={{
           whiteSpace: 'initial',
-          textShadow: '1px 1px 1px rgba(0,0,0,0.5)',
+          textShadow: '1px 1px 1px rgba(0,0,0,0.1)',
           wordWrap: 'break-word'
-        }} color={event.extendedProps.approved ? 'white' : 'darkgray'} variant='h5'>
+        }} color={'white'} variant='h6'>
           {event.title}
         </Typography>
       </Box>
