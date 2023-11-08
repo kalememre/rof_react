@@ -29,18 +29,14 @@ const SidebarLeft = props => {
     selectBranch,
     isLoading,
     roles,
-    calendarApi,
-    calendarsColor,
     leftSidebarOpen,
     leftSidebarWidth,
     handleSelectEvent,
-    handleAllCalendars,
-    handleCalendarsUpdate,
     handleLeftSidebarToggle,
     handleAddEventSidebarToggle
   } = props
 
-  const colorsArr = roles.map((role, index) => {
+  const colorsArr = roles.map((role) => {
     return (
       {
         [role.name]: {
@@ -69,7 +65,7 @@ const SidebarLeft = props => {
                 color={role.name}
                 sx={{ color: role.color }}
                 checked={storeHolidays.selectedColors.includes(role.color)}
-                onChange={(e) => dispatch(toggleColor(role.color))}
+                onChange={() => dispatch(toggleColor(role.color))}
               />
             }
           />
@@ -82,22 +78,26 @@ const SidebarLeft = props => {
     handleAddEventSidebarToggle()
     dispatch(handleSelectEvent(null))
   }
+  console.log('leftSidebarOpen', leftSidebarOpen);
   if (renderFilters) {
     return (
-      <Drawer
-        open={leftSidebarOpen}
-        onClose={handleLeftSidebarToggle}
-        variant={mdAbove ? 'permanent' : 'temporary'}
-        ModalProps={{
-          disablePortal: true,
-          disableAutoFocus: true,
-          disableScrollLock: true,
-          keepMounted: true // Better open performance on mobile.
-        }}
+      <Box
+
+        // open={leftSidebarOpen}
+        // onClose={handleLeftSidebarToggle}
+        // variant={mdAbove ? 'permanent' : 'temporary'}
+        // ModalProps={{
+        //   disablePortal: true,
+        //   disableAutoFocus: true,
+        //   disableScrollLock: true,
+        //   keepMounted: true // Better open performance on mobile.
+        // }}
+
+        bgcolor={'white'}
         sx={{
-          zIndex: 3,
+          borderRight: '1px solid #e0e0e0',
           display: 'block',
-          position: mdAbove ? 'static' : 'absolute',
+          position: 'static',
           '& .MuiDrawer-paper': {
             borderRadius: 1,
             boxShadow: 'none',
@@ -105,8 +105,7 @@ const SidebarLeft = props => {
             borderTopRightRadius: 0,
             alignItems: 'flex-start',
             borderBottomRightRadius: 0,
-            zIndex: mdAbove ? 2 : 'drawer',
-            position: mdAbove ? 'static' : 'absolute'
+            position: 'static'
           },
           '& .MuiBackdrop-root': {
             borderRadius: 1,
@@ -114,12 +113,12 @@ const SidebarLeft = props => {
           }
         }}
       >
-        <Box sx={{ p: 6, width: '100%' }}>
-          <Button fullWidth variant='contained' sx={{ '& svg': { mr: 2 } }} onClick={handleSidebarToggleSidebar}>
-            <Icon icon='tabler:plus' fontSize='1.125rem' />
-            Add Event
+        {/* <Box sx={{ p: 6, width: '100%' }}>
+          <Button fullWidth variant='contained' sx={{ '& svg': { mr: 2 } }} onClick={() => handleLeftSidebarToggle(false)}>
+            <Icon icon='tabler:cancel' fontSize='1.125rem' />
+            Close Drawer
           </Button>
-        </Box>
+        </Box> */}
 
         <Divider sx={{ width: '100%', m: '0 !important' }} />
         <CardActionsRefresh
@@ -140,13 +139,13 @@ const SidebarLeft = props => {
               <Checkbox
                 color='secondary'
                 checked={storeHolidays.selectedColors.includes('lightgray')}
-                onChange={(e) => dispatch(toggleColor('lightgray'))}
+                onChange={() => dispatch(toggleColor('lightgray'))}
               />
             }
           />
           {renderFilters}
         </Box>
-      </Drawer>
+      </Box>
     )
   } else {
     return null

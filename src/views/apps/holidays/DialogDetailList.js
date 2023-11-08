@@ -12,7 +12,7 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
-import { Alert, Divider, Grid } from '@mui/material'
+import { Alert, Divider, Grid, Typography } from '@mui/material'
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { formatDate } from 'src/@core/utils/format'
 
@@ -39,8 +39,8 @@ const StyledList = styled(List)(({ theme }) => ({
   }
 }))
 
-const ListProgress = props => {
-  const { event, userAbility } = props
+const DialogDetailList = props => {
+  const { event } = props
   const approvedStatus = event?.extendedProps?.approved
 
   return (
@@ -59,6 +59,9 @@ const ListProgress = props => {
           </CustomAvatar>
         </ListItemAvatar>
         <Box sx={{ width: '100%' }}>
+          <Typography variant='h4' sx={{ mb: 2 }}>
+            User Detail
+          </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <CustomTextField
@@ -86,6 +89,9 @@ const ListProgress = props => {
           </CustomAvatar>
         </ListItemAvatar>
         <Box sx={{ width: '100%' }}>
+          <Typography variant='h4' sx={{ mb: 2 }}>
+            Holiday Detail
+          </Typography>
           <Grid container spacing={3}>
             <Grid item sm={6} xs={12}>
               <CustomTextField
@@ -132,6 +138,9 @@ const ListProgress = props => {
             </CustomAvatar>
           </ListItemAvatar>
           <Box sx={{ width: '100%' }}>
+            <Typography variant='h4' sx={{ mb: 2 }}>
+              Approval Detail
+            </Typography>
             <Grid container spacing={3}>
               <Grid item sm={6} xs={12}>
                 <CustomTextField
@@ -157,4 +166,4 @@ const ListProgress = props => {
   )
 }
 
-export default ListProgress
+export default DialogDetailList

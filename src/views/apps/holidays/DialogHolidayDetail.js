@@ -27,7 +27,7 @@ import Icon from 'src/@core/components/icon'
 import { formatDate } from 'src/@core/utils/format'
 import { Alert, Backdrop, CircularProgress, Stack } from '@mui/material'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
-import ListProgress from './ListProgress'
+import DialogDetailList from './DialogDetailList'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Fade ref={ref} {...props} />
@@ -50,11 +50,13 @@ const CustomCloseButton = styled(IconButton)(({ theme }) => ({
 
 const DialogHolidayDetail = props => {
   // ** Props
-  const { show, setShow, event } = props
-
-  // ** States
-  const ability = useContext(AbilityContext)
-  const userAbility = ability.can(true, 'can_approve_holidays')
+  const {
+    show,
+    setShow,
+    event,
+    can_see_branch_holidays,
+    can_approve_holidays,
+  } = props
 
   const approvedStatus = event?.extendedProps?.approved
 
@@ -79,15 +81,15 @@ const DialogHolidayDetail = props => {
         <CustomCloseButton onClick={() => setShow(false)}>
           <Icon icon='tabler:x' fontSize='1.25rem' />
         </CustomCloseButton>
-        <Box sx={{ mb: 8, textAlign: 'center' }}>
+        {/* <Box sx={{ mb: 8, textAlign: 'center' }}>
           <Typography variant='h3' sx={{ mb: 3 }}>
             Holiday Detail
           </Typography>
           <Typography sx={{ color: 'text.secondary' }}>
             Showing and editing holiday details for holiday
           </Typography>
-        </Box>
-        <ListProgress event={event} userAbility={userAbility} />
+        </Box> */}
+        <DialogDetailList event={event} />
       </DialogContent>
       <DialogActions
         sx={{
@@ -99,7 +101,7 @@ const DialogHolidayDetail = props => {
         <Button variant='tonal' color='secondary' onClick={() => setShow(false)}>
           Cancel
         </Button>
-        {userAbility && (
+        {can_see_branch_holidays && can_approve_holidays && (
           !approvedStatus && (
             <Button variant='contained' sx={{ mr: 1 }} onClick={() => setShow(false)}>
               Approve

@@ -24,16 +24,11 @@ const Calendar = props => {
   // ** Props
   const {
     storeHolidays,
-    dispatch,
-    direction,
-    updateEvent,
     calendarApi,
-    userAbility,
-    calendarsColor,
+    can_approve_holidays,
+    can_see_branch_holidays,
     setCalendarApi,
-    handleSelectEvent,
     handleLeftSidebarToggle,
-    handleAddEventSidebarToggle
   } = props
 
   // ** Event Rendering
@@ -66,7 +61,7 @@ const Calendar = props => {
   if (storeHolidays) {
     const calendarOptions = {
       ref: calendarRef,
-      events: userAbility ? storeHolidays.filteredHolidays : storeHolidays.holidays,
+      events: can_see_branch_holidays ? storeHolidays.filteredHolidays : storeHolidays.holidays,
       eventContent: EventRender,
       plugins: [dayGridPlugin, timeGridPlugin, listPlugin, bootstrap5Plugin, interactionPlugin],
       initialView: 'dayGridMonth',
@@ -102,16 +97,8 @@ const Calendar = props => {
             handleLeftSidebarToggle()
           }
         },
-        addEvent: {
-          text: 'Add Event',
-
-          // icon: 'bi bi-plus',
-          click() {
-            handleAddEventSidebarToggle()
-          }
-        }
       },
-      dateClick(info) {
+      dateClick() {
 
       },
     }
@@ -120,7 +107,12 @@ const Calendar = props => {
     return (
       <Fragment>
         <FullCalendar {...calendarOptions} />
-        <DialogHolidayDetail show={show} setShow={setShow} event={event} />
+        <DialogHolidayDetail
+          can_see_branch_holidays={can_see_branch_holidays}
+          can_approve_holidays={can_approve_holidays}
+          show={show}
+          setShow={setShow}
+          event={event} />
       </Fragment>
     )
   } else {

@@ -19,17 +19,9 @@ import { getBranches, getRoles } from 'src/store/apps/user'
 import { useTheme } from '@mui/material/styles'
 import RoleListAccordion from 'src/views/apps/holidays/RoleListAccordion'
 import DialogHolidayDetail from 'src/views/apps/holidays/DialogHolidayDetail'
-import { useMediaQuery } from '@mui/material'
+import { Typography, useMediaQuery } from '@mui/material'
 import SidebarLeft from 'src/views/apps/holidays/SidebarLeft'
 
-// ** CalendarColors
-const calendarsColor = {
-    Personal: 'error',
-    Business: 'primary',
-    Family: 'warning',
-    Holiday: 'success',
-    ETC: 'info'
-}
 
 const HolidaysPage = () => {
 
@@ -38,10 +30,12 @@ const HolidaysPage = () => {
 
     // ** Hooks
     const ability = useContext(AbilityContext)
-    const userAbility = ability?.can(true, 'can_see_branch_holidays')
+    const can_see_branch_holidays = ability?.can(true, 'can_see_branch_holidays')
+    const can_approve_holidays = ability.can(true, 'can_approve_holidays')
 
     // ** States
     const [calendarApi, setCalendarApi] = useState(null)
+    const [leftSidebarOpen, setLeftSidebarOpen] = useState(false)
 
     // ** Hooks
     const { settings } = useSettings()
@@ -53,10 +47,12 @@ const HolidaysPage = () => {
     const addEventSidebarWidth = 400
     const { skin, direction } = settings
     const mdAbove = useMediaQuery(theme => theme.breakpoints.up('md'))
+    const xsAbove = useMediaQuery(theme => theme.breakpoints.down('sm'))
     useEffect(() => {
         dispatch(getRoles())
-        !userAbility ? dispatch(getHolidays()) : dispatch(getBranches())
-    }, [userAbility, dispatch])
+        !can_see_branch_holidays ? dispatch(getHolidays()) : dispatch(getBranches())
+    }, [can_see_branch_holidays, dispatch])
+    const handleLeftSidebarToggle = () => setLeftSidebarOpen(!leftSidebarOpen)
 
     const selectBranch = (e) => {
         dispatch(getHolidays(e.target.value))
@@ -64,49 +60,55 @@ const HolidaysPage = () => {
 
     return (
         <Fragment>
-            <CalendarWrapper
-                className='app-calendar'
-                sx={{
-                    boxShadow: skin === 'bordered' ? 0 : 6,
-                    ...(skin === 'bordered' && { border: theme => `1px solid ${theme.palette.divider}` })
-                }}
-            >
-                {userAbility &&
-                    <SidebarLeft
-                        storeHolidays={storeHolidays}
-                        mdAbove={mdAbove}
-                        dispatch={dispatch}
-                        calendarApi={calendarApi}
-                        calendarsColor={calendarsColor}
-                        branches={branches}
-                        selectBranch={selectBranch}
-                        isLoading={isLoading}
-                        roles={roles}
-                    />
-                }
-                <Box
-                    sx={{
-                        p: 6,
-                        pb: 0,
-                        flexGrow: 1,
-                        borderRadius: 1,
-                        boxShadow: 'none',
-                        backgroundColor: 'background.paper',
-                        ...(userAbility && mdAbove ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } : {})
+            {xsAbove ? <Typography>Not Support Small Screen</Typography> :
 
+                <CalendarWrapper
+                    className='app-calendar'
+                    sx={{
+                        boxShadow: skin === 'bordered' ? 0 : 6,
+                        ...(skin === 'bordered' && { border: theme => `1px solid ${theme.palette.divider}` })
                     }}
                 >
-                    <Calendar
-                        storeHolidays={storeHolidays}
-                        dispatch={dispatch}
-                        direction={direction}
-                        calendarApi={calendarApi}
-                        calendarsColor={calendarsColor}
-                        setCalendarApi={setCalendarApi}
-                        userAbility={userAbility}
-                    />
-                </Box>
-            </CalendarWrapper>
+                    {can_see_branch_holidays &&
+                        <SidebarLeft
+                            storeHolidays={storeHolidays}
+                            mdAbove={mdAbove}
+                            dispatch={dispatch}
+                            calendarApi={calendarApi}
+                            branches={branches}
+                            selectBranch={selectBranch}
+                            isLoading={isLoading}
+                            roles={roles}
+                            leftSidebarOpen={leftSidebarOpen}
+                            leftSidebarWidth={leftSidebarWidth}
+                        />
+                    }
+                    <Box
+                        sx={{
+                            p: 6,
+                            pb: 0,
+                            flexGrow: 1,
+                            borderRadius: 1,
+                            boxShadow: 'none',
+                            backgroundColor: 'background.paper',
+                            ...(can_see_branch_holidays && mdAbove ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } : {})
+
+                        }}
+                    >
+                        <Calendar
+                            storeHolidays={storeHolidays}
+                            dispatch={dispatch}
+                            direction={direction}
+                            calendarApi={calendarApi}
+                            setCalendarApi={setCalendarApi}
+                            can_see_branch_holidays={can_see_branch_holidays}
+                            can_approve_holidays={can_approve_holidays}
+                            handleLeftSidebarToggle={handleLeftSidebarToggle}
+                        />
+                    </Box>
+
+                </CalendarWrapper>
+            }
         </Fragment>
     )
 }
