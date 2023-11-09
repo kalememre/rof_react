@@ -23,17 +23,12 @@ import { toggleColor } from 'src/store/apps/holidays'
 const SidebarLeft = props => {
   const {
     storeHolidays,
-    mdAbove,
     dispatch,
     branches,
     selectBranch,
-    isLoading,
+    userLoading,
     roles,
-    leftSidebarOpen,
-    leftSidebarWidth,
-    handleSelectEvent,
-    handleLeftSidebarToggle,
-    handleAddEventSidebarToggle
+    leftSidebarWidth
   } = props
 
   const colorsArr = roles.map((role) => {
@@ -74,11 +69,6 @@ const SidebarLeft = props => {
     })
     : null
 
-  const handleSidebarToggleSidebar = () => {
-    handleAddEventSidebarToggle()
-    dispatch(handleSelectEvent(null))
-  }
-  console.log('leftSidebarOpen', leftSidebarOpen);
   if (renderFilters) {
     return (
       <Box
@@ -123,7 +113,7 @@ const SidebarLeft = props => {
         <Divider sx={{ width: '100%', m: '0 !important' }} />
         <CardActionsRefresh
           branches={branches}
-          isLoading={isLoading}
+          userLoading={userLoading}
           storeHolidays={storeHolidays}
           selectBranch={selectBranch}
         />

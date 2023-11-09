@@ -59,7 +59,7 @@ const DialogDetailList = props => {
           </CustomAvatar>
         </ListItemAvatar>
         <Box sx={{ width: '100%' }}>
-          <Typography variant='h4' sx={{ mb: 2 }}>
+          <Typography variant='h5' sx={{ mb: 2 }}>
             User Detail
           </Typography>
           <Grid container spacing={3}>
@@ -89,7 +89,7 @@ const DialogDetailList = props => {
           </CustomAvatar>
         </ListItemAvatar>
         <Box sx={{ width: '100%' }}>
-          <Typography variant='h4' sx={{ mb: 2 }}>
+          <Typography variant='h5' sx={{ mb: 2 }}>
             Holiday Detail
           </Typography>
           <Grid container spacing={3}>
@@ -138,7 +138,7 @@ const DialogDetailList = props => {
             </CustomAvatar>
           </ListItemAvatar>
           <Box sx={{ width: '100%' }}>
-            <Typography variant='h4' sx={{ mb: 2 }}>
+            <Typography variant='h5' sx={{ mb: 2 }}>
               Approval Detail
             </Typography>
             <Grid container spacing={3}>

@@ -1,37 +1,26 @@
 // ** React Imports
-import { useState, forwardRef, useContext } from 'react'
+import { useState, forwardRef } from 'react'
 
 // ** MUI Imports
-import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import Grid from '@mui/material/Grid'
-import Card from '@mui/material/Card'
-import Switch from '@mui/material/Switch'
 import Dialog from '@mui/material/Dialog'
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
-import MenuItem from '@mui/material/MenuItem'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import Fade from '@mui/material/Fade'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import IconButton from '@mui/material/IconButton'
+import Slide from '@mui/material/Slide'
 
 // ** Custom Component Import
-import CustomTextField from 'src/@core/components/mui/text-field'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
-import { formatDate } from 'src/@core/utils/format'
-import { Alert, Backdrop, CircularProgress, Stack } from '@mui/material'
-import { AbilityContext } from 'src/layouts/components/acl/Can'
 import DialogDetailList from './DialogDetailList'
+import DialogConfirmation from './DialogConfirmation'
 
 const Transition = forwardRef(function Transition(props, ref) {
-  return <Fade ref={ref} {...props} />
+  return <Slide direction='up' ref={ref} {...props} />
 })
+
 
 const CustomCloseButton = styled(IconButton)(({ theme }) => ({
   top: 0,
@@ -57,6 +46,9 @@ const DialogHolidayDetail = props => {
     can_see_branch_holidays,
     can_approve_holidays,
   } = props
+
+  // ** State
+  const [open, setOpen] = useState(false)
 
   const approvedStatus = event?.extendedProps?.approved
 
@@ -103,22 +95,18 @@ const DialogHolidayDetail = props => {
         </Button>
         {can_see_branch_holidays && can_approve_holidays && (
           !approvedStatus && (
-            <Button variant='contained' sx={{ mr: 1 }} onClick={() => setShow(false)}>
+            <Button variant='contained' sx={{ mr: 1 }} onClick={() => setOpen(true)}>
               Approve
             </Button>
           )
         )}
       </DialogActions>
-      <Backdrop
-        open={false}
-        sx={{
-          position: 'absolute',
-          color: 'common.white',
-          zIndex: theme => theme.zIndex.mobileStepper - 1
-        }}
-      >
-        <CircularProgress color='inherit' />
-      </Backdrop>
+      <DialogConfirmation
+        open={open}
+        setOpen={setOpen}
+        eventId={event?.id}
+        setShow={setShow}
+      />
     </Dialog>
   )
 }

@@ -16,9 +16,6 @@ import Calendar from 'src/views/apps/holidays/Calendar'
 import { getHolidays } from 'src/store/apps/holidays'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
 import { getBranches, getRoles } from 'src/store/apps/user'
-import { useTheme } from '@mui/material/styles'
-import RoleListAccordion from 'src/views/apps/holidays/RoleListAccordion'
-import DialogHolidayDetail from 'src/views/apps/holidays/DialogHolidayDetail'
 import { Typography, useMediaQuery } from '@mui/material'
 import SidebarLeft from 'src/views/apps/holidays/SidebarLeft'
 
@@ -26,7 +23,7 @@ import SidebarLeft from 'src/views/apps/holidays/SidebarLeft'
 const HolidaysPage = () => {
 
     // ** States
-    const { roles, branches, isLoading } = useSelector(state => state.storeUsers)
+    const { roles, branches, userLoading } = useSelector(state => state.storeUsers)
 
     // ** Hooks
     const ability = useContext(AbilityContext)
@@ -35,7 +32,6 @@ const HolidaysPage = () => {
 
     // ** States
     const [calendarApi, setCalendarApi] = useState(null)
-    const [leftSidebarOpen, setLeftSidebarOpen] = useState(false)
 
     // ** Hooks
     const { settings } = useSettings()
@@ -44,7 +40,6 @@ const HolidaysPage = () => {
 
     // ** Vars
     const leftSidebarWidth = 300
-    const addEventSidebarWidth = 400
     const { skin, direction } = settings
     const mdAbove = useMediaQuery(theme => theme.breakpoints.up('md'))
     const xsAbove = useMediaQuery(theme => theme.breakpoints.down('sm'))
@@ -52,7 +47,6 @@ const HolidaysPage = () => {
         dispatch(getRoles())
         !can_see_branch_holidays ? dispatch(getHolidays()) : dispatch(getBranches())
     }, [can_see_branch_holidays, dispatch])
-    const handleLeftSidebarToggle = () => setLeftSidebarOpen(!leftSidebarOpen)
 
     const selectBranch = (e) => {
         dispatch(getHolidays(e.target.value))
@@ -77,9 +71,8 @@ const HolidaysPage = () => {
                             calendarApi={calendarApi}
                             branches={branches}
                             selectBranch={selectBranch}
-                            isLoading={isLoading}
+                            userLoading={userLoading}
                             roles={roles}
-                            leftSidebarOpen={leftSidebarOpen}
                             leftSidebarWidth={leftSidebarWidth}
                         />
                     }
@@ -103,7 +96,6 @@ const HolidaysPage = () => {
                             setCalendarApi={setCalendarApi}
                             can_see_branch_holidays={can_see_branch_holidays}
                             can_approve_holidays={can_approve_holidays}
-                            handleLeftSidebarToggle={handleLeftSidebarToggle}
                         />
                     </Box>
 

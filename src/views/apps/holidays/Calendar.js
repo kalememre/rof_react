@@ -11,12 +11,10 @@ import interactionPlugin from '@fullcalendar/interaction'
 
 // ** Third Party Style Import
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import DialogHolidayDetail from './DialogHolidayDetail'
-import Iconify from '@iconify/iconify'
 
 // ** Icon Imports
-import Icon from 'src/@core/components/icon'
 
 const Calendar = props => {
 
@@ -29,6 +27,7 @@ const Calendar = props => {
     can_see_branch_holidays,
     setCalendarApi,
     handleLeftSidebarToggle,
+    dispatch,
   } = props
 
   // ** Event Rendering
@@ -57,7 +56,7 @@ const Calendar = props => {
       // @ts-ignore
       setCalendarApi(calendarRef.current?.getApi())
     }
-  }, [calendarApi, setCalendarApi])
+  }, [calendarApi, setCalendarApi, storeHolidays])
   if (storeHolidays) {
     const calendarOptions = {
       ref: calendarRef,
@@ -112,7 +111,8 @@ const Calendar = props => {
           can_approve_holidays={can_approve_holidays}
           show={show}
           setShow={setShow}
-          event={event} />
+          event={event}
+        />
       </Fragment>
     )
   } else {

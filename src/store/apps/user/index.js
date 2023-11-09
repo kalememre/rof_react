@@ -28,35 +28,35 @@ export const appUserSlice = createSlice({
         branches: [],
         roles: [],
         error: null,
-        isLoading: false,
+        userLoading: false,
     },
     reducers: {},
     extraReducers: builder => {
         builder.addCase(getBranches.pending, (state, action) => {
-            state.isLoading = true
+            state.userLoading = true
         })
         builder.addCase(getBranches.fulfilled, (state, action) => {
             state.branches = action.payload
             toast.success('Successfully loaded branches')
-            state.isLoading = false
+            state.userLoading = false
         })
         builder.addCase(getBranches.rejected, (state, action) => {
             state.error = action.error.message
             toast.error('Failed to load branches')
-            state.isLoading = false
+            state.userLoading = false
         })
         builder.addCase(getRoles.pending, (state, action) => {
-            state.isLoading = true
+            state.userLoading = true
         })
         builder.addCase(getRoles.fulfilled, (state, action) => {
             state.roles = action.payload
             toast.success('Successfully loaded roles')
-            state.isLoading = false
+            state.userLoading = false
         })
         builder.addCase(getRoles.rejected, (state, action) => {
             state.error = action.error.message
             toast.error('Failed to load roles')
-            state.isLoading = false
+            state.userLoading = false
         })
     }
 })
