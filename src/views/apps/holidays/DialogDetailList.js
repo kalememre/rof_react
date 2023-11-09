@@ -39,6 +39,14 @@ const StyledList = styled(List)(({ theme }) => ({
   }
 }))
 
+const CustomAlert = ({ severity, message }) => {
+  const alertMessage = message === 'Approved'
+    ? 'This holiday has been approved'
+    : 'This holiday is pending approval'
+
+  return <Alert severity={severity}>{alertMessage}</Alert>
+}
+
 const DialogDetailList = props => {
   const { event } = props
   const approvedStatus = event?.extendedProps?.approved
@@ -46,11 +54,9 @@ const DialogDetailList = props => {
   return (
     <StyledList disablePadding>
       <Grid item xs={12} mb={3}>
-        {approvedStatus ? (
-          <Alert severity='success'>This holiday has been approved</Alert>
-        ) : (
-          <Alert severity='warning'>This holiday is still pending approval</Alert>
-        )}
+        {approvedStatus
+          ? <CustomAlert severity='success' message='Approved' />
+          : <CustomAlert severity='warning' message='Pending' />}
       </Grid>
       <ListItem>
         <ListItemAvatar>

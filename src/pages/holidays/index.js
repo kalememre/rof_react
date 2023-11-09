@@ -44,8 +44,12 @@ const HolidaysPage = () => {
     const mdAbove = useMediaQuery(theme => theme.breakpoints.up('md'))
     const xsAbove = useMediaQuery(theme => theme.breakpoints.down('sm'))
     useEffect(() => {
-        dispatch(getRoles())
-        !can_see_branch_holidays ? dispatch(getHolidays()) : dispatch(getBranches())
+        if (!can_see_branch_holidays) {
+            dispatch(getHolidays())
+        } else {
+            dispatch(getBranches())
+            dispatch(getRoles())
+        }
     }, [can_see_branch_holidays, dispatch])
 
     const selectBranch = (e) => {

@@ -25,6 +25,7 @@ export const getRoles = createAsyncThunk('appUser/getRoles', async (branch) => {
 export const appUserSlice = createSlice({
     name: 'appUser',
     initialState: {
+        users: [],
         branches: [],
         roles: [],
         error: null,

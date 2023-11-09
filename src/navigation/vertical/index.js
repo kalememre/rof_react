@@ -16,6 +16,13 @@ const navigation = () => {
       subject: 'can_access_announcement_page',
     },
     {
+      title: 'Users',
+      path: '/announcements',
+      icon: 'tabler:users',
+      action: true,
+      subject: 'can_see_branch_users',
+    },
+    {
       title: 'Roster',
       path: '/roster',
       icon: 'tabler:report',
@@ -27,7 +34,21 @@ const navigation = () => {
       path: '/holidays',
       icon: 'tabler:beach',
       action: true,
-      subject: 'can_access_leave_page',
+      subject: 'can_access_holiday_page',
+    },
+    {
+      title: 'Managements',
+      icon: 'tabler:settings',
+      children: [
+        {
+          title: 'Branches',
+          path: '/branches',
+        },
+        {
+          title: 'Roles',
+          path: '/roles',
+        },
+      ],
     }
   ]
 }

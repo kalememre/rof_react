@@ -72,7 +72,7 @@ const Calendar = props => {
       views: {
         week: {
           titleFormat: { year: 'numeric', month: 'long', day: 'numeric' }
-        }
+        },
       },
       firstDay: 1,
 
