@@ -35,6 +35,17 @@ export const updateRole = createAsyncThunk('appUser/updateRole', async (role) =>
     return response.data
 })
 
+// ** Delete Role
+export const deleteRole = createAsyncThunk('appUser/deleteRole', async (role) => {
+    try {
+        await axios.delete(`/roles/${role}/`)
+
+        return role
+    } catch (error) {
+        throw Error(error.response.data.error.message)
+    }
+})
+
 
 export const appUserSlice = createSlice({
     name: 'appUser',
@@ -100,6 +111,20 @@ export const appUserSlice = createSlice({
         builder.addCase(updateRole.rejected, (state, action) => {
             state.error = action.error.message
             toast.error('Failed to update role')
+            state.userLoading = false
+        })
+        builder.addCase(deleteRole.pending, (state, action) => {
+            state.userLoading = true
+        })
+        builder.addCase(deleteRole.fulfilled, (state, action) => {
+            const deletedRole = action.payload
+            state.roles = state.roles.filter(role => role.id !== deletedRole)
+            toast.success('Successfully deleted role')
+            state.userLoading = false
+        })
+        builder.addCase(deleteRole.rejected, (state, action) => {
+            state.error = action.error.message
+            toast.error(`Failed to delete role\n"${action.error.message}"`)
             state.userLoading = false
         })
     }

@@ -35,7 +35,7 @@ import Icon from 'src/@core/components/icon'
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { useDispatch, useSelector } from 'react-redux'
-import { addRole, getRoles, updateRole } from 'src/store/apps/user'
+import { addRole, deleteRole, getRoles, updateRole } from 'src/store/apps/user'
 import { Chip, FormHelperText, Stack } from '@mui/material'
 import clsx from 'clsx'
 import { AlphaPicker, BlockPicker, ChromePicker, CirclePicker, CompactPicker, GithubPicker, HuePicker, MaterialPicker, PhotoshopPicker, SketchPicker, SliderPicker, SwatchesPicker } from 'react-color'
@@ -44,6 +44,7 @@ import { AlphaPicker, BlockPicker, ChromePicker, CirclePicker, CompactPicker, Gi
 import * as yup from 'yup'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import DialogConfirmation from './DialogConfirmation'
 
 const cardData = [
   { totalUsers: 4, title: 'Administrator', avatars: ['1.png', '2.png', '3.png', '4.png'] },
@@ -88,6 +89,7 @@ const RolesCards = () => {
   const storeUsers = useSelector(state => state.storeUsers)
   const [roleColor, setRoleColor] = useState(null)
   const [selectedRole, setSelectedRole] = useState(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const {
     control,
@@ -170,7 +172,7 @@ const RolesCards = () => {
         <Card>
           <CardContent>
             <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography sx={{ color: 'text.secondary' }}>{`Total ${item.users_quantity} users`}</Typography>
+              <Typography sx={{ color: 'text.main' }}>{`Total ${item.users_quantity} users`}</Typography>
               <AvatarGroup
                 max={4}
                 className='pull-up'
@@ -195,18 +197,12 @@ const RolesCards = () => {
                     {item.name}
                   </Typography>
                 </Box>
-                <Typography
-                  sx={{ color: 'text.secondary', textDecoration: 'none', width: '90%' }}
-                >
+                <Typography color={'text.secondary'} variant='p'>
                   {item.description}
                 </Typography>
-
               </Box>
-              <Typography
-                href='/'
-                component={Link}
-                sx={{ color: 'primary.main', textDecoration: 'none', whiteSpace: 'nowrap' }}
-                onClick={e => {
+              <Stack direction='row' justifyContent={'flex-end'} spacing={0} sx={{ mb: 0 }}>
+                <IconButton color='info' onClick={e => {
                   e.preventDefault()
                   handleClickOpen()
                   setDialogTitle('Edit')
@@ -216,13 +212,25 @@ const RolesCards = () => {
                   setValue('roleColor', item.color)
                   setRoleColor(item.color)
                   setSelectedRole(item)
-                }}
-              >
-                Edit Role
-              </Typography>
+                }}>
+                  <Icon icon='tabler:edit' />
+                </IconButton>
+                <IconButton color='error' onClick={() => {
+                  setConfirmDelete(true)
+                  setSelectedRole(item)
+                }}>
+                  <Icon icon='tabler:trash' />
+                </IconButton>
+              </Stack>
             </Box>
           </CardContent>
         </Card>
+        <DialogConfirmation
+          confirmDelete={confirmDelete}
+          setConfirmDelete={setConfirmDelete}
+          roleId={selectedRole?.id}
+          storeUsers={storeUsers}
+        />
       </Grid>
     ))
 
@@ -326,6 +334,8 @@ const RolesCards = () => {
                     value={value}
                     onChange={onChange}
                     onBlur={onBlur}
+                    multiline
+                    rows={4}
                     label='Description'
                     placeholder='Enter Role Description'
                     error={Boolean(errors.description)}
@@ -366,7 +376,7 @@ const RolesCards = () => {
           <Button color='secondary' variant='tonal' onClick={handleClose}>
             Cancel
           </Button>
-          <Button type='submit' variant='contained' onClick={handleSubmit(onSubmit)}>
+          <Button type='submit' variant='outlined' onClick={handleSubmit(onSubmit)}>
             Save
           </Button>
         </DialogActions>
