@@ -29,10 +29,14 @@ const RolesComponent = () => {
         <RoleCards />
       </Grid>
       <Grid item xs={12}>
-        <Table />
+        {/* <Table /> */}
       </Grid>
     </Grid>
   )
+}
+RolesComponent.acl = {
+  action: 'all',
+  subject: 'manager'
 }
 
 export default RolesComponent

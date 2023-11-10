@@ -34,6 +34,16 @@ import Icon from 'src/@core/components/icon'
 
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
+import { useDispatch, useSelector } from 'react-redux'
+import { addRole, getRoles, updateRole } from 'src/store/apps/user'
+import { Chip, FormHelperText, Stack } from '@mui/material'
+import clsx from 'clsx'
+import { AlphaPicker, BlockPicker, ChromePicker, CirclePicker, CompactPicker, GithubPicker, HuePicker, MaterialPicker, PhotoshopPicker, SketchPicker, SliderPicker, SwatchesPicker } from 'react-color'
+
+// ** Third Party Imports
+import * as yup from 'yup'
+import { useForm, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 const cardData = [
   { totalUsers: 4, title: 'Administrator', avatars: ['1.png', '2.png', '3.png', '4.png'] },
@@ -55,13 +65,63 @@ const rolesArr = [
   'Payroll'
 ]
 
+const schema = yup.object().shape({
+  roleName: yup.string().required('Role Name is required'),
+  description: yup.string().required('Description is required'),
+  roleColor: yup.string().required('Role Color is required')
+})
+
+const defaultValues = {
+  roleName: '',
+  description: '',
+  roleColor: ''
+}
+
 const RolesCards = () => {
   // ** States
+  const dispatch = useDispatch()
   const [open, setOpen] = useState(false)
   const [dialogTitle, setDialogTitle] = useState('Add')
   const [selectedCheckbox, setSelectedCheckbox] = useState([])
   const [isIndeterminateCheckbox, setIsIndeterminateCheckbox] = useState(false)
   const handleClickOpen = () => setOpen(true)
+  const storeUsers = useSelector(state => state.storeUsers)
+  const [roleColor, setRoleColor] = useState(null)
+  const [selectedRole, setSelectedRole] = useState(null)
+
+  const {
+    control,
+    setError,
+    setValue,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm({
+    defaultValues,
+    mode: 'onChange',
+    resolver: yupResolver(schema)
+  })
+
+  const onSubmit = data => {
+    if (dialogTitle === 'Add') {
+      const role = {
+        name: data.roleName,
+        description: data.description,
+        color: data.roleColor,
+      }
+      dispatch(addRole(role))
+    } else {
+      const role = {
+        id: selectedRole.id,
+        name: data.roleName,
+        description: data.description,
+        color: data.roleColor,
+      }
+      dispatch(updateRole(role))
+    }
+    handleClose()
+    reset()
+  }
 
   const handleClose = () => {
     setOpen(false)
@@ -100,13 +160,17 @@ const RolesCards = () => {
     }
   }, [selectedCheckbox])
 
+  useEffect(() => {
+    dispatch(getRoles())
+  }, [dispatch])
+
   const renderCards = () =>
-    cardData.map((item, index) => (
+    storeUsers?.roles?.map((item, index) => (
       <Grid item xs={12} sm={6} lg={4} key={index}>
         <Card>
           <CardContent>
             <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography sx={{ color: 'text.secondary' }}>{`Total ${item.totalUsers} users`}</Typography>
+              <Typography sx={{ color: 'text.secondary' }}>{`Total ${item.users_quantity} users`}</Typography>
               <AvatarGroup
                 max={4}
                 className='pull-up'
@@ -114,32 +178,48 @@ const RolesCards = () => {
                   '& .MuiAvatar-root': { width: 32, height: 32, fontSize: theme => theme.typography.body2.fontSize }
                 }}
               >
-                {item.avatars.map((img, index) => (
-                  <Avatar key={index} alt={item.title} src={`/images/avatars/${img}`} />
+                {item?.avatars?.map((img, index) => (
+                  <Avatar key={index} alt={item.name} src={`/images/avatars/${img}`} />
                 ))}
               </AvatarGroup>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-                <Typography variant='h4' sx={{ mb: 1 }}>
-                  {item.title}
-                </Typography>
+                <Box sx={{
+                  borderRadius: 1,
+                  bgcolor: item.color,
+                  mb: 1,
+                  p: 2,
+                }}>
+                  <Typography color={'white'} variant='h5'>
+                    {item.name}
+                  </Typography>
+                </Box>
                 <Typography
-                  href='/'
-                  component={Link}
-                  sx={{ color: 'primary.main', textDecoration: 'none' }}
-                  onClick={e => {
-                    e.preventDefault()
-                    handleClickOpen()
-                    setDialogTitle('Edit')
-                  }}
+                  sx={{ color: 'text.secondary', textDecoration: 'none', width: '90%' }}
                 >
-                  Edit Role
+                  {item.description}
                 </Typography>
+
               </Box>
-              <IconButton size='small' sx={{ color: 'text.disabled' }}>
-                <Icon icon='tabler:copy' />
-              </IconButton>
+              <Typography
+                href='/'
+                component={Link}
+                sx={{ color: 'primary.main', textDecoration: 'none', whiteSpace: 'nowrap' }}
+                onClick={e => {
+                  e.preventDefault()
+                  handleClickOpen()
+                  setDialogTitle('Edit')
+                  reset()
+                  setValue('roleName', item.name)
+                  setValue('description', item.description)
+                  setValue('roleColor', item.color)
+                  setRoleColor(item.color)
+                  setSelectedRole(item)
+                }}
+              >
+                Edit Role
+              </Typography>
             </Box>
           </CardContent>
         </Card>
@@ -155,6 +235,8 @@ const RolesCards = () => {
           onClick={() => {
             handleClickOpen()
             setDialogTitle('Add')
+            reset()
+            setRoleColor(null)
           }}
         >
           <Grid container sx={{ height: '100%' }}>
@@ -175,7 +257,7 @@ const RolesCards = () => {
               <CardContent sx={{ pl: 0, height: '100%' }}>
                 <Box sx={{ textAlign: 'right' }}>
                   <Button
-                    variant='contained'
+                    variant='outlined'
                     sx={{ mb: 3, whiteSpace: 'nowrap' }}
                     onClick={() => {
                       handleClickOpen()
@@ -191,7 +273,7 @@ const RolesCards = () => {
           </Grid>
         </Card>
       </Grid>
-      <Dialog fullWidth maxWidth='md' scroll='body' onClose={handleClose} open={open}>
+      <Dialog fullWidth maxWidth='xs' scroll='body' onClose={handleClose} open={open}>
         <DialogTitle
           component='div'
           sx={{
@@ -210,131 +292,83 @@ const RolesCards = () => {
           }}
         >
           <Box sx={{ my: 4 }}>
+            <Controller
+              name='roleName'
+              control={control}
+              render={({ field: { value, onChange, onBlur } }) => (
+                <CustomTextField
+                  fullWidth
+                  autoFocus
+                  control={control}
+                  rules={{ required: true }}
+                  value={value}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  label='Role Name'
+                  placeholder='Enter Role Name'
+                  error={Boolean(errors.roleName)}
+                  {...(errors.roleName && { helperText: errors.roleName.message })}
+                />
+
+              )}
+            />
+          </Box>
+          <Box sx={{ my: 4 }}>
             <FormControl fullWidth>
-              <CustomTextField fullWidth label='Role Name' placeholder='Enter Role Name' />
+              <Controller
+                name='description'
+                control={control}
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <CustomTextField
+                    fullWidth
+                    control={control}
+                    rules={{ required: true }}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    label='Description'
+                    placeholder='Enter Role Description'
+                    error={Boolean(errors.description)}
+                    {...(errors.description && { helperText: errors.description.message })}
+                  />
+
+                )}
+              />
             </FormControl>
           </Box>
-          <Typography variant='h4'>Role Permissions</Typography>
-          <TableContainer>
-            <Table size='small'>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ pl: '0 !important' }}>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        whiteSpace: 'nowrap',
-                        alignItems: 'center',
-                        textTransform: 'capitalize',
-                        '& svg': { ml: 1, cursor: 'pointer' },
-                        color: theme => theme.palette.text.secondary,
-                        fontSize: theme => theme.typography.h6.fontSize
-                      }}
-                    >
-                      Administrator Access
-                      <Tooltip placement='top' title='Allows a full access to the system'>
-                        <Box sx={{ display: 'flex' }}>
-                          <Icon icon='tabler:info-circle' fontSize='1.25rem' />
-                        </Box>
-                      </Tooltip>
-                    </Box>
-                  </TableCell>
-                  <TableCell colSpan={3}>
-                    <FormControlLabel
-                      label='Select All'
-                      sx={{ '& .MuiTypography-root': { textTransform: 'capitalize', color: 'text.secondary' } }}
-                      control={
-                        <Checkbox
-                          size='small'
-                          onChange={handleSelectAllCheckbox}
-                          indeterminate={isIndeterminateCheckbox}
-                          checked={selectedCheckbox.length === rolesArr.length * 3}
-                        />
-                      }
-                    />
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rolesArr.map((i, index) => {
-                  const id = i.toLowerCase().split(' ').join('-')
+          <Box sx={{ my: 4 }}>
+            <FormControl fullWidth>
+              <Box bgcolor={roleColor} sx={{ borderRadius: 1, mb: 3, p: 2 }}>
+                <Typography align={'center'} color={'white'} variant='h5'>
+                  {roleColor}
+                </Typography>
+              </Box>
+              {errors.roleColor && <FormHelperText error>{errors.roleColor.message}</FormHelperText>}
+            </FormControl>
+          </Box>
+          <Stack direction='row' justifyContent={'center'} spacing={2} sx={{ mb: 4 }}>
+            <CirclePicker onChangeComplete={color => {
+              setRoleColor(color.hex)
+              setValue('roleColor', color.hex)
+              setError('roleColor', null)
+            }} />
+          </Stack>
 
-                  return (
-                    <TableRow key={index} sx={{ '& .MuiTableCell-root:first-of-type': { pl: '0 !important' } }}>
-                      <TableCell
-                        sx={{
-                          fontWeight: 600,
-                          whiteSpace: 'nowrap',
-                          fontSize: theme => theme.typography.h6.fontSize
-                        }}
-                      >
-                        {i}
-                      </TableCell>
-                      <TableCell>
-                        <FormControlLabel
-                          label='Read'
-                          sx={{ '& .MuiTypography-root': { color: 'text.secondary' } }}
-                          control={
-                            <Checkbox
-                              size='small'
-                              id={`${id}-read`}
-                              onChange={() => togglePermission(`${id}-read`)}
-                              checked={selectedCheckbox.includes(`${id}-read`)}
-                            />
-                          }
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <FormControlLabel
-                          label='Write'
-                          sx={{ '& .MuiTypography-root': { color: 'text.secondary' } }}
-                          control={
-                            <Checkbox
-                              size='small'
-                              id={`${id}-write`}
-                              onChange={() => togglePermission(`${id}-write`)}
-                              checked={selectedCheckbox.includes(`${id}-write`)}
-                            />
-                          }
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <FormControlLabel
-                          label='Create'
-                          sx={{ '& .MuiTypography-root': { color: 'text.secondary' } }}
-                          control={
-                            <Checkbox
-                              size='small'
-                              id={`${id}-create`}
-                              onChange={() => togglePermission(`${id}-create`)}
-                              checked={selectedCheckbox.includes(`${id}-create`)}
-                            />
-                          }
-                        />
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
         </DialogContent>
         <DialogActions
           sx={{
-            display: 'flex',
+            // display: 'flex',
             justifyContent: 'center',
             px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
             pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
           }}
         >
-          <Box className='demo-space-x'>
-            <Button type='submit' variant='contained' onClick={handleClose}>
-              Submit
-            </Button>
-            <Button color='secondary' variant='tonal' onClick={handleClose}>
-              Cancel
-            </Button>
-          </Box>
+          <Button color='secondary' variant='tonal' onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button type='submit' variant='contained' onClick={handleSubmit(onSubmit)}>
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </Grid>

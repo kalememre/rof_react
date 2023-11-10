@@ -52,7 +52,7 @@ const ACLPage = () => {
   )
 }
 ACLPage.acl = {
-  action: true,
+  action: false,
   subject: 'can_see_branch_users'
 }
 

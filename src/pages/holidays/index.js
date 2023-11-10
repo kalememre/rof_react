@@ -110,7 +110,7 @@ const HolidaysPage = () => {
 }
 HolidaysPage.acl = {
     action: true,
-    subject: 'can_access_leave_page'
+    subject: 'can_access_holiday_page'
 }
 
 export default HolidaysPage

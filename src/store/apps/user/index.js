@@ -14,9 +14,23 @@ export const getBranches = createAsyncThunk('appUser/getBranches', async (branch
     return response.data
 })
 
-// ** Get Branches
-export const getRoles = createAsyncThunk('appUser/getRoles', async (branch) => {
+// ** Get Roles
+export const getRoles = createAsyncThunk('appUser/getRoles', async () => {
     const response = await axios.get('/roles/')
+
+    return response.data
+})
+
+// ** Add Role
+export const addRole = createAsyncThunk('appUser/addRole', async (role) => {
+    const response = await axios.post('/roles/', role)
+
+    return response.data
+})
+
+// ** Update Role
+export const updateRole = createAsyncThunk('appUser/updateRole', async (role) => {
+    const response = await axios.patch(`/roles/${role.id}/`, role)
 
     return response.data
 })
@@ -57,6 +71,35 @@ export const appUserSlice = createSlice({
         builder.addCase(getRoles.rejected, (state, action) => {
             state.error = action.error.message
             toast.error('Failed to load roles')
+            state.userLoading = false
+        })
+        builder.addCase(addRole.pending, (state, action) => {
+            state.userLoading = true
+        })
+        builder.addCase(addRole.fulfilled, (state, action) => {
+            const newRole = action.payload
+            state.roles.push(newRole)
+            toast.success('Successfully added role')
+            state.userLoading = false
+        })
+        builder.addCase(addRole.rejected, (state, action) => {
+            state.error = action.error.message
+            toast.error('Failed to add role')
+            state.userLoading = false
+        })
+        builder.addCase(updateRole.pending, (state, action) => {
+            state.userLoading = true
+        })
+        builder.addCase(updateRole.fulfilled, (state, action) => {
+            const updatedRole = action.payload
+            const index = state.roles.findIndex(role => role.id === updatedRole.id)
+            state.roles[index] = updatedRole
+            toast.success('Successfully updated role')
+            state.userLoading = false
+        })
+        builder.addCase(updateRole.rejected, (state, action) => {
+            state.error = action.error.message
+            toast.error('Failed to update role')
             state.userLoading = false
         })
     }

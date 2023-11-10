@@ -54,7 +54,7 @@ const SidebarLeft = props => {
         <ThemeProvider key={index} theme={theme}>
           <FormControlLabel
             label={role.name}
-            sx={{ '& .MuiFormControlLabel-label': { color: 'text.secondary' } }}
+            sx={{ '& .MuiFormControlLabel-label': { color: role.color } }}
             control={
               <Checkbox
                 color={role.name}
