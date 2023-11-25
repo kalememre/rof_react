@@ -12,9 +12,10 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
-import { Alert, Divider, Grid, Typography } from '@mui/material'
+import { Alert, AlertTitle, Divider, Grid, Typography } from '@mui/material'
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { formatDate } from 'src/@core/utils/format'
+import { useState } from 'react'
 
 const StyledList = styled(List)(({ theme }) => ({
   '& .MuiListItem-root': {
@@ -39,24 +40,71 @@ const StyledList = styled(List)(({ theme }) => ({
   }
 }))
 
-const CustomAlert = ({ severity, message }) => {
-  const alertMessage = message === 'Approved'
-    ? 'This holiday has been approved'
-    : 'This holiday is pending approval'
+const ApprovedSection = ({ event }) => {
+  const eventStatus = event?.extendedProps?.status
+  const statusTitle = eventStatus === 'approved' ? 'Approved' : 'Rejected'
 
-  return <Alert severity={severity}>{alertMessage}</Alert>
+  return (
+    <ListItem>
+      <ListItemAvatar>
+        <CustomAvatar skin='light' variant='rounded' color={eventStatus === 'approved' ? 'success' : 'error'} sx={{ height: 36, width: 36 }}>
+          <Icon icon={eventStatus === 'approved' ? 'tabler:check' : 'tabler:x'} />
+        </CustomAvatar>
+      </ListItemAvatar>
+      <Box sx={{ width: '100%' }}>
+        <Typography variant='h5' sx={{ mb: 2 }}>
+          {statusTitle} Detail
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item sm={6} xs={12}>
+            <CustomTextField
+              fullWidth
+              disabled
+              label='Approved By'
+              defaultValue={event?.extendedProps?.processed_by}
+            />
+          </Grid>
+          <Grid item sm={6} xs={12}>
+            <CustomTextField
+              fullWidth
+              disabled
+              label='Approved Date'
+              defaultValue={event?.extendedProps?.processed_on}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+    </ListItem>
+  )
+}
+
+// const RefuseSection = ({ event }) => {
+
+
+const CustomAlert = ({ status }) => {
+  const statusConfig = {
+    pending: { message: 'This holiday is pending for approval', severity: 'info' },
+    approved: { message: 'This holiday has been approved', severity: 'success' },
+    rejected: { message: 'This holiday has been rejected', severity: 'error' },
+    cancelled: { message: 'This holiday has been cancelled', severity: 'warning' },
+  };
+
+  return <Alert severity={statusConfig[status].severity}>
+    <AlertTitle sx={{
+      textTransform: 'capitalize',
+    }}>{status}</AlertTitle>
+    {statusConfig[status].message}
+  </Alert>;
 }
 
 const DialogDetailList = props => {
   const { event } = props
-  const approvedStatus = event?.extendedProps?.approved
+  const holidayStatus = event?.extendedProps?.status
 
   return (
     <StyledList disablePadding>
       <Grid item xs={12} mb={3}>
-        {approvedStatus
-          ? <CustomAlert severity='success' message='Approved' />
-          : <CustomAlert severity='warning' message='Pending' />}
+        <CustomAlert status={holidayStatus} />
       </Grid>
       <ListItem>
         <ListItemAvatar>
@@ -136,38 +184,7 @@ const DialogDetailList = props => {
           </Grid>
         </Box>
       </ListItem>
-      {approvedStatus &&
-        <ListItem>
-          <ListItemAvatar>
-            <CustomAvatar skin='light' variant='rounded' color='success' sx={{ height: 36, width: 36 }}>
-              <Icon icon='tabler:check' />
-            </CustomAvatar>
-          </ListItemAvatar>
-          <Box sx={{ width: '100%' }}>
-            <Typography variant='h5' sx={{ mb: 2 }}>
-              Approval Detail
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item sm={6} xs={12}>
-                <CustomTextField
-                  fullWidth
-                  disabled
-                  label='Approved By'
-                  defaultValue={event?.extendedProps?.approved_by}
-                />
-              </Grid>
-              <Grid item sm={6} xs={12}>
-                <CustomTextField
-                  fullWidth
-                  disabled
-                  label='Approved Date'
-                  defaultValue={event?.extendedProps?.approved_on}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        </ListItem>
-      }
+      {holidayStatus !== 'pending' && <ApprovedSection event={event} />}
     </StyledList>
   )
 }

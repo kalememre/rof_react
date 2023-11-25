@@ -56,15 +56,6 @@ import 'src/iconify-bundle/icons-bundle-react'
 // ** Global css styles
 import '../../styles/globals.css'
 
-// ** Axios Import
-import axios from 'axios'
-
-// ** Auth Config
-import authConfig from '../configs/auth'
-
-axios.defaults.baseURL = authConfig.apiEndpoint
-
-
 
 const clientSideEmotionCache = createEmotionCache()
 
@@ -130,7 +121,25 @@ const App = props => {
                       </AclGuard>
                     </Guard>
                     <ReactHotToast>
-                      <Toaster position={settings.toastPosition} toastOptions={{ className: 'react-hot-toast' }} />
+                      <Toaster position={settings.toastPosition} toastOptions={{
+                        className: 'react-hot-toast',
+                        success: {
+                          style: {
+                            border: '1px solid #4caf50',
+                          }
+                        },
+                        error: {
+                          style: {
+                            border: '1px solid #f44336',
+                          }
+                        },
+                        loading: {
+                          style: {
+                            border: '1px solid #2196f3',
+                          }
+                        }
+
+                      }} />
                     </ReactHotToast>
                   </ThemeComponent>
                 )

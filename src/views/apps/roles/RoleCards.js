@@ -35,8 +35,7 @@ import Icon from 'src/@core/components/icon'
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { useDispatch, useSelector } from 'react-redux'
-import { addRole, deleteRole, getRoles, updateRole } from 'src/store/apps/user'
-import { Chip, FormHelperText, Stack } from '@mui/material'
+import { Backdrop, Chip, CircularProgress, FormHelperText, Stack } from '@mui/material'
 import clsx from 'clsx'
 import { AlphaPicker, BlockPicker, ChromePicker, CirclePicker, CompactPicker, GithubPicker, HuePicker, MaterialPicker, PhotoshopPicker, SketchPicker, SliderPicker, SwatchesPicker } from 'react-color'
 
@@ -45,6 +44,7 @@ import * as yup from 'yup'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import DialogConfirmation from './DialogConfirmation'
+import { addRole, getRoles, updateRole } from 'src/store/apps/role'
 
 const cardData = [
   { totalUsers: 4, title: 'Administrator', avatars: ['1.png', '2.png', '3.png', '4.png'] },
@@ -86,7 +86,7 @@ const RolesCards = () => {
   const [selectedCheckbox, setSelectedCheckbox] = useState([])
   const [isIndeterminateCheckbox, setIsIndeterminateCheckbox] = useState(false)
   const handleClickOpen = () => setOpen(true)
-  const storeUsers = useSelector(state => state.storeUsers)
+  const storeRoles = useSelector(state => state.storeRoles)
   const [roleColor, setRoleColor] = useState(null)
   const [selectedRole, setSelectedRole] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -167,7 +167,7 @@ const RolesCards = () => {
   }, [dispatch])
 
   const renderCards = () =>
-    storeUsers?.roles?.map((item, index) => (
+    storeRoles?.roles?.map((item, index) => (
       <Grid item xs={12} sm={6} lg={4} key={index}>
         <Card>
           <CardContent>
@@ -186,42 +186,54 @@ const RolesCards = () => {
               </AvatarGroup>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-                <Box sx={{
-                  borderRadius: 1,
-                  bgcolor: item.color,
-                  mb: 1,
-                  p: 2,
-                }}>
-                  <Typography color={'white'} variant='h5'>
-                    {item.name}
-                  </Typography>
-                </Box>
-                <Typography color={'text.secondary'} variant='p'>
-                  {item.description}
-                </Typography>
-              </Box>
-              <Stack direction='row' justifyContent={'flex-end'} spacing={0} sx={{ mb: 0 }}>
-                <IconButton color='info' onClick={e => {
-                  e.preventDefault()
-                  handleClickOpen()
-                  setDialogTitle('Edit')
-                  reset()
-                  setValue('roleName', item.name)
-                  setValue('description', item.description)
-                  setValue('roleColor', item.color)
-                  setRoleColor(item.color)
-                  setSelectedRole(item)
-                }}>
-                  <Icon icon='tabler:edit' />
-                </IconButton>
-                <IconButton color='error' onClick={() => {
-                  setConfirmDelete(true)
-                  setSelectedRole(item)
-                }}>
-                  <Icon icon='tabler:trash' />
-                </IconButton>
-              </Stack>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={8}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
+                    <Box sx={{
+                      borderRadius: 1,
+                      bgcolor: item.color,
+                      mb: 1,
+                      p: 2,
+                    }}>
+                      <Typography color={'white'} variant='h5'>
+                        {item.name}
+                      </Typography>
+                    </Box>
+                    <Typography sx={{
+                      whiteSpace: 'nowrap',
+
+                      textOverflow: 'ellipsis',
+
+                      overflow: 'hidden',
+                    }} color={'text.secondary'} width={'100%'} variant='p'>
+                      {item.description}
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={4} alignSelf={'flex-end'}>
+                  <Stack direction='row' justifyContent={'flex-end'} spacing={0} sx={{ mb: 0 }}>
+                    <IconButton color='info' onClick={e => {
+                      e.preventDefault()
+                      handleClickOpen()
+                      setDialogTitle('Edit')
+                      reset()
+                      setValue('roleName', item.name)
+                      setValue('description', item.description)
+                      setValue('roleColor', item.color)
+                      setRoleColor(item.color)
+                      setSelectedRole(item)
+                    }}>
+                      <Icon icon='tabler:edit' />
+                    </IconButton>
+                    <IconButton color='error' onClick={() => {
+                      setConfirmDelete(true)
+                      setSelectedRole(item)
+                    }}>
+                      <Icon icon='tabler:trash' />
+                    </IconButton>
+                  </Stack>
+                </Grid>
+              </Grid>
             </Box>
           </CardContent>
         </Card>
@@ -229,7 +241,7 @@ const RolesCards = () => {
           confirmDelete={confirmDelete}
           setConfirmDelete={setConfirmDelete}
           roleId={selectedRole?.id}
-          storeUsers={storeUsers}
+          storeRoles={storeRoles}
         />
       </Grid>
     ))
@@ -247,6 +259,7 @@ const RolesCards = () => {
             setRoleColor(null)
           }}
         >
+
           <Grid container sx={{ height: '100%' }}>
             <Grid item xs={5}>
               <Box
@@ -275,12 +288,14 @@ const RolesCards = () => {
                     Add New Role
                   </Button>
                   <Typography sx={{ color: 'text.secondary' }}>Add role, if it doesn't exist.</Typography>
+
                 </Box>
               </CardContent>
             </Grid>
           </Grid>
         </Card>
       </Grid>
+
       <Dialog fullWidth maxWidth='xs' scroll='body' onClose={handleClose} open={open}>
         <DialogTitle
           component='div'
@@ -381,6 +396,16 @@ const RolesCards = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Backdrop
+        open={storeRoles.roleLoading}
+        sx={{
+          position: 'absolute',
+          color: 'common.white',
+          zIndex: theme => theme.zIndex.mobileStepper - 1
+        }}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
     </Grid>
   )
 }

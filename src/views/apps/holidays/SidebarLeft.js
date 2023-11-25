@@ -24,14 +24,15 @@ const SidebarLeft = props => {
   const {
     storeHolidays,
     dispatch,
-    branches,
+    storeBranches,
     selectBranch,
-    userLoading,
-    roles,
-    leftSidebarWidth
+    storeRoles,
+    leftSidebarWidth,
+    mdAbove,
+    can_see_branch_holidays
   } = props
 
-  const colorsArr = roles.map((role) => {
+  const colorsArr = storeRoles.roles.map((role) => {
     return (
       {
         [role.name]: {
@@ -48,8 +49,8 @@ const SidebarLeft = props => {
   });
 
 
-  const renderFilters = roles.length
-    ? roles?.map((role, index) => {
+  const renderFilters = storeRoles.roles.length
+    ? storeRoles.roles?.map((role, index) => {
       return (
         <ThemeProvider key={index} theme={theme}>
           <FormControlLabel
@@ -71,21 +72,22 @@ const SidebarLeft = props => {
 
   if (renderFilters) {
     return (
-      <Box
+      <Drawer
 
-        // open={leftSidebarOpen}
+        open={can_see_branch_holidays}
+
         // onClose={handleLeftSidebarToggle}
-        // variant={mdAbove ? 'permanent' : 'temporary'}
-        // ModalProps={{
-        //   disablePortal: true,
-        //   disableAutoFocus: true,
-        //   disableScrollLock: true,
-        //   keepMounted: true // Better open performance on mobile.
-        // }}
+        variant={mdAbove ? 'permanent' : 'temporary'}
+        ModalProps={{
+          disablePortal: true,
+          disableAutoFocus: true,
+          disableScrollLock: true,
+          keepMounted: true // Better open performance on mobile.
+        }}
 
         bgcolor={'white'}
         sx={{
-          borderRight: '1px solid #e0e0e0',
+          // borderRight: '1px solid #e0e0e0',
           display: 'block',
           position: 'static',
           '& .MuiDrawer-paper': {
@@ -110,10 +112,9 @@ const SidebarLeft = props => {
           </Button>
         </Box> */}
 
-        <Divider sx={{ width: '100%', m: '0 !important' }} />
+        {/* <Divider sx={{ width: '100%', m: '0 !important' }} /> */}
         <CardActionsRefresh
-          branches={branches}
-          userLoading={userLoading}
+          storeBranches={storeBranches}
           storeHolidays={storeHolidays}
           selectBranch={selectBranch}
         />
@@ -135,7 +136,7 @@ const SidebarLeft = props => {
           />
           {renderFilters}
         </Box>
-      </Box>
+      </Drawer>
     )
   } else {
     return null

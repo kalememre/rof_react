@@ -185,7 +185,7 @@ const UserList = () => {
 
   // ** Hooks
   const dispatch = useDispatch()
-  const storeUsers = useSelector(state => state.storeUsers)
+  const storeRoles = useSelector(state => state.storeRoles)
 
   // useEffect(() => {
   //   dispatch(
@@ -214,7 +214,7 @@ const UserList = () => {
           <DataGrid
             autoHeight
             rowHeight={62}
-            rows={storeUsers.users}
+            rows={storeRoles.roles}
             columns={columns}
             checkboxSelection
             disableRowSelectionOnClick

@@ -49,8 +49,9 @@ const DialogHolidayDetail = props => {
 
   // ** State
   const [open, setOpen] = useState(false)
+  const [process, setProcess] = useState('')
 
-  const approvedStatus = event?.extendedProps?.approved
+  const holidayStatus = event?.extendedProps?.status
 
   return (
     <Dialog
@@ -90,14 +91,22 @@ const DialogHolidayDetail = props => {
           pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
         }}
       >
-        <Button variant='tonal' color='secondary' onClick={() => setShow(false)}>
-          Cancel
-        </Button>
         {can_see_branch_holidays && can_approve_holidays && (
-          !approvedStatus && (
-            <Button variant='contained' sx={{ mr: 1 }} onClick={() => setOpen(true)}>
-              Approve
-            </Button>
+          holidayStatus === 'pending' && (
+            <>
+              <Button variant='tonal' color='error' onClick={() => {
+                setProcess('refuse')
+                setOpen(true)
+              }}>
+                Refuse
+              </Button>
+              <Button variant='contained' color='success' sx={{ mr: 1 }} onClick={() => {
+                setProcess('approve')
+                setOpen(true)
+              }}>
+                Approve
+              </Button>
+            </>
           )
         )}
       </DialogActions>
@@ -106,6 +115,7 @@ const DialogHolidayDetail = props => {
         setOpen={setOpen}
         eventId={event?.id}
         setShow={setShow}
+        process={process}
       />
     </Dialog>
   )

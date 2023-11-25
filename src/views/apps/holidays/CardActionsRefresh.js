@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles'
 
 const CardActionsRefresh = props => {
     // ** Props
-    const { branches, userLoading, storeHolidays, selectBranch } = props
+    const { storeBranches, storeHolidays, selectBranch } = props
 
     // ** Hooks
     const theme = useTheme()
@@ -22,7 +22,7 @@ const CardActionsRefresh = props => {
 
                 <FormControl sx={{ width: '100%' }}>
                     <InputLabel id='demo-simple-select-outlined-label'>
-                        {userLoading ? 'Loading...' : 'Select Branch'}
+                        {storeBranches.branchLoading ? 'Loading...' : 'Select Branch'}
                     </InputLabel>
                     <Select
                         label='Select Branch'
@@ -30,12 +30,12 @@ const CardActionsRefresh = props => {
                         id='select_branch'
                         labelId='select_branch-label'
                         onChange={selectBranch}
-                        disabled={userLoading}
+                        disabled={storeBranches.branchLoading}
                     >
-                        <MenuItem value=''>
+                        <MenuItem value='None'>
                             <em>None</em>
                         </MenuItem>
-                        {branches?.map((branch, index) => (
+                        {storeBranches.branches?.map((branch, index) => (
                             <MenuItem key={index} value={branch.id}>
                                 {branch.name}
                             </MenuItem>
@@ -45,7 +45,7 @@ const CardActionsRefresh = props => {
 
             </CardContent>
             <Backdrop
-                open={userLoading || storeHolidays.holidayLoading}
+                open={storeBranches.branchLoading || storeHolidays.holidayLoading}
                 sx={{
                     position: 'absolute',
                     color: 'common.white',

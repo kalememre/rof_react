@@ -1,13 +1,9 @@
 // ** Redux Imports
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-// ** Config
-import authConfig from 'src/configs/auth'
 
 // ** Axios Imports
 import axios from 'axios'
-
-axios.defaults.baseURL = authConfig.apiEndpoint
 
 // ** Fetch Events
 export const fetchEvents = createAsyncThunk('appCalendar/fetchEvents', async calendars => {

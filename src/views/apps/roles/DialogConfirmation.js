@@ -16,7 +16,7 @@ import { deleteRole } from 'src/store/apps/user'
 
 const DialogConfirmation = props => {
     // ** Props
-    const { confirmDelete, setConfirmDelete, roleId, storeUsers } = props
+    const { confirmDelete, setConfirmDelete, roleId, storeRoles } = props
 
     const handleClose = () => {
         setConfirmDelete(false)
@@ -53,13 +53,13 @@ const DialogConfirmation = props => {
                 </DialogContent>
                 <DialogActions className='dialog-actions-dense'>
                     <Button
-                        disabled={storeUsers.userLoading}
+                        disabled={storeRoles.roleLoading}
                         onClick={handleClose}>Cancel</Button>
                     <Button
-                        disabled={storeUsers.userLoading}
+                        disabled={storeRoles.roleLoading}
                         onClick={handleSubmit}>Submit</Button>
                 </DialogActions>
-                {storeUsers.userLoading && <LinearProgress color='error' />}
+                {storeRoles.roleLoading && <LinearProgress color='error' />}
             </Dialog>
         </Fragment>
     )

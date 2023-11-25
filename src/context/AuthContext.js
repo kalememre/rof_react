@@ -9,6 +9,7 @@ import axios from 'axios'
 
 // ** Config
 import authConfig from 'src/configs/auth'
+import axiosInstance from 'src/store/axiosDefaults'
 
 // ** Defaults
 const defaultProvider = {
@@ -33,6 +34,7 @@ const AuthProvider = ({ children }) => {
       const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName)
       if (storedToken) {
         axios.defaults.headers.common.Authorization = `Bearer ${storedToken}`
+        axiosInstance.defaults.headers.common.Authorization = `Bearer ${storedToken}`
         setLoading(true)
         await axios
           .get(authConfig.meEndpoint, {
@@ -68,6 +70,7 @@ const AuthProvider = ({ children }) => {
       .post(authConfig.loginEndpoint, params)
       .then(async response => {
         axios.defaults.headers.common.Authorization = `Bearer ${response.data.access}`
+        axiosInstance.defaults.headers.common.Authorization = `Bearer ${response.data.access}`
         params.rememberMe
           ? window.localStorage.setItem(authConfig.storageTokenKeyName, response.data.access)
           : null

@@ -5,11 +5,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
 import toast from 'react-hot-toast'
+import axiosInstance from 'src/store/axiosDefaults'
 
 
 // ** Get Holidays
 export const getHolidays = createAsyncThunk('appHolidays/getHolidays', async (branch) => {
-    const response = await axios.get('/holidays/', {
+    const response = await axiosInstance.get('/holidays/', {
         params: {
             branch: branch
         }
@@ -22,8 +23,9 @@ export const getHolidays = createAsyncThunk('appHolidays/getHolidays', async (br
 
 
 // ** Update Holidays
-export const patchHoliday = createAsyncThunk('appHolidays/addHolidays', async (holiday) => {
-    const response = await axios.patch(`/holidays/${holiday}/`)
+export const patchHoliday = createAsyncThunk('appHolidays/addHolidays', async ({ id, process, processed_reason }) => {
+    console.log(id, process, processed_reason);
+    const response = await axiosInstance.patch(`/holidays/${id}/`, { process, processed_reason })
 
     return response.data
 })
@@ -73,11 +75,20 @@ export const appHolidaysSlice = createSlice({
         })
         builder.addCase(patchHoliday.fulfilled, (state, action) => {
             const holiday = action.payload
-            const index = state.holidays.findIndex(holidays => holidays.id === holiday.id)
-            state.holidays[index] = holiday
-            state.filteredHolidays[index] = holiday
-            toast.success('Successfully updated holiday')
-            state.holidayLoading = false
+            const holidayStatus = holiday.extendedProps.status
+            if (holidayStatus === 'refused') {
+                const index = state.holidays.findIndex(holidays => holidays.id === holiday.id)
+                state.holidays.splice(index, 1)
+                state.filteredHolidays.splice(index, 1)
+                toast.success('Successfully refused  holiday')
+                state.holidayLoading = false
+            } else if (holidayStatus === 'approved') {
+                const index = state.holidays.findIndex(holidays => holidays.id === holiday.id)
+                state.holidays[index] = holiday
+                state.filteredHolidays[index] = holiday
+                toast.success('Successfully approved holiday')
+                state.holidayLoading = false
+            }
         })
         builder.addCase(patchHoliday.rejected, (state, action) => {
             state.error = action.error.message
