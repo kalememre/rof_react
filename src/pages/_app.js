@@ -21,7 +21,7 @@ import themeConfig from 'src/configs/themeConfig'
 import 'src/@fake-db'
 
 // ** Third Party Import
-import { Toaster } from 'react-hot-toast'
+import { Toaster, ToastBar } from 'react-hot-toast'
 
 // ** Component Imports
 import UserLayout from 'src/layouts/UserLayout'
@@ -121,25 +121,26 @@ const App = props => {
                       </AclGuard>
                     </Guard>
                     <ReactHotToast>
-                      <Toaster position={settings.toastPosition} toastOptions={{
-                        className: 'react-hot-toast',
-                        success: {
-                          style: {
-                            border: '1px solid #4caf50',
+                      <Toaster
+                        position={settings.toastPosition} toastOptions={{
+                          className: 'react-hot-toast',
+                          success: {
+                            style: {
+                              border: '1px solid #4caf50',
+                            }
+                          },
+                          error: {
+                            style: {
+                              border: '1px solid #f44336',
+                            }
+                          },
+                          loading: {
+                            style: {
+                              border: '1px solid #2196f3',
+                            }
                           }
-                        },
-                        error: {
-                          style: {
-                            border: '1px solid #f44336',
-                          }
-                        },
-                        loading: {
-                          style: {
-                            border: '1px solid #2196f3',
-                          }
-                        }
 
-                      }} />
+                        }} />
                     </ReactHotToast>
                   </ThemeComponent>
                 )

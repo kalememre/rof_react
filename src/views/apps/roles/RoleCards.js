@@ -1,5 +1,5 @@
 // ** React Imports
-import { useEffect, useState } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 
 // ** Next Import
 import Link from 'next/link'
@@ -35,7 +35,7 @@ import Icon from 'src/@core/components/icon'
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { useDispatch, useSelector } from 'react-redux'
-import { Backdrop, Chip, CircularProgress, FormHelperText, Stack } from '@mui/material'
+import { Backdrop, Chip, CircularProgress, Fade, FormHelperText, Stack } from '@mui/material'
 import clsx from 'clsx'
 import { AlphaPicker, BlockPicker, ChromePicker, CirclePicker, CompactPicker, GithubPicker, HuePicker, MaterialPicker, PhotoshopPicker, SketchPicker, SliderPicker, SwatchesPicker } from 'react-color'
 
@@ -45,14 +45,26 @@ import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import DialogConfirmation from './DialogConfirmation'
 import { addRole, getRoles, updateRole } from 'src/store/apps/role'
+import styled from '@emotion/styled'
 
-const cardData = [
-  { totalUsers: 4, title: 'Administrator', avatars: ['1.png', '2.png', '3.png', '4.png'] },
-  { totalUsers: 7, title: 'Manager', avatars: ['5.png', '6.png', '7.png', '8.png', '1.png', '2.png', '3.png'] },
-  { totalUsers: 5, title: 'Users', avatars: ['4.png', '5.png', '6.png', '7.png', '8.png'] },
-  { totalUsers: 3, title: 'Support', avatars: ['1.png', '2.png', '3.png'] },
-  { totalUsers: 2, title: 'Restricted User', avatars: ['4.png', '5.png'] }
-]
+const Transition = forwardRef(function Transition(props, ref) {
+  return <Fade ref={ref} {...props} />
+})
+
+const CustomCloseButton = styled(IconButton)(({ theme }) => ({
+  top: 0,
+  right: 0,
+  color: 'grey.500',
+  position: 'absolute',
+  boxShadow: theme.shadows[2],
+  transform: 'translate(10px, -10px)',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: `${theme.palette.background.paper} !important`,
+  transition: 'transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out',
+  '&:hover': {
+    transform: 'translate(7px, -5px)'
+  }
+}))
 
 const rolesArr = [
   'User Management',
@@ -83,8 +95,6 @@ const RolesCards = () => {
   const dispatch = useDispatch()
   const [open, setOpen] = useState(false)
   const [dialogTitle, setDialogTitle] = useState('Add')
-  const [selectedCheckbox, setSelectedCheckbox] = useState([])
-  const [isIndeterminateCheckbox, setIsIndeterminateCheckbox] = useState(false)
   const handleClickOpen = () => setOpen(true)
   const storeRoles = useSelector(state => state.storeRoles)
   const [roleColor, setRoleColor] = useState(null)
@@ -127,40 +137,7 @@ const RolesCards = () => {
 
   const handleClose = () => {
     setOpen(false)
-    setSelectedCheckbox([])
-    setIsIndeterminateCheckbox(false)
   }
-
-  const togglePermission = id => {
-    const arr = selectedCheckbox
-    if (selectedCheckbox.includes(id)) {
-      arr.splice(arr.indexOf(id), 1)
-      setSelectedCheckbox([...arr])
-    } else {
-      arr.push(id)
-      setSelectedCheckbox([...arr])
-    }
-  }
-
-  const handleSelectAllCheckbox = () => {
-    if (isIndeterminateCheckbox) {
-      setSelectedCheckbox([])
-    } else {
-      rolesArr.forEach(row => {
-        const id = row.toLowerCase().split(' ').join('-')
-        togglePermission(`${id}-read`)
-        togglePermission(`${id}-write`)
-        togglePermission(`${id}-create`)
-      })
-    }
-  }
-  useEffect(() => {
-    if (selectedCheckbox.length > 0 && selectedCheckbox.length < rolesArr.length * 3) {
-      setIsIndeterminateCheckbox(true)
-    } else {
-      setIsIndeterminateCheckbox(false)
-    }
-  }, [selectedCheckbox])
 
   useEffect(() => {
     dispatch(getRoles())
@@ -296,7 +273,16 @@ const RolesCards = () => {
         </Card>
       </Grid>
 
-      <Dialog fullWidth maxWidth='xs' scroll='body' onClose={handleClose} open={open}>
+      <Dialog
+        fullWidth
+        maxWidth='xs'
+        scroll='body'
+        onClose={handleClose}
+        open={open}
+        TransitionComponent={Transition}
+        onBackdropClick={() => setOpen(false)}
+        sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
+      >
         <DialogTitle
           component='div'
           sx={{
@@ -314,6 +300,9 @@ const RolesCards = () => {
             px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
           }}
         >
+          <CustomCloseButton onClick={() => setOpen(false)}>
+            <Icon icon='tabler:x' fontSize='1.25rem' />
+          </CustomCloseButton>
           <Box sx={{ my: 4 }}>
             <Controller
               name='roleName'

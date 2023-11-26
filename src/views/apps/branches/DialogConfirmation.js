@@ -8,15 +8,14 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContentText from '@mui/material/DialogContentText'
-import { FormHelperText, LinearProgress } from '@mui/material'
+import { LinearProgress } from '@mui/material'
 import { useDispatch } from 'react-redux'
-import { patchHoliday } from 'src/store/apps/holidays'
-import { deleteRole } from 'src/store/apps/role'
+import { deleteBranch } from 'src/store/apps/branch'
 
 
 const DialogConfirmation = props => {
     // ** Props
-    const { confirmDelete, setConfirmDelete, roleId, storeRoles } = props
+    const { confirmDelete, setConfirmDelete, branchId, storeBranches } = props
 
     const handleClose = () => {
         setConfirmDelete(false)
@@ -26,8 +25,12 @@ const DialogConfirmation = props => {
     const dispatch = useDispatch()
 
     const handleSubmit = () => {
-        dispatch(deleteRole(roleId))
-        handleClose()
+        dispatch(deleteBranch(branchId))
+            .then((res) => {
+                if (!res.error) {
+                    handleClose()
+                }
+            })
     }
 
     return (
@@ -43,23 +46,23 @@ const DialogConfirmation = props => {
                     }
                 }}
             >
-                <DialogTitle id='alert-dialog-title'>{'Delete Role'}</DialogTitle>
+                <DialogTitle id='alert-dialog-title'>{'Delete Branch'}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id='alert-dialog-description'>
-                        Are you sure you want to delete this role?
+                        Are you sure you want to delete this branch?
                         <br />
                         It won't be possible to undo this action
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions className='dialog-actions-dense'>
                     <Button
-                        disabled={storeRoles.roleLoading}
+                        disabled={storeBranches.branchLoading}
                         onClick={handleClose}>Cancel</Button>
                     <Button
-                        disabled={storeRoles.roleLoading}
+                        disabled={storeBranches.branchLoading}
                         onClick={handleSubmit}>Submit</Button>
                 </DialogActions>
-                {storeRoles.roleLoading && <LinearProgress color='error' />}
+                {storeBranches.branchLoading && <LinearProgress color='error' />}
             </Dialog>
         </Fragment>
     )

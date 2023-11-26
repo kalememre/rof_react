@@ -14,14 +14,13 @@ const RolesComponent = () => {
     <Grid container spacing={6}>
       <PageHeader
         title={
-          <Typography variant='h4' sx={{ mb: 6 }}>
+          <Typography variant='h4'>
             Roles List
           </Typography>
         }
         subtitle={
           <Typography sx={{ color: 'text.secondary' }}>
-            A role provided access to predefined menus and features so that depending on <br /> assigned role an
-            administrator can have access to what he need
+            You can view and manage roles here.
           </Typography>
         }
       />
