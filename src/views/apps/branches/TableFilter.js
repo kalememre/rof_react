@@ -150,6 +150,12 @@ const TableColumns = params => {
             csvOptions: { disableToolbarButton: true },
             printOptions: { disableToolbarButton: true },
             showQuickFilter: true,
+            quickFilterProps: {
+              placeholder: 'Search Branches',
+              size: 'small',
+              variant: 'outlined',
+              color: 'primary',
+            },
             sx: {
               padding: '10px'
             }

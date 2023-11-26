@@ -7,7 +7,7 @@ import axiosInstance from 'src/store/axiosDefaults'
 
 // ** Get Branches
 export const getBranches = createAsyncThunk('appUser/getBranches', async (branch) => {
-    const response = await axiosInstance.get('/user/branch/')
+    const response = await axiosInstance.get('/branches/')
 
     return response.data
 })

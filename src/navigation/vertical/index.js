@@ -17,7 +17,7 @@ const navigation = () => {
     },
     {
       title: 'Users',
-      path: '/announcements',
+      path: '/users',
       icon: 'tabler:users',
       action: true,
       subject: 'can_see_branch_users',
