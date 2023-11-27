@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Drawer from '@mui/material/Drawer'
@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 
 // ** Custom Component Import
+import CustomChip from 'src/@core/components/mui/chip'
 import CustomTextField from 'src/@core/components/mui/text-field'
 
 // ** Third Party Imports
@@ -29,9 +30,10 @@ import { useDispatch, useSelector } from 'react-redux'
 
 // ** Actions Imports
 import { addUser } from 'src/store/apps/user'
-import { Grid } from '@mui/material'
+import { Grid, InputLabel } from '@mui/material'
 import CustomAutocomplete from 'src/@core/components/mui/autocomplete'
 import { CircleFlag } from 'react-circle-flags'
+import { getBranches } from 'src/store/apps/branch'
 
 const showErrors = (field, valueLen, min) => {
   if (valueLen === 0) {
@@ -50,54 +52,69 @@ const Header = styled(Box)(({ theme }) => ({
   justifyContent: 'space-between'
 }))
 
+const ITEM_HEIGHT = 48
+const ITEM_PADDING_TOP = 8
+
+const MenuProps = {
+  PaperProps: {
+    style: {
+      width: 250,
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP
+    }
+  }
+}
+
 const schema = yup.object().shape({
-  company: yup.string().required(),
-  billing: yup.string().required(),
-  country: yup.string().required(),
-  email: yup.string().email().required(),
-  contact: yup
-    .number()
-    .typeError('Contact Number field is required')
-    .min(10, obj => showErrors('Contact Number', obj.value.length, obj.min))
-    .required(),
-  fullName: yup
-    .string()
-    .min(3, obj => showErrors('First Name', obj.value.length, obj.min))
-    .required(),
-  username: yup
-    .string()
-    .min(3, obj => showErrors('Username', obj.value.length, obj.min))
-    .required()
+  // name: yup.string().required('Name field is required'),
+  // surname: yup.string().required('Surname field is required'),
+  // phone: yup.string().required('Phone field is required'),
+  // email: yup.string().email('Invalid email').required('Email field is required'),
+  // country: yup.string().required('Country field is required'),
+  // ppsn: yup.string().required('PPSN field is required'),
+  // passport: yup.string().required('Passport field is required'),
+  // role: yup.string().required('Role field is required'),
+  branch: yup.array().min(1, 'Branch field is required'),
 })
 
 const defaultValues = {
+  name: '',
+  surname: '',
+  phone: '',
   email: '',
-  company: '',
   country: '',
-  billing: '',
-  fullName: '',
-  username: '',
-  contact: Number('')
+  ppsn: '',
+  passport: '',
+  role: '',
+  branch: []
 }
 
 
 const SidebarAddUser = props => {
   // ** Props
-  const { open, toggle } = props
+  const { open, toggle, storeRoles } = props
 
   // ** State
-  const [plan, setPlan] = useState('basic')
-  const [role, setRole] = useState('subscriber')
+  const [branch, setBranch] = useState([])
+
+  const handleRoleChange = useCallback(e => {
+    setRole(e.target.value)
+  }, [])
 
   // ** Hooks
   const dispatch = useDispatch()
-  const store = useSelector(state => state.user)
+  const storeBranches = useSelector(state => state.storeBranches)
+
+
+  useEffect(() => {
+    dispatch(getBranches())
+  }, [dispatch])
 
   const {
     reset,
     control,
     setValue,
     setError,
+    trigger,
     handleSubmit,
     formState: { errors }
   } = useForm({
@@ -107,30 +124,33 @@ const SidebarAddUser = props => {
   })
 
   const onSubmit = data => {
-    if (store.allData.some(u => u.email === data.email || u.username === data.username)) {
-      store.allData.forEach(u => {
-        if (u.email === data.email) {
-          setError('email', {
-            message: 'Email already exists!'
-          })
-        }
-        if (u.username === data.username) {
-          setError('username', {
-            message: 'Username already exists!'
-          })
-        }
-      })
-    } else {
-      dispatch(addUser({ ...data, role, currentPlan: plan }))
-      toggle()
-      reset()
-    }
+    console.log('data', data);
+
+    // if (store.allData.some(u => u.email === data.email || u.username === data.username)) {
+    //   store.allData.forEach(u => {
+    //     if (u.email === data.email) {
+    //       setError('email', {
+    //         message: 'Email already exists!'
+    //       })
+    //     }
+    //     if (u.username === data.username) {
+    //       setError('username', {
+    //         message: 'Username already exists!'
+    //       })
+    //     }
+    //   })
+    // } else {
+    //   dispatch(addUser({ ...data, role, currentPlan: plan }))
+    //   toggle()
+    //   reset()
+    // }
   }
 
   const handleClose = () => {
-    setPlan('basic')
-    setRole('subscriber')
-    setValue('contact', Number(''))
+    // setPlan('basic')
+    // setRole('subscriber')
+    // setValue('contact', Number(''))
+    setBranch([])
     toggle()
     reset()
   }
@@ -176,12 +196,12 @@ const SidebarAddUser = props => {
                   <CustomTextField
                     fullWidth
                     value={value}
-                    sx={{ mb: 4 }}
+                    sx={{ mb: 2 }}
                     label='Name'
                     onChange={onChange}
                     placeholder="Enter user's name"
-                    error={Boolean(errors.fullName)}
-                    {...(errors.fullName && { helperText: errors.fullName.message })}
+                    error={Boolean(errors.name)}
+                    {...(errors.name && { helperText: errors.name.message })}
                   />
                 )}
               />
@@ -195,17 +215,36 @@ const SidebarAddUser = props => {
                   <CustomTextField
                     fullWidth
                     value={value}
-                    sx={{ mb: 4 }}
+                    sx={{ mb: 2 }}
                     label='Surname'
                     onChange={onChange}
                     placeholder="Enter user's surname"
-                    error={Boolean(errors.username)}
-                    {...(errors.username && { helperText: errors.username.message })}
+                    error={Boolean(errors.surname)}
+                    {...(errors.surname && { helperText: errors.surname.message })}
                   />
                 )}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={6}>
+              <Controller
+                name='phone'
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <CustomTextField
+                    fullWidth
+                    label='Phone'
+                    value={value}
+                    sx={{ mb: 2 }}
+                    onChange={onChange}
+                    error={Boolean(errors.phone)}
+                    placeholder='Enter user phone'
+                    {...(errors.phone && { helperText: errors.phone.message })}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={6}>
               <Controller
                 name='email'
                 control={control}
@@ -216,7 +255,7 @@ const SidebarAddUser = props => {
                     type='email'
                     label='Email'
                     value={value}
-                    sx={{ mb: 4 }}
+                    sx={{ mb: 2 }}
                     onChange={onChange}
                     error={Boolean(errors.email)}
                     placeholder='johndoe@email.com'
@@ -226,84 +265,141 @@ const SidebarAddUser = props => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Controller
-                name='country'
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <CustomAutocomplete
-                    autoHighlight
-                    id='autocomplete-country-select'
-                    options={countries}
-                    getOptionLabel={option => option.label || ''}
-                    renderOption={(props, option) => (
-                      <Box component='li' sx={{ '& > img': { mr: 4, flexShrink: 0 } }} {...props}>
-                        <CircleFlag countryCode={option.code.toLowerCase()} height="20" />
-                        {option.label} ({option.code})
-                      </Box>
-                    )}
-                    renderInput={params => (
-                      <CustomTextField
-                        {...params}
-                        label='Choose a country'
-                        inputProps={{
-                          ...params.inputProps,
-                          autoComplete: 'new-password'
-                        }}
-                      />
-                    )}
+              <CustomAutocomplete
+                autoHighlight
+                id='autocomplete-country-select'
+                options={countries}
+                sx={{ mb: 2 }}
+                onChange={(e, value) => setValue('country', value?.code ?? '')}
+                getOptionLabel={option => option?.label || ''}
+                renderOption={(props, option) => (
+                  <Box component='li' sx={{ '& > img': { mr: 4, flexShrink: 0 } }} {...props}>
+                    <CircleFlag countryCode={option.code.toLowerCase()} height="20" />
+                    {option.label}
+                  </Box>
+                )}
+                renderInput={params => (
+                  <CustomTextField
+                    {...params}
+                    label='Choose a country'
+                    placeholder='Search for a country'
+                    inputProps={{
+                      ...params.inputProps,
+                      autoComplete: 'new-password'
+                    }}
+                    error={Boolean(errors.country)}
+                    {...(errors.country && { helperText: errors.country.message })}
                   />
                 )}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <Controller
-                name='contact'
+                name='ppsn'
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
                   <CustomTextField
                     fullWidth
-                    type='number'
                     value={value}
-                    sx={{ mb: 4 }}
-                    label='Contact'
+                    sx={{ mb: 2 }}
+                    label='PPSN / Tax / VAT'
                     onChange={onChange}
-                    placeholder='(397) 294-5153'
-                    error={Boolean(errors.contact)}
-                    {...(errors.contact && { helperText: errors.contact.message })}
+                    placeholder='Enter PPSN / Tax / VAT'
+                    error={Boolean(errors.ppsn)}
+                    {...(errors.ppsn && { helperText: errors.ppsn.message })}
                   />
                 )}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <Controller
-                name='billing'
+                name='passport'
                 control={control}
                 rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <CustomTextField
+                    fullWidth
+                    value={value}
+                    sx={{ mb: 2 }}
+                    label='Passport Number'
+                    onChange={onChange}
+                    placeholder='Enter Passport Number'
+                    error={Boolean(errors.passport)}
+                    {...(errors.passport && { helperText: errors.passport.message })}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item sm={12} xs={12}>
+              <Controller
+                name='role'
+                control={control}
+                rules={{ required: true }}
+                defaultValue=''
                 render={({ field: { value, onChange } }) => (
                   <CustomTextField
                     select
                     fullWidth
-                    sx={{ mb: 4 }}
-                    label='Billing'
-                    id='validation-billing-select'
-                    error={Boolean(errors.billing)}
-                    aria-describedby='validation-billing-select'
-                    {...(errors.billing && { helperText: errors.billing.message })}
-                    SelectProps={{ value: value, onChange: e => onChange(e) }}
+                    label='Role'
+                    sx={{ mb: 2 }}
+                    disabled={storeRoles.loading}
+                    defaultValue='Select Role'
+                    error={Boolean(errors.role)}
+                    {...(errors.role && { helperText: errors.role.message })}
+                    SelectProps={{
+                      value: value,
+                      displayEmpty: true,
+                      onChange: onChange,
+                    }}
                   >
-                    <MenuItem value=''>Billing</MenuItem>
-                    <MenuItem value='Auto Debit'>Auto Debit</MenuItem>
-                    <MenuItem value='Manual - Cash'>Manual - Cash</MenuItem>
-                    <MenuItem value='Manual - Paypal'>Manual - Paypal</MenuItem>
-                    <MenuItem value='Manual - Credit Card'>Manual - Credit Card</MenuItem>
+                    <MenuItem selected disabled value=''><em>Select Role</em></MenuItem>
+                    {storeRoles.roles?.map((role, index) => (
+                      <MenuItem key={index} value={role.id}>
+                        {role.name}
+                      </MenuItem>
+                    ))}
                   </CustomTextField>
                 )}
               />
+
+            </Grid>
+            <Grid item sm={12} xs={12}>
+              <CustomTextField
+                select
+                fullWidth
+                label='Branch'
+                id='select-branch-chip'
+                sx={{ mb: 2 }}
+                error={Boolean(errors.branch)}
+                {...(errors.branch && { helperText: errors.branch.message })}
+                SelectProps={{
+                  MenuProps,
+                  multiple: true,
+                  value: branch,
+                  onChange: e => {
+                    setBranch(e.target.value)
+                    setValue('branch', e.target.value)
+                    trigger('branch')
+                  },
+                  renderValue: selected => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                      {selected.map(value => (
+                        <CustomChip key={value.id} label={value.name} sx={{ m: 0.75 }} skin='light' color='primary' />
+                      ))}
+                    </Box>
+                  )
+                }}
+              >
+                {storeBranches.branches.map(branch => (
+                  <MenuItem key={branch.id} value={branch}>
+                    {branch.name}
+                  </MenuItem>
+                ))}
+              </CustomTextField>
             </Grid>
           </Grid>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+          <Box mt={3} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
             <Button variant='tonal' color='secondary' sx={{ mr: 3 }} onClick={handleClose}>
               Cancel
             </Button>
