@@ -277,9 +277,14 @@ const UserList = ({ apiData }) => {
                     alignSelf: 'center',
                     textAlign: 'right'
                 }}>
-                    <Button onClick={toggleAddUserDrawer} variant="contained">
+                    {/* <Button onClick={toggleAddUserDrawer} variant="contained">
                         Create User
-                    </Button>
+                    </Button> */}
+                    <Link href='/users/add'>
+                        <Button variant="contained">
+                            Create User
+                        </Button>
+                    </Link>
                 </Grid>
             }
             <Grid item xs={12}>
