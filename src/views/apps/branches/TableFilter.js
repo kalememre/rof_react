@@ -25,15 +25,18 @@ const TableColumns = params => {
   // ** States
   const data = storeBranches.branches
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
-  const [show, setShow] = useState(false)
   const [row, setRow] = useState({})
   const [title, setTitle] = useState('Edit')
   const [confirmDelete, setConfirmDelete] = useState(false)
 
   const editBranch = e => {
-    setShow(true)
+    toggleAddBranchDrawer()
     setRow(e.row)
   }
+
+  const [addBranchOpen, setAddBranchOpen] = useState(false)
+
+  const toggleAddBranchDrawer = () => setAddBranchOpen(!addBranchOpen)
 
   const columns = [
     {
@@ -57,17 +60,6 @@ const TableColumns = params => {
     },
 
     {
-      flex: 0.2,
-      minWidth: 110,
-      field: 'email',
-      headerName: 'Email',
-      renderCell: params => (
-        <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.branch_detail?.email}
-        </Typography>
-      )
-    },
-    {
       flex: 0.125,
       field: 'phone',
       minWidth: 80,
@@ -75,6 +67,17 @@ const TableColumns = params => {
       renderCell: params => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
           {params.row.branch_detail?.phone}
+        </Typography>
+      )
+    },
+    {
+      flex: 0.2,
+      minWidth: 110,
+      field: 'email',
+      headerName: 'Email',
+      renderCell: params => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.branch_detail?.email}
         </Typography>
       )
     },
@@ -106,8 +109,8 @@ const TableColumns = params => {
     <Card>
       <CreateBranch
         row={row}
-        show={show}
-        setShow={setShow}
+        open={addBranchOpen}
+        toggle={toggleAddBranchDrawer}
         title={title}
       />
       <DialogConfirmation

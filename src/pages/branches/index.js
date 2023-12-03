@@ -12,15 +12,14 @@ import CreateBranch from 'src/views/apps/branches/CreateBranch'
 const Branch = () => {
     const dispatch = useDispatch()
     const storeBranches = useSelector(state => state.storeBranches)
-    const [show, setShow] = useState(false)
 
     useEffect(() => {
         dispatch(getBranches())
     }, [dispatch])
 
-    const handleShow = () => {
-        setShow(true)
-    }
+    const [addBranchOpen, setAddBranchOpen] = useState(false)
+
+    const toggleAddBranchDrawer = () => setAddBranchOpen(!addBranchOpen)
 
     return (
         <Grid container spacing={6}>
@@ -43,14 +42,14 @@ const Branch = () => {
                 alignSelf: 'center',
                 textAlign: 'right'
             }}>
-                <Button onClick={handleShow} variant="contained">
+                <Button onClick={toggleAddBranchDrawer} variant="contained">
                     Create Branch
                 </Button>
             </Grid>
             <Grid item xs={12}>
                 <TableFilter storeBranches={storeBranches} />
             </Grid>
-            <CreateBranch title={'Create'} show={show} setShow={setShow} />
+            <CreateBranch title={'Create'} open={addBranchOpen} toggle={toggleAddBranchDrawer} />
         </Grid>
     )
 }

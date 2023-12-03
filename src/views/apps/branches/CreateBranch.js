@@ -29,6 +29,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useDispatch } from 'react-redux'
 import { addBranch, updateBranch } from 'src/store/apps/branch'
+import { Drawer } from '@mui/material'
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Fade ref={ref} {...props} />
@@ -50,7 +51,7 @@ const CustomCloseButton = styled(IconButton)(({ theme }) => ({
 }))
 
 const CreateBranch = props => {
-    const { show, setShow, title, row } = props
+    const { open, toggle, title, row } = props
 
 
 
@@ -103,7 +104,7 @@ const CreateBranch = props => {
             dispatch(addBranch(branch))
                 .then((res) => {
                     if (!res.error) {
-                        setShow(false)
+                        toggle()
                         reset()
                     }
                 })
@@ -120,7 +121,7 @@ const CreateBranch = props => {
             dispatch(updateBranch(branch))
                 .then((res) => {
                     if (!res.error) {
-                        setShow(false)
+                        toggle()
                         reset()
                     }
                 })
@@ -128,35 +129,46 @@ const CreateBranch = props => {
 
     }
 
+    const Header = styled(Box)(({ theme }) => ({
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(6),
+        justifyContent: 'space-between'
+    }))
+
+    const handleClose = () => {
+        toggle()
+        reset()
+    }
 
     return (
-        <Dialog
-            fullWidth
-            open={show}
-            maxWidth='xs'
-            scroll='body'
-            onClose={() => setShow(false)}
-            TransitionComponent={Transition}
-            sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
+        <Drawer
+            open={open}
+            anchor='right'
+            variant='temporary'
+            onClose={handleClose}
+            ModalProps={{ keepMounted: true }}
+            sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 500 } } }}
         >
-            <DialogContent
-                sx={{
-                    pb: theme => `${theme.spacing(8)} !important`,
-                    px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-                    pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-                }}
-            >
-                <CustomCloseButton onClick={() => setShow(false)}>
-                    <Icon icon='tabler:x' fontSize='1.25rem' />
-                </CustomCloseButton>
-                <Box sx={{ mb: 8, textAlign: 'center' }}>
-                    <Typography variant='h3' sx={{ mb: 3 }}>
-                        {title} Branch
-                    </Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>
-                        You can {title} branch here.
-                    </Typography>
-                </Box>
+            <Header>
+                <Typography variant='h5'>Add Branch</Typography>
+                <IconButton
+                    size='small'
+                    onClick={handleClose}
+                    sx={{
+                        p: '0.438rem',
+                        borderRadius: 1,
+                        color: 'text.primary',
+                        backgroundColor: 'action.selected',
+                        '&:hover': {
+                            backgroundColor: theme => `rgba(${theme.palette.customColors.main}, 0.16)`
+                        }
+                    }}
+                >
+                    <Icon icon='tabler:x' fontSize='1.125rem' />
+                </IconButton>
+            </Header>
+            <Box sx={{ p: theme => theme.spacing(0, 6, 6) }}>
                 <Grid container spacing={6}>
                     <Grid item xs={12}>
                         <Controller
@@ -249,22 +261,16 @@ const CreateBranch = props => {
                     </Grid>
 
                 </Grid>
-            </DialogContent>
-            <DialogActions
-                sx={{
-                    justifyContent: 'center',
-                    px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-                    pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-                }}
-            >
-                <Button variant='tonal' color='secondary' onClick={() => setShow(false)}>
-                    Cancel
-                </Button>
-                <Button variant='outlined' sx={{ mr: 1 }} onClick={handleSubmit(onSubmit)}>
-                    {title}
-                </Button>
-            </DialogActions>
-        </Dialog>
+                <Box mt={3} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                    <Button variant='tonal' color='secondary' sx={{ mr: 3 }} onClick={handleClose}>
+                        Cancel
+                    </Button>
+                    <Button variant='outlined' onClick={handleSubmit(onSubmit)}>
+                        {title}
+                    </Button>
+                </Box>
+            </Box>
+        </Drawer>
     )
 }
 
