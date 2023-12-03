@@ -42,6 +42,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { countries } from 'src/@fake-db/autocomplete'
 import CustomAutocomplete from 'src/@core/components/mui/autocomplete'
 import { CircleFlag } from 'react-circle-flags'
+import { addUser } from 'src/store/apps/user'
+import { Backdrop, CircularProgress } from '@mui/material'
+import { useRouter } from 'next/router'
 
 const steps = [
   {
@@ -63,8 +66,8 @@ const steps = [
 ]
 
 const defaultAccountValues = {
-  name: '',
-  surname: '',
+  first_name: '',
+  last_name: '',
   phone: '',
   email: '',
   role: '',
@@ -73,7 +76,7 @@ const defaultAccountValues = {
 
 const defaultPersonalValues = {
   country: '',
-  ppsn: '',
+  PPSN: '',
   passport: '',
 }
 
@@ -85,8 +88,8 @@ const defaultSocialValues = {
 }
 
 const accountSchema = yup.object().shape({
-  // name: yup.string().required('Name field is required'),
-  // surname: yup.string().required('Surname field is required'),
+  // first_name: yup.string().required('Name field is required'),
+  // last_name: yup.string().required('Surname field is required'),
   // phone: yup.string().required('Phone field is required'),
   // email: yup.string().email('Invalid email').required('Email field is required'),
   // role: yup.string().required('Role field is required'),
@@ -95,7 +98,7 @@ const accountSchema = yup.object().shape({
 
 const personalSchema = yup.object().shape({
   // country: yup.string().required('Country field is required'),
-  // ppsn: yup.string().required('PPSN field is required'),
+  // PPSN: yup.string().required('PPSN field is required'),
   // passport: yup.string().required('Passport field is required'),
 })
 
@@ -122,6 +125,10 @@ const StepperLinearWithValidation = () => {
   const dispatch = useDispatch()
   const storeBranches = useSelector(state => state.storeBranches)
   const storeRoles = useSelector(state => state.storeRoles)
+  const storeUsers = useSelector(state => state.storeUsers)
+
+  const router = useRouter()
+
 
   useEffect(() => {
     dispatch(getBranches())
@@ -201,16 +208,31 @@ const StepperLinearWithValidation = () => {
 
   const handleMainSubmit = () => {
     // get all form data
-    const data = {
-      ...getAccountValues(),
-      ...getPersonalValues(),
-      ...getPersonalValues()
+    const user_profile = {
+      role: getAccountValues().role,
+      country: getPersonalValues().country,
+      PPSN: getPersonalValues().PPSN,
+      passport: getPersonalValues().passport,
+      phone: getAccountValues().phone,
     }
-    console.log(data)
+
+    const data = {
+      first_name: getAccountValues().first_name,
+      last_name: getAccountValues().last_name,
+      email: getAccountValues().email,
+      user_profile: user_profile,
+      branches: getAccountValues().branch,
+    }
+    const result = dispatch(addUser(data))
+    result.then(res => {
+      if (!res.error) {
+        router.push('/users')
+      }
+    })
+
   }
 
   const onSubmit = (data) => {
-    console.log(data)
     setActiveStep(activeStep + 1)
     if (activeStep === steps.length - 1) {
       toast.success('Form Submitted')
@@ -240,7 +262,7 @@ const StepperLinearWithValidation = () => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Controller
-                  name='name'
+                  name='first_name'
                   control={accountControl}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
@@ -251,15 +273,15 @@ const StepperLinearWithValidation = () => {
                       label='Name'
                       onChange={onChange}
                       placeholder="Enter user's name"
-                      error={Boolean(accountErrors.name)}
-                      {...(accountErrors.name && { helperText: accountErrors.name.message })}
+                      error={Boolean(accountErrors.first_name)}
+                      {...(accountErrors.first_name && { helperText: accountErrors.first_name.message })}
                     />
                   )}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Controller
-                  name='surname'
+                  name='last_name'
                   control={accountControl}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
@@ -270,8 +292,8 @@ const StepperLinearWithValidation = () => {
                       label='Surname'
                       onChange={onChange}
                       placeholder="Enter user's surname"
-                      error={Boolean(accountErrors.surname)}
-                      {...(accountErrors.surname && { helperText: accountErrors.surname.message })}
+                      error={Boolean(accountErrors.last_name)}
+                      {...(accountErrors.last_name && { helperText: accountErrors.last_name.message })}
                     />
                   )}
                 />
@@ -407,7 +429,7 @@ const StepperLinearWithValidation = () => {
               </Grid>
               <Grid item xs={6}>
                 <Controller
-                  name='ppsn'
+                  name='PPSN'
                   control={personalControl}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
@@ -418,8 +440,8 @@ const StepperLinearWithValidation = () => {
                       label='PPSN / Tax / VAT'
                       onChange={onChange}
                       placeholder='Enter PPSN / Tax / VAT'
-                      error={Boolean(personalErrors.ppsn)}
-                      {...(personalErrors.ppsn && { helperText: personalErrors.ppsn.message })}
+                      error={Boolean(personalErrors.PPSN)}
+                      {...(personalErrors.PPSN && { helperText: personalErrors.PPSN.message })}
                     />
                   )}
                 />
@@ -585,7 +607,18 @@ const StepperLinearWithValidation = () => {
         )
       case 3:
         return (
-          <Fragment>
+          <Box sx={{ position: 'relative', mb: 1 }}>
+            <Backdrop
+              open={storeUsers.userLoading}
+              sx={{
+                position: 'absolute',
+                color: 'common.white',
+                zIndex: theme => theme.zIndex.mobileStepper - 1
+              }}
+            >
+              <CircularProgress color='inherit' />
+            </Backdrop>
+
             <Grid container spacing={5}>
               <Grid item xs={12}>
                 <Typography variant='body2' sx={{ fontWeight: 600, color: 'text.primary' }}>
@@ -640,7 +673,9 @@ const StepperLinearWithValidation = () => {
                 Submit
               </Button>
             </Grid>
-          </Fragment>
+
+          </Box>
+
         )
       default:
         return null
@@ -678,8 +713,8 @@ const StepperLinearWithValidation = () => {
               if (index === activeStep) {
                 labelProps.error = false
                 if (
-                  (accountErrors.name ||
-                    accountErrors.surname ||
+                  (accountErrors.first_name ||
+                    accountErrors.last_name ||
                     accountErrors.phone ||
                     accountErrors.email ||
                     accountErrors.role ||
@@ -689,7 +724,7 @@ const StepperLinearWithValidation = () => {
                   labelProps.error = true
                 } else if (
                   (personalErrors.country ||
-                    personalErrors.ppsn ||
+                    personalErrors.PPSN ||
                     personalErrors.passport) &&
                   activeStep === 1
                 ) {

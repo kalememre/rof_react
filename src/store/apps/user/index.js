@@ -14,6 +14,13 @@ export const getUsers = createAsyncThunk('appUser/getUsers', async () => {
     return response.data
 })
 
+// ** Add new User
+export const addUser = createAsyncThunk('appUser/addUser', async (user) => {
+    const response = await axiosInstance.post('/user/', user)
+
+    return response.data
+})
+
 
 export const appUserSlice = createSlice({
     name: 'appUser',
@@ -33,6 +40,19 @@ export const appUserSlice = createSlice({
             state.userLoading = false
         })
         builder.addCase(getUsers.rejected, (state, action) => {
+            state.error = action.payload
+            toast.error('Something went wrong')
+            state.userLoading = false
+        })
+        builder.addCase(addUser.pending, (state, action) => {
+            state.userLoading = true
+        })
+        builder.addCase(addUser.fulfilled, (state, action) => {
+            state.users.push(action.payload)
+            toast.success('User added successfully')
+            state.userLoading = false
+        })
+        builder.addCase(addUser.rejected, (state, action) => {
             state.error = action.payload
             toast.error('Something went wrong')
             state.userLoading = false

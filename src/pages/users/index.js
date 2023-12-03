@@ -49,8 +49,8 @@ import { AbilityContext } from 'src/layouts/components/acl/Can'
 
 
 const userStatusObj = {
-    Active: 'success',
-    Inactive: 'secondary'
+    true: 'success',
+    false: 'secondary'
 }
 
 const RowOptions = ({ id }) => {
@@ -123,11 +123,12 @@ const columns = [
         field: 'fullName',
         headerName: 'User',
         renderCell: ({ row }) => {
-            const { fullName, email } = row
+            const { first_name, last_name, email } = row
+            const fullName = `${first_name} ${last_name}`
 
             return (
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{ mr: 2.5 }}><CircleFlag countryCode={row.country} height="35" /></Box>
+                    <Box sx={{ mr: 2.5 }}><CircleFlag countryCode={row.user_profile?.country?.toLowerCase()} height="35" /></Box>
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
                         <Typography
                             noWrap
@@ -167,11 +168,11 @@ const columns = [
                     </CustomAvatar> */}
                     <Box sx={{
                         borderRadius: 1,
-                        bgcolor: row.role.color,
+                        bgcolor: row.user_profile?.role.color,
                         p: 1,
                     }}>
                         <Typography color={'white'}>
-                            {row.role.name}
+                            {row.user_profile?.role.name}
                         </Typography>
                     </Box>
                 </Box>
@@ -189,8 +190,8 @@ const columns = [
                     rounded
                     skin='light'
                     size='small'
-                    label={row.status}
-                    color={userStatusObj[row.status]}
+                    label={row.is_active ? 'Active' : 'Inactive'}
+                    color={userStatusObj[row.is_active]}
                     sx={{ textTransform: 'capitalize' }}
                 />
             )
