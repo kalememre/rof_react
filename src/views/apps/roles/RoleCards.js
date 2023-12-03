@@ -35,7 +35,7 @@ import Icon from 'src/@core/components/icon'
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { useDispatch, useSelector } from 'react-redux'
-import { Backdrop, Chip, CircularProgress, Fade, FormHelperText, Stack } from '@mui/material'
+import { Backdrop, Chip, CircularProgress, Drawer, Fade, FormHelperText, Stack } from '@mui/material'
 import clsx from 'clsx'
 import { AlphaPicker, BlockPicker, ChromePicker, CirclePicker, CompactPicker, GithubPicker, HuePicker, MaterialPicker, PhotoshopPicker, SketchPicker, SliderPicker, SwatchesPicker } from 'react-color'
 
@@ -137,6 +137,7 @@ const RolesCards = () => {
 
   const handleClose = () => {
     setOpen(false)
+    reset()
   }
 
   useEffect(() => {
@@ -223,6 +224,13 @@ const RolesCards = () => {
       </Grid>
     ))
 
+  const Header = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(6),
+    justifyContent: 'space-between'
+  }))
+
   return (
     <Grid container spacing={6} className='match-height'>
       {renderCards()}
@@ -273,36 +281,33 @@ const RolesCards = () => {
         </Card>
       </Grid>
 
-      <Dialog
-        fullWidth
-        maxWidth='xs'
-        scroll='body'
-        onClose={handleClose}
+      <Drawer
         open={open}
-        TransitionComponent={Transition}
-        onBackdropClick={() => setOpen(false)}
-        sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
+        anchor='right'
+        variant='temporary'
+        onClose={handleClose}
+        ModalProps={{ keepMounted: true }}
+        sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 500 } } }}
       >
-        <DialogTitle
-          component='div'
-          sx={{
-            textAlign: 'center',
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Typography variant='h3'>{`${dialogTitle} Role`}</Typography>
-          <Typography color='text.secondary'>Set Role Permissions</Typography>
-        </DialogTitle>
-        <DialogContent
-          sx={{
-            pb: theme => `${theme.spacing(5)} !important`,
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
-          }}
-        >
-          <CustomCloseButton onClick={() => setOpen(false)}>
-            <Icon icon='tabler:x' fontSize='1.25rem' />
-          </CustomCloseButton>
+        <Header>
+          <Typography variant='h5'>Add Branch</Typography>
+          <IconButton
+            size='small'
+            onClick={handleClose}
+            sx={{
+              p: '0.438rem',
+              borderRadius: 1,
+              color: 'text.primary',
+              backgroundColor: 'action.selected',
+              '&:hover': {
+                backgroundColor: theme => `rgba(${theme.palette.customColors.main}, 0.16)`
+              }
+            }}
+          >
+            <Icon icon='tabler:x' fontSize='1.125rem' />
+          </IconButton>
+        </Header>
+        <Box sx={{ p: theme => theme.spacing(0, 6, 6) }}>
           <Box sx={{ my: 4 }}>
             <Controller
               name='roleName'
@@ -350,6 +355,13 @@ const RolesCards = () => {
               />
             </FormControl>
           </Box>
+          <Stack direction='row' justifyContent={'center'} spacing={2} sx={{ mb: 4 }}>
+            <CirclePicker onChangeComplete={color => {
+              setRoleColor(color.hex)
+              setValue('roleColor', color.hex)
+              setError('roleColor', null)
+            }} />
+          </Stack>
           <Box sx={{ my: 4 }}>
             <FormControl fullWidth>
               <Box bgcolor={roleColor} sx={{ borderRadius: 1, mb: 3, p: 2 }}>
@@ -360,31 +372,17 @@ const RolesCards = () => {
               {errors.roleColor && <FormHelperText error>{errors.roleColor.message}</FormHelperText>}
             </FormControl>
           </Box>
-          <Stack direction='row' justifyContent={'center'} spacing={2} sx={{ mb: 4 }}>
-            <CirclePicker onChangeComplete={color => {
-              setRoleColor(color.hex)
-              setValue('roleColor', color.hex)
-              setError('roleColor', null)
-            }} />
-          </Stack>
 
-        </DialogContent>
-        <DialogActions
-          sx={{
-            // display: 'flex',
-            justifyContent: 'center',
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Button color='secondary' variant='tonal' onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button type='submit' variant='outlined' onClick={handleSubmit(onSubmit)}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+          <Box mt={3} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+            <Button variant='tonal' color='secondary' sx={{ mr: 3 }} onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button type='submit' variant='outlined' onClick={handleSubmit(onSubmit)}>
+              Save
+            </Button>
+          </Box>
+        </Box>
+      </Drawer>
       <Backdrop
         open={storeRoles.roleLoading}
         sx={{
