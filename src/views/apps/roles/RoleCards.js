@@ -35,7 +35,7 @@ import Icon from 'src/@core/components/icon'
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { useDispatch, useSelector } from 'react-redux'
-import { Backdrop, Chip, CircularProgress, Drawer, Fade, FormHelperText, Stack } from '@mui/material'
+import { Backdrop, Chip, CircularProgress, Drawer, Fade, FormHelperText, MenuItem, Stack } from '@mui/material'
 import clsx from 'clsx'
 import { AlphaPicker, BlockPicker, ChromePicker, CirclePicker, CompactPicker, GithubPicker, HuePicker, MaterialPicker, PhotoshopPicker, SketchPicker, SliderPicker, SwatchesPicker } from 'react-color'
 
@@ -81,13 +81,15 @@ const rolesArr = [
 const schema = yup.object().shape({
   roleName: yup.string().required('Role Name is required'),
   description: yup.string().required('Description is required'),
-  roleColor: yup.string().required('Role Color is required')
+  roleColor: yup.string().required('Role Color is required'),
+  authGroup: yup.string().required('This Field is required')
 })
 
 const defaultValues = {
   roleName: '',
   description: '',
-  roleColor: ''
+  roleColor: '',
+  authGroup: ''
 }
 
 const RolesCards = () => {
@@ -100,6 +102,7 @@ const RolesCards = () => {
   const [roleColor, setRoleColor] = useState(null)
   const [selectedRole, setSelectedRole] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [authGroup, setAuthGroup] = useState('')
 
   const {
     control,
@@ -107,6 +110,7 @@ const RolesCards = () => {
     setValue,
     handleSubmit,
     reset,
+    trigger,
     formState: { errors }
   } = useForm({
     defaultValues,
@@ -115,34 +119,32 @@ const RolesCards = () => {
   })
 
   const onSubmit = data => {
-    if (dialogTitle === 'Add') {
-      const role = {
-        name: data.roleName,
-        description: data.description,
-        color: data.roleColor,
-      }
-      dispatch(addRole(role))
-    } else {
-      const role = {
-        id: selectedRole.id,
-        name: data.roleName,
-        description: data.description,
-        color: data.roleColor,
-      }
-      dispatch(updateRole(role))
+    const role = {
+      id: selectedRole?.id,
+      name: data.roleName,
+      description: data.description,
+      color: data.roleColor,
+      auth_group: data.authGroup
     }
+    dialogTitle === 'Add' ? dispatch(addRole(role)) : dispatch(updateRole(role))
     handleClose()
-    reset()
   }
 
   const handleClose = () => {
     setOpen(false)
+    setAuthGroup('')
     reset()
   }
 
   useEffect(() => {
     dispatch(getRoles())
   }, [dispatch])
+
+  const handleAuthGroupChange = (e) => {
+    setAuthGroup(e.target.value)
+    setValue('authGroup', e.target.value)
+    trigger('authGroup')
+  }
 
   const renderCards = () =>
     storeRoles?.roles?.map((item, index) => (
@@ -198,6 +200,8 @@ const RolesCards = () => {
                       setValue('roleName', item.name)
                       setValue('description', item.description)
                       setValue('roleColor', item.color)
+                      setValue('authGroup', item.auth_group)
+                      setAuthGroup(item.auth_group)
                       setRoleColor(item.color)
                       setSelectedRole(item)
                     }}>
@@ -290,7 +294,7 @@ const RolesCards = () => {
         sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 500 } } }}
       >
         <Header>
-          <Typography variant='h5'>Add Branch</Typography>
+          <Typography variant='h5'>Add Role</Typography>
           <IconButton
             size='small'
             onClick={handleClose}
@@ -354,6 +358,30 @@ const RolesCards = () => {
                 )}
               />
             </FormControl>
+          </Box>
+          <Box sx={{ my: 4 }}>
+            <CustomTextField
+              select
+              fullWidth
+              defaultValue='None'
+              label='Who Can Add Users to this Role'
+              disabled={storeRoles.loading}
+              error={Boolean(errors.authGroup)}
+              {...(errors.authGroup && { helperText: errors.authGroup.message })}
+              SelectProps={{
+                value: authGroup,
+                displayEmpty: true,
+                onChange: e => handleAuthGroupChange(e)
+              }}
+            >
+              <MenuItem selected value=''><em>None</em></MenuItem>
+              <MenuItem value={'admin'}>
+                Only Me
+              </MenuItem>
+              <MenuItem value={'client'}>
+                Everyone
+              </MenuItem>
+            </CustomTextField>
           </Box>
           <Stack direction='row' justifyContent={'center'} spacing={2} sx={{ mb: 4 }}>
             <CirclePicker onChangeComplete={color => {
