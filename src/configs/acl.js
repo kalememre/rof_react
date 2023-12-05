@@ -12,12 +12,9 @@ const defineRulesFor = (role, subject, ability) => {
   if (role === 'admin') {
     can('manage', 'all')
   } else if (role === 'client') {
-    // filter all values start with can in ability object
-    const filtered = Object.keys(ability).filter(key => key.startsWith('can'));
-
     // create rules for each filtered ability
-    filtered.forEach(item => {
-      can(ability[item], item)
+    ability.forEach(item => {
+      can(true, item.ability.code)
     })
   } else {
     can(['read', 'create', 'update', 'delete'], subject)

@@ -110,9 +110,10 @@ const HolidaysPage = () => {
         </Fragment>
     )
 }
+
 HolidaysPage.acl = {
     action: true,
-    subject: 'can_access_holiday_page'
+    subject: 'can_create_user'
 }
 
 export default HolidaysPage

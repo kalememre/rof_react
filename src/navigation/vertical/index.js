@@ -6,7 +6,7 @@ const navigation = () => {
       path: '/home',
       icon: 'tabler:smart-home',
       action: true,
-      subject: 'can_access_home_page',
+      subject: 'can_view_home_page'
     },
     {
       title: 'Announcements',
@@ -33,8 +33,6 @@ const navigation = () => {
       title: 'Holidays',
       path: '/holidays',
       icon: 'tabler:beach',
-      action: true,
-      subject: 'can_access_holiday_page',
     },
     {
       title: 'Managements',

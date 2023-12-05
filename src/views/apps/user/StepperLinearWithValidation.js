@@ -43,8 +43,9 @@ import { countries } from 'src/@fake-db/autocomplete'
 import CustomAutocomplete from 'src/@core/components/mui/autocomplete'
 import { CircleFlag } from 'react-circle-flags'
 import { addUser } from 'src/store/apps/user'
-import { Backdrop, CircularProgress } from '@mui/material'
+import { Backdrop, Checkbox, CircularProgress, FormControlLabel, FormHelperText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material'
 import { useRouter } from 'next/router'
+import { getPermissions } from 'src/store/apps/permissions'
 
 const steps = [
   {
@@ -109,13 +110,80 @@ const socialSchema = yup.object().shape({
   // linkedIn: yup.string().required()
 })
 
+const rolesArr = [
+  {
+    "name": 'User Management',
+    "permissions": [
+      {
+        "name": 'Can Create User',
+        "code": 'can_create_user'
+      },
+      {
+        "name": 'Can Delete User',
+        "code": 'can_delete_user'
+      },
+      {
+        "name": 'Can See Branch Users',
+        "code": 'can_see_branch_users'
+      },
+    ],
+  },
+  {
+    "name": 'Announcements Management',
+    "permissions": [
+      {
+        "name": "Can Receive Announcements",
+        "code": "can_receive_announcements"
+      },
+      {
+        "name": "Can Create Announcements",
+        "code": "can_create_announcements"
+      }
+    ],
+  },
+  {
+    "name": 'Holiday Management',
+    "permissions": [
+      {
+        "name": 'Can Approve Holidays',
+        "code": 'can_approve_holidays'
+      },
+      {
+        "name": 'Can See Branch Holidays',
+        "code": 'can_see_branch_holidays'
+      },
+    ],
+  },
+  {
+    "name": 'Roster Management',
+    "permissions": [
+      {
+        "name": 'Can Create Roster',
+        "code": 'can_create_roster'
+      },
+      {
+        "name": 'Can Publish Roster',
+        "code": 'can_publish_roster'
+      },
+      {
+        "name": 'Can See Branch Roster',
+        "code": 'can_see_branch_roster'
+      },
+      {
+        "name": 'Can Rosterable',
+        "code": 'can_rosterable'
+      },
+    ],
+  },
+]
+
 const StepperLinearWithValidation = () => {
 
   // ** State
   const [branch, setBranch] = useState([])
   const [activeStep, setActiveStep] = useState(0)
   const [country, setCountry] = useState('')
-
+  const [selectedCheckbox, setSelectedCheckbox] = useState([])
 
   const handleRoleChange = useCallback(e => {
     setRole(e.target.value)
@@ -126,13 +194,14 @@ const StepperLinearWithValidation = () => {
   const storeBranches = useSelector(state => state.storeBranches)
   const storeRoles = useSelector(state => state.storeRoles)
   const storeUsers = useSelector(state => state.storeUsers)
+  const storePermissions = useSelector(state => state.storePermissions)
 
   const router = useRouter()
-
 
   useEffect(() => {
     dispatch(getBranches())
     dispatch(getRoles())
+    dispatch(getPermissions())
   }, [dispatch])
 
 
@@ -199,11 +268,15 @@ const StepperLinearWithValidation = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1)
   }
 
-  const handleReset = () => {
-    setActiveStep(0)
-    socialReset({ google: '', twitter: '', facebook: '', linkedIn: '' })
-    accountReset({ email: '', username: '', password: '', 'confirm-password': '' })
-    personalReset({ country: '', language: [], 'last-name': '', 'first-name': '' })
+  const togglePermission = id => {
+    const arr = selectedCheckbox
+    if (selectedCheckbox.includes(id)) {
+      arr.splice(arr.indexOf(id), 1)
+      setSelectedCheckbox([...arr])
+    } else {
+      arr.push(id)
+      setSelectedCheckbox([...arr])
+    }
   }
 
   const handleMainSubmit = () => {
@@ -233,6 +306,7 @@ const StepperLinearWithValidation = () => {
   }
 
   const onSubmit = (data) => {
+    console.log(selectedCheckbox);
     setActiveStep(activeStep + 1)
     if (activeStep === steps.length - 1) {
       toast.success('Form Submitted')
@@ -245,6 +319,14 @@ const StepperLinearWithValidation = () => {
     setValuePersonal('country', value?.code ?? '')
     triggerPersonal('country')
   }
+
+  const groupedPermissions = {};
+  storePermissions.permissions.forEach((permission) => {
+    if (!groupedPermissions[permission.type]) {
+      groupedPermissions[permission.type] = [];
+    }
+    groupedPermissions[permission.type].push(permission);
+  });
 
   const getStepContent = step => {
     switch (step) {
@@ -518,82 +600,59 @@ const StepperLinearWithValidation = () => {
                   {steps[2].subtitle}
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name='twitter'
-                  control={socialControl}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <CustomTextField
-                      fullWidth
-                      value={value}
-                      label='Twitter'
-                      onChange={onChange}
-                      error={Boolean(socialErrors.twitter)}
-                      placeholder='https://twitter.com/carterLeonard'
-                      aria-describedby='stepper-linear-social-twitter'
-                      {...(socialErrors.twitter && { helperText: 'This field is required' })}
-                    />
-                  )}
-                />
+              <Grid item xs={12} sm={12}>
+                <TableContainer>
+                  <Table size='small'>
+                    <TableBody>
+                      {Object.keys(groupedPermissions).map((type, index) => (
+                        <TableCell
+                          key={index}
+                          sx={{
+                            fontWeight: 600,
+                            whiteSpace: 'nowrap',
+                            fontSize: theme => theme.typography.h6.fontSize,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                          }}
+                        >
+                          <Typography variant='h5' sx={{ fontWeight: 600, color: 'text.primary', textTransform: 'capitalize' }}>
+                            {type} Management
+                          </Typography>
+                          {groupedPermissions[type].map((permission, permissionIndex) => (
+
+                            <>
+                              <FormControlLabel
+                                key={permissionIndex}
+                                label={
+                                  <div>
+                                    <Typography variant='body' sx={{ fontWeight: 600, color: 'text.primary' }}>
+                                      {permission.name}
+                                    </Typography>
+                                    <FormHelperText>{permission.description}</FormHelperText>
+                                  </div>
+                                }
+                                sx={{ '& .MuiTypography-root': { color: 'text.secondary' } }}
+                                control={
+                                  <Checkbox
+                                    size='small'
+                                    id={permission.code}
+                                    onChange={() => togglePermission(permission.code)}
+                                    checked={selectedCheckbox.includes(permission.code)}
+                                  />
+                                }
+                              />
+
+                            </>
+                          ))}
+                        </TableCell>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+                </TableContainer>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name='facebook'
-                  control={socialControl}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <CustomTextField
-                      fullWidth
-                      value={value}
-                      label='Facebook'
-                      onChange={onChange}
-                      error={Boolean(socialErrors.facebook)}
-                      placeholder='https://facebook.com/carterLeonard'
-                      aria-describedby='stepper-linear-social-facebook'
-                      {...(socialErrors.facebook && { helperText: 'This field is required' })}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name='google'
-                  control={socialControl}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <CustomTextField
-                      fullWidth
-                      value={value}
-                      label='Google+'
-                      onChange={onChange}
-                      error={Boolean(socialErrors.google)}
-                      aria-describedby='stepper-linear-social-google'
-                      placeholder='https://plus.google.com/carterLeonard'
-                      {...(socialErrors.google && { helperText: 'This field is required' })}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name='linkedIn'
-                  control={socialControl}
-                  rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
-                    <CustomTextField
-                      fullWidth
-                      value={value}
-                      label='LinkedIn'
-                      onChange={onChange}
-                      error={Boolean(socialErrors.linkedIn)}
-                      placeholder='https://linkedin.com/carterLeonard'
-                      aria-describedby='stepper-linear-social-linkedIn'
-                      {...(socialErrors.linkedIn && { helperText: 'This field is required' })}
-                    />
-                  )}
-                />
-              </Grid>
+
               <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Button variant='tonal' color='secondary' onClick={handleBack}>
                   Back
@@ -603,7 +662,7 @@ const StepperLinearWithValidation = () => {
                 </Button>
               </Grid>
             </Grid>
-          </form>
+          </form >
         )
       case 3:
         return (

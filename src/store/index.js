@@ -7,6 +7,7 @@ import storeHolidays from 'src/store/apps/holidays'
 import storeUsers from 'src/store/apps/user'
 import storeBranches from 'src/store/apps/branch'
 import storeRoles from 'src/store/apps/role'
+import storePermissions from 'src/store/apps/permissions'
 
 export const store = configureStore({
     reducer: {
@@ -14,7 +15,8 @@ export const store = configureStore({
         storeHolidays,
         storeUsers,
         storeBranches,
-        storeRoles
+        storeRoles,
+        storePermissions
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
