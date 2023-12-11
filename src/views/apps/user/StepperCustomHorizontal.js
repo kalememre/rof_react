@@ -65,7 +65,7 @@ import { InputLabel } from '@mui/material'
 import CustomAutocomplete from 'src/@core/components/mui/autocomplete'
 import { CircleFlag } from 'react-circle-flags'
 import { getBranches } from 'src/store/apps/branch'
-import { getRoles } from 'src/store/apps/role'
+import { getPositions } from 'src/store/apps/position'
 
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -188,11 +188,11 @@ const StepperCustomHorizontal = () => {
   // ** Hooks
   const dispatch = useDispatch()
   const storeBranches = useSelector(state => state.storeBranches)
-  const storeRoles = useSelector(state => state.storeRoles)
+  const storePositions = useSelector(state => state.storePositions)
 
   useEffect(() => {
     dispatch(getBranches())
-    dispatch(getRoles())
+    dispatch(getPositions())
   }, [dispatch])
 
   // ** Hooks
@@ -368,7 +368,7 @@ const StepperCustomHorizontal = () => {
                       fullWidth
                       label='Role'
                       sx={{ mb: 2 }}
-                      disabled={storeRoles.loading}
+                      disabled={storePositions.loading}
                       defaultValue='Select Role'
                       error={Boolean(errorsPerson.role)}
                       {...(errorsPerson.role && { helperText: errorsPerson.role.message })}
@@ -379,7 +379,7 @@ const StepperCustomHorizontal = () => {
                       }}
                     >
                       <MenuItem selected disabled value=''><em>Select Role</em></MenuItem>
-                      {storeRoles.roles?.map((role, index) => (
+                      {storePositions.positions?.map((role, index) => (
                         <MenuItem key={index} value={role.id}>
                           {role.name}
                         </MenuItem>

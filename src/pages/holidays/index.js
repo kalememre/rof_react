@@ -15,16 +15,16 @@ import CalendarWrapper from 'src/@core/styles/libs/fullcalendar'
 import Calendar from 'src/views/apps/holidays/Calendar'
 import { getHolidays } from 'src/store/apps/holidays'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
-import { Typography, useMediaQuery } from '@mui/material'
+import { Grid, Typography, useMediaQuery } from '@mui/material'
 import SidebarLeft from 'src/views/apps/holidays/SidebarLeft'
 import { getBranches } from 'src/store/apps/branch'
-import { getRoles } from 'src/store/apps/role'
+import { getPositions } from 'src/store/apps/position'
 
 
 const HolidaysPage = () => {
 
     // ** States
-    const storeRoles = useSelector(state => state.storeRoles)
+    const storePositions = useSelector(state => state.storePositions)
     const storeBranches = useSelector(state => state.storeBranches)
     const storeHolidays = useSelector(state => state.storeHolidays)
 
@@ -50,7 +50,7 @@ const HolidaysPage = () => {
             dispatch(getHolidays())
         } else {
             dispatch(getBranches())
-            dispatch(getRoles())
+            dispatch(getPositions())
         }
     }, [can_see_branch_holidays, dispatch])
 
@@ -77,7 +77,7 @@ const HolidaysPage = () => {
                             calendarApi={calendarApi}
                             storeBranches={storeBranches}
                             selectBranch={selectBranch}
-                            storeRoles={storeRoles}
+                            storePositions={storePositions}
                             leftSidebarWidth={leftSidebarWidth}
                             can_see_branch_holidays={can_see_branch_holidays}
                         />

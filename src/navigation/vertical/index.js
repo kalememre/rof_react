@@ -13,26 +13,28 @@ const navigation = () => {
       path: '/announcements',
       icon: 'tabler:bell-ringing',
       action: true,
-      subject: 'can_access_announcement_page',
+      subject: 'can_view_announcement_page',
     },
     {
       title: 'Users',
       path: '/users',
       icon: 'tabler:users',
       action: true,
-      subject: 'can_see_branch_users',
+      subject: 'can_view_branch_users',
     },
     {
       title: 'Roster',
       path: '/roster',
       icon: 'tabler:report',
       action: true,
-      subject: 'can_access_roster_page',
+      subject: 'can_view_roster_page',
     },
     {
       title: 'Holidays',
       path: '/holidays',
       icon: 'tabler:beach',
+      action: true,
+      subject: 'can_view_holiday_page',
     },
     {
       title: 'Managements',
@@ -43,8 +45,8 @@ const navigation = () => {
           path: '/branches',
         },
         {
-          title: 'Roles',
-          path: '/roles',
+          title: 'Positions',
+          path: '/positions',
         },
       ],
     }

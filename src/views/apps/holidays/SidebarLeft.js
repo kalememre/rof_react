@@ -26,13 +26,13 @@ const SidebarLeft = props => {
     dispatch,
     storeBranches,
     selectBranch,
-    storeRoles,
+    storePositions,
     leftSidebarWidth,
     mdAbove,
     can_see_branch_holidays
   } = props
 
-  const colorsArr = storeRoles.roles.map((role) => {
+  const colorsArr = storePositions.positions.map((role) => {
     return (
       {
         [role.name]: {
@@ -49,8 +49,8 @@ const SidebarLeft = props => {
   });
 
 
-  const renderFilters = storeRoles.roles.length
-    ? storeRoles.roles?.map((role, index) => {
+  const renderFilters = storePositions.positions.length
+    ? storePositions.positions?.map((role, index) => {
       return (
         <ThemeProvider key={index} theme={theme}>
           <FormControlLabel

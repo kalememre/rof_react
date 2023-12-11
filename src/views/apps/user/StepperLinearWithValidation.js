@@ -35,7 +35,7 @@ import CustomTextField from 'src/@core/components/mui/text-field'
 // ** Styled Components
 import StepperWrapper from 'src/@core/styles/mui/stepper'
 import { getBranches } from 'src/store/apps/branch'
-import { getRoles } from 'src/store/apps/role'
+import { getPositions } from 'src/store/apps/position'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Data
@@ -192,7 +192,7 @@ const StepperLinearWithValidation = () => {
   // ** Hooks
   const dispatch = useDispatch()
   const storeBranches = useSelector(state => state.storeBranches)
-  const storeRoles = useSelector(state => state.storeRoles)
+  const storePositions = useSelector(state => state.storePositions)
   const storeUsers = useSelector(state => state.storeUsers)
   const storePermissions = useSelector(state => state.storePermissions)
 
@@ -200,7 +200,7 @@ const StepperLinearWithValidation = () => {
 
   useEffect(() => {
     dispatch(getBranches())
-    dispatch(getRoles())
+    dispatch(getPositions())
     dispatch(getPermissions())
   }, [dispatch])
 
@@ -295,6 +295,7 @@ const StepperLinearWithValidation = () => {
       email: getAccountValues().email,
       user_profile: user_profile,
       branches: getAccountValues().branch,
+      permissions: selectedCheckbox
     }
     const result = dispatch(addUser(data))
     result.then(res => {
@@ -306,7 +307,6 @@ const StepperLinearWithValidation = () => {
   }
 
   const onSubmit = (data) => {
-    console.log(selectedCheckbox);
     setActiveStep(activeStep + 1)
     if (activeStep === steps.length - 1) {
       toast.success('Form Submitted')
@@ -431,7 +431,7 @@ const StepperLinearWithValidation = () => {
                       fullWidth
                       label='Role'
                       sx={{ mb: 2 }}
-                      disabled={storeRoles.loading}
+                      disabled={storePositions.loading}
                       defaultValue='Select Role'
                       error={Boolean(accountErrors.role)}
                       {...(accountErrors.role && { helperText: accountErrors.role.message })}
@@ -442,7 +442,7 @@ const StepperLinearWithValidation = () => {
                       }}
                     >
                       <MenuItem selected disabled value=''><em>Select Role</em></MenuItem>
-                      {storeRoles.roles?.map((role, index) => (
+                      {storePositions.positions?.map((role, index) => (
                         <MenuItem key={index} value={role.id}>
                           {role.name}
                         </MenuItem>
@@ -605,8 +605,8 @@ const StepperLinearWithValidation = () => {
                   <Table size='small'>
                     <TableBody>
                       {Object.keys(groupedPermissions).map((type, index) => (
-                        <TableCell
-                          key={index}
+                        <TableRow
+                          key={index} // Adding key prop for TableRow
                           sx={{
                             fontWeight: 600,
                             whiteSpace: 'nowrap',
@@ -616,14 +616,24 @@ const StepperLinearWithValidation = () => {
                             alignItems: 'flex-start',
                           }}
                         >
-                          <Typography variant='h5' sx={{ fontWeight: 600, color: 'text.primary', textTransform: 'capitalize' }}>
-                            {type} Management
-                          </Typography>
-                          {groupedPermissions[type].map((permission, permissionIndex) => (
-
-                            <>
+                          <TableCell
+                            key={type} // Adding key prop for TableCell
+                            sx={{
+                              fontWeight: 600,
+                              whiteSpace: 'nowrap',
+                              fontSize: theme => theme.typography.h6.fontSize,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'flex-start',
+                              width: '100%'
+                            }}
+                          >
+                            <Typography variant='h5' sx={{ fontWeight: 600, color: 'primary.main', textTransform: 'capitalize' }}>
+                              {type} Management
+                            </Typography>
+                            {groupedPermissions[type].map((permission, permissionIndex) => (
                               <FormControlLabel
-                                key={permissionIndex}
+                                key={permissionIndex} // Adding key prop for FormControlLabel
                                 label={
                                   <div>
                                     <Typography variant='body' sx={{ fontWeight: 600, color: 'text.primary' }}>
@@ -642,15 +652,14 @@ const StepperLinearWithValidation = () => {
                                   />
                                 }
                               />
-
-                            </>
-                          ))}
-                        </TableCell>
+                            ))}
+                          </TableCell>
+                        </TableRow>
                       ))}
                     </TableBody>
                   </Table>
-
                 </TableContainer>
+
               </Grid>
 
               <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -702,7 +711,7 @@ const StepperLinearWithValidation = () => {
                   Phone: {getAccountValues().phone}
                 </Typography>
                 <Typography variant='body2' sx={{ color: 'text.primary' }}>
-                  Position: {storeRoles.roles?.find(role => role.id === getAccountValues().role)?.name}
+                  Position: {storePositions.positions?.find(role => role.id === getAccountValues().role)?.name}
                 </Typography>
                 <Typography variant='body2' sx={{ color: 'text.primary' }}>
                   Branches: {getAccountValues().branch?.map(branch => branch.name).join(', ')}

@@ -44,8 +44,9 @@ import * as yup from 'yup'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import DialogConfirmation from './DialogConfirmation'
-import { addRole, getRoles, updateRole } from 'src/store/apps/role'
+import { addPosition, addRole, getPositions, updatePosition, updateRole } from 'src/store/apps/position'
 import styled from '@emotion/styled'
+import { CircleFlag } from 'react-circle-flags'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Fade ref={ref} {...props} />
@@ -79,26 +80,24 @@ const rolesArr = [
 ]
 
 const schema = yup.object().shape({
-  roleName: yup.string().required('Role Name is required'),
+  roleName: yup.string().required('Position Name is required'),
   description: yup.string().required('Description is required'),
-  roleColor: yup.string().required('Role Color is required'),
-  authGroup: yup.string().required('This Field is required')
+  roleColor: yup.string().required('Position Color is required'),
 })
 
 const defaultValues = {
   roleName: '',
   description: '',
   roleColor: '',
-  authGroup: ''
 }
 
-const RolesCards = () => {
+const PositionCards = () => {
   // ** States
   const dispatch = useDispatch()
   const [open, setOpen] = useState(false)
   const [dialogTitle, setDialogTitle] = useState('Add')
   const handleClickOpen = () => setOpen(true)
-  const storeRoles = useSelector(state => state.storeRoles)
+  const storePositions = useSelector(state => state.storePositions)
   const [roleColor, setRoleColor] = useState(null)
   const [selectedRole, setSelectedRole] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -119,14 +118,13 @@ const RolesCards = () => {
   })
 
   const onSubmit = data => {
-    const role = {
+    const position = {
       id: selectedRole?.id,
       name: data.roleName,
       description: data.description,
       color: data.roleColor,
-      auth_group: data.authGroup
     }
-    dialogTitle === 'Add' ? dispatch(addRole(role)) : dispatch(updateRole(role))
+    dialogTitle === 'Add' ? dispatch(addPosition(position)) : dispatch(updatePosition(position))
     handleClose()
   }
 
@@ -137,7 +135,7 @@ const RolesCards = () => {
   }
 
   useEffect(() => {
-    dispatch(getRoles())
+    dispatch(getPositions())
   }, [dispatch])
 
   const handleAuthGroupChange = (e) => {
@@ -147,12 +145,12 @@ const RolesCards = () => {
   }
 
   const renderCards = () =>
-    storeRoles?.roles?.map((item, index) => (
+    storePositions?.positions?.map((item, index) => (
       <Grid item xs={12} sm={6} lg={4} key={index}>
         <Card>
           <CardContent>
             <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography sx={{ color: 'text.main' }}>{`Total ${item.users_quantity} users`}</Typography>
+              <Typography sx={{ color: 'text.main' }}>{`Total ${item.totalUsers} users`}</Typography>
               <AvatarGroup
                 max={4}
                 className='pull-up'
@@ -160,8 +158,8 @@ const RolesCards = () => {
                   '& .MuiAvatar-root': { width: 32, height: 32, fontSize: theme => theme.typography.body2.fontSize }
                 }}
               >
-                {item?.avatars?.map((img, index) => (
-                  <Avatar key={index} alt={item.name} src={`/images/avatars/${img}`} />
+                {item?.userCountries?.map((img, index) => (
+                  <Avatar key={index} alt={item.name} src={`https://hatscripts.github.io/circle-flags/flags/${img.toLowerCase()}.svg`} />
                 ))}
               </AvatarGroup>
             </Box>
@@ -181,9 +179,7 @@ const RolesCards = () => {
                     </Box>
                     <Typography sx={{
                       whiteSpace: 'nowrap',
-
                       textOverflow: 'ellipsis',
-
                       overflow: 'hidden',
                     }} color={'text.secondary'} width={'100%'} variant='p'>
                       {item.description}
@@ -201,18 +197,19 @@ const RolesCards = () => {
                       setValue('description', item.description)
                       setValue('roleColor', item.color)
                       setValue('authGroup', item.auth_group)
-                      setAuthGroup(item.auth_group)
                       setRoleColor(item.color)
                       setSelectedRole(item)
                     }}>
                       <Icon icon='tabler:edit' />
                     </IconButton>
-                    <IconButton color='error' onClick={() => {
-                      setConfirmDelete(true)
-                      setSelectedRole(item)
-                    }}>
-                      <Icon icon='tabler:trash' />
-                    </IconButton>
+                    {item.totalUsers === 0 && (
+                      <IconButton color='error' onClick={() => {
+                        setConfirmDelete(true)
+                        setSelectedRole(item)
+                      }}>
+                        <Icon icon='tabler:trash' />
+                      </IconButton>
+                    )}
                   </Stack>
                 </Grid>
               </Grid>
@@ -223,7 +220,7 @@ const RolesCards = () => {
           confirmDelete={confirmDelete}
           setConfirmDelete={setConfirmDelete}
           roleId={selectedRole?.id}
-          storeRoles={storeRoles}
+          storePositions={storePositions}
         />
       </Grid>
     ))
@@ -274,9 +271,9 @@ const RolesCards = () => {
                       setDialogTitle('Add')
                     }}
                   >
-                    Add New Role
+                    Add New Position
                   </Button>
-                  <Typography sx={{ color: 'text.secondary' }}>Add role, if it doesn't exist.</Typography>
+                  <Typography sx={{ color: 'text.secondary' }}>Add position, if it doesn't exist.</Typography>
 
                 </Box>
               </CardContent>
@@ -294,7 +291,7 @@ const RolesCards = () => {
         sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 500 } } }}
       >
         <Header>
-          <Typography variant='h5'>Add Role</Typography>
+          <Typography variant='h5'>Add Position</Typography>
           <IconButton
             size='small'
             onClick={handleClose}
@@ -325,8 +322,8 @@ const RolesCards = () => {
                   value={value}
                   onChange={onChange}
                   onBlur={onBlur}
-                  label='Role Name'
-                  placeholder='Enter Role Name'
+                  label='Position Name'
+                  placeholder='Enter Position Name'
                   error={Boolean(errors.roleName)}
                   {...(errors.roleName && { helperText: errors.roleName.message })}
                 />
@@ -350,7 +347,7 @@ const RolesCards = () => {
                     multiline
                     rows={4}
                     label='Description'
-                    placeholder='Enter Role Description'
+                    placeholder='Enter Position Description'
                     error={Boolean(errors.description)}
                     {...(errors.description && { helperText: errors.description.message })}
                   />
@@ -358,30 +355,6 @@ const RolesCards = () => {
                 )}
               />
             </FormControl>
-          </Box>
-          <Box sx={{ my: 4 }}>
-            <CustomTextField
-              select
-              fullWidth
-              defaultValue='None'
-              label='Who Can Add Users to this Role'
-              disabled={storeRoles.loading}
-              error={Boolean(errors.authGroup)}
-              {...(errors.authGroup && { helperText: errors.authGroup.message })}
-              SelectProps={{
-                value: authGroup,
-                displayEmpty: true,
-                onChange: e => handleAuthGroupChange(e)
-              }}
-            >
-              <MenuItem selected value=''><em>None</em></MenuItem>
-              <MenuItem value={'admin'}>
-                Only Me
-              </MenuItem>
-              <MenuItem value={'client'}>
-                Everyone
-              </MenuItem>
-            </CustomTextField>
           </Box>
           <Stack direction='row' justifyContent={'center'} spacing={2} sx={{ mb: 4 }}>
             <CirclePicker onChangeComplete={color => {
@@ -412,7 +385,7 @@ const RolesCards = () => {
         </Box>
       </Drawer>
       <Backdrop
-        open={storeRoles.roleLoading}
+        open={storePositions.positionLoading}
         sx={{
           position: 'absolute',
           color: 'common.white',
@@ -425,4 +398,4 @@ const RolesCards = () => {
   )
 }
 
-export default RolesCards
+export default PositionCards

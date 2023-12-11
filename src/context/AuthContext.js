@@ -11,6 +11,9 @@ import axios from 'axios'
 import authConfig from 'src/configs/auth'
 import axiosInstance from 'src/store/axiosDefaults'
 
+// ** JWT import
+import jwt from 'jsonwebtoken'
+
 // ** Defaults
 const defaultProvider = {
   user: null,
@@ -39,7 +42,7 @@ const AuthProvider = ({ children }) => {
         await axios
           .get(authConfig.meEndpoint, {
             headers: {
-              Authorization: `Bearer ${storedToken}`
+              Authorization: `${storedToken}`
             }
           })
           .then(async response => {
@@ -71,12 +74,14 @@ const AuthProvider = ({ children }) => {
       .then(async response => {
         axios.defaults.headers.common.Authorization = `Bearer ${response.data.access}`
         axiosInstance.defaults.headers.common.Authorization = `Bearer ${response.data.access}`
-        params.rememberMe
-          ? window.localStorage.setItem(authConfig.storageTokenKeyName, response.data.access)
-          : null
+        window.localStorage.setItem(authConfig.storageTokenKeyName, response.data.access)
         const returnUrl = router.query.returnUrl
-        setUser({ ...response.data.userData })
-        params.rememberMe ? window.localStorage.setItem('userData', JSON.stringify(response.data.userData)) : null
+
+        // decode jwt token
+        const decodedToken = jwt.decode(response.data.access, { complete: true })
+        const userData = { ...decodedToken.payload }
+        setUser(userData)
+        window.localStorage.setItem('userData', JSON.stringify(userData))
         const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
         router.replace(redirectURL)
       })

@@ -11,12 +11,12 @@ import DialogContentText from '@mui/material/DialogContentText'
 import { FormHelperText, LinearProgress } from '@mui/material'
 import { useDispatch } from 'react-redux'
 import { patchHoliday } from 'src/store/apps/holidays'
-import { deleteRole } from 'src/store/apps/role'
+import { deletePosition } from 'src/store/apps/position'
 
 
 const DialogConfirmation = props => {
     // ** Props
-    const { confirmDelete, setConfirmDelete, roleId, storeRoles } = props
+    const { confirmDelete, setConfirmDelete, roleId, storePositions } = props
 
     const handleClose = () => {
         setConfirmDelete(false)
@@ -26,7 +26,7 @@ const DialogConfirmation = props => {
     const dispatch = useDispatch()
 
     const handleSubmit = () => {
-        dispatch(deleteRole(roleId))
+        dispatch(deletePosition(roleId))
         handleClose()
     }
 
@@ -43,23 +43,23 @@ const DialogConfirmation = props => {
                     }
                 }}
             >
-                <DialogTitle id='alert-dialog-title'>{'Delete Role'}</DialogTitle>
+                <DialogTitle id='alert-dialog-title'>{'Delete Position'}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id='alert-dialog-description'>
-                        Are you sure you want to delete this role?
+                        Are you sure you want to delete this position?
                         <br />
                         It won't be possible to undo this action
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions className='dialog-actions-dense'>
                     <Button
-                        disabled={storeRoles.roleLoading}
+                        disabled={storePositions.positionLoading}
                         onClick={handleClose}>Cancel</Button>
                     <Button
-                        disabled={storeRoles.roleLoading}
+                        disabled={storePositions.positionLoading}
                         onClick={handleSubmit}>Submit</Button>
                 </DialogActions>
-                {storeRoles.roleLoading && <LinearProgress color='error' />}
+                {storePositions.positionLoading && <LinearProgress color='error' />}
             </Dialog>
         </Fragment>
     )

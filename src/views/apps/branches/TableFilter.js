@@ -66,7 +66,7 @@ const TableColumns = params => {
       headerName: 'Phone',
       renderCell: params => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.branch_detail?.phone}
+          {params.row.phone}
         </Typography>
       )
     },
@@ -77,7 +77,7 @@ const TableColumns = params => {
       headerName: 'Email',
       renderCell: params => (
         <Typography variant='body2' sx={{ color: 'text.primary' }}>
-          {params.row.branch_detail?.email}
+          {params.row.email}
         </Typography>
       )
     },

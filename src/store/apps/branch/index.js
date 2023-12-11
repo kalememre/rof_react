@@ -7,30 +7,37 @@ import axiosInstance from 'src/store/axiosDefaults'
 
 // ** Get Branches
 export const getBranches = createAsyncThunk('appUser/getBranches', async (branch) => {
-    const response = await axiosInstance.get('/branches/')
+    const response = await axiosInstance.get('/branch/')
 
     return response.data
 })
 
 // ** Add Branch
 export const addBranch = createAsyncThunk('appUser/addBranch', async (branch) => {
-    const response = await axiosInstance.post('/branches/', branch)
+    const response = await axiosInstance.post('/branch/', branch)
 
     return response.data
 })
 
 // ** Update Branch
 export const updateBranch = createAsyncThunk('appUser/updateBranch', async (branch) => {
-    const response = await axiosInstance.patch(`/branches/${branch.id}/`, branch)
+    const response = await axiosInstance.put(`/branch/${branch.id}/`, branch)
 
     return response.data
 })
 
 // ** Delete Branch
 export const deleteBranch = createAsyncThunk('appUser/deleteBranch', async (branchId) => {
-    const response = await axiosInstance.delete(`/branches/${branchId}/`)
+    try {
+        const res = await axiosInstance.delete(`/branch/${branchId}/`)
+        console.log('res', res)
 
-    return branchId
+        return branchId
+    } catch (error) {
+        console.log('error', error.response.data)
+
+        return error.response.data
+    }
 })
 
 export const appBranchSlice = createSlice({

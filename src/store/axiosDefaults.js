@@ -17,7 +17,10 @@ const getErrorMessage = (error) => {
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response) { throw Error(getErrorMessage(error)) }
+        if (error.response && error.response.status === 401) {
+            localStorage.clear()
+            throw Error(getErrorMessage(error))
+        }
         else if (error.request) { throw Error('No response received from the server.') }
         else { throw Error('An error occurred while making the request.') }
     }

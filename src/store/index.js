@@ -6,7 +6,7 @@ import roster from 'src/store/apps/roster'
 import storeHolidays from 'src/store/apps/holidays'
 import storeUsers from 'src/store/apps/user'
 import storeBranches from 'src/store/apps/branch'
-import storeRoles from 'src/store/apps/role'
+import storePositions from 'src/store/apps/position'
 import storePermissions from 'src/store/apps/permissions'
 
 export const store = configureStore({
@@ -15,7 +15,7 @@ export const store = configureStore({
         storeHolidays,
         storeUsers,
         storeBranches,
-        storeRoles,
+        storePositions,
         storePermissions
     },
     middleware: getDefaultMiddleware =>

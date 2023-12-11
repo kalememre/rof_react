@@ -1,8 +1,8 @@
 export default {
-  meEndpoint: 'http://abc.localhost:8000/api/me/',
-  loginEndpoint: 'http://abc.localhost:8000/api/token/',
+  meEndpoint: 'http://tenantb.localhost:5259/api/Auth/me',
+  loginEndpoint: 'http://tenantb.localhost:5259/api/Auth/login',
   registerEndpoint: '/jwt/register',
-  apiEndpoint: 'http://abc.localhost:8000/api/',
+  apiEndpoint: 'http://tenantb.localhost:5259/api',
   storageTokenKeyName: 'accessToken',
   onTokenExpiration: 'refreshToken' // logout | refreshToken
 }

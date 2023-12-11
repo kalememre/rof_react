@@ -91,7 +91,7 @@ const defaultValues = {
 
 const SidebarAddUser = props => {
   // ** Props
-  const { open, toggle, storeRoles } = props
+  const { open, toggle, storePositions } = props
 
   // ** State
   const [branch, setBranch] = useState([])
@@ -343,7 +343,7 @@ const SidebarAddUser = props => {
                     fullWidth
                     label='Role'
                     sx={{ mb: 2 }}
-                    disabled={storeRoles.loading}
+                    disabled={storePositions.loading}
                     defaultValue='Select Role'
                     error={Boolean(errors.role)}
                     {...(errors.role && { helperText: errors.role.message })}
@@ -354,7 +354,7 @@ const SidebarAddUser = props => {
                     }}
                   >
                     <MenuItem selected disabled value=''><em>Select Role</em></MenuItem>
-                    {storeRoles.roles?.map((role, index) => (
+                    {storePositions.positions?.map((role, index) => (
                       <MenuItem key={index} value={role.id}>
                         {role.name}
                       </MenuItem>

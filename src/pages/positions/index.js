@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography'
 import PageHeader from 'src/@core/components/page-header'
 
 // ** Demo Components Imports
-import Table from 'src/views/apps/roles/Table'
-import RoleCards from 'src/views/apps/roles/RoleCards'
+import Table from 'src/views/apps/positions/Table'
+import PositionCards from 'src/views/apps/positions/PositionCards'
 
 const RolesComponent = () => {
   return (
@@ -25,7 +25,7 @@ const RolesComponent = () => {
         }
       />
       <Grid item xs={12}>
-        <RoleCards />
+        <PositionCards />
       </Grid>
       <Grid item xs={12}>
         {/* <Table /> */}

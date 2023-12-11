@@ -29,7 +29,7 @@ import { getInitials } from 'src/@core/utils/get-initials'
 import { fetchData } from 'src/store/apps/user'
 
 // ** Custom Components Imports
-import TableHeader from 'src/views/apps/roles/TableHeader'
+import TableHeader from 'src/views/apps/positions/TableHeader'
 
 // ** Vars
 const userRoleObj = {
@@ -99,21 +99,21 @@ const columns = [
   },
   {
     flex: 0.15,
-    field: 'role',
+    field: 'position',
     minWidth: 170,
-    headerName: 'Role',
+    headerName: 'Position',
     renderCell: ({ row }) => {
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <CustomAvatar
             skin='light'
             sx={{ mr: 4, width: 30, height: 30 }}
-            color={userRoleObj[row.role].color || 'primary'}
+            color={userRoleObj[row.position].color || 'primary'}
           >
-            <Icon icon={userRoleObj[row.role].icon} />
+            <Icon icon={userRoleObj[row.position].icon} />
           </CustomAvatar>
           <Typography noWrap sx={{ color: 'text.secondary', textTransform: 'capitalize' }}>
-            {row.role}
+            {row.position}
           </Typography>
         </Box>
       )
@@ -185,12 +185,12 @@ const UserList = () => {
 
   // ** Hooks
   const dispatch = useDispatch()
-  const storeRoles = useSelector(state => state.storeRoles)
+  const storePositions = useSelector(state => state.storePositions)
 
   // useEffect(() => {
   //   dispatch(
   //     fetchData({
-  //       role: '',
+  //       position: '',
   //       q: value,
   //       status: '',
   //       currentPlan: plan
@@ -214,7 +214,7 @@ const UserList = () => {
           <DataGrid
             autoHeight
             rowHeight={62}
-            rows={storeRoles.roles}
+            rows={storePositions.positions}
             columns={columns}
             checkboxSelection
             disableRowSelectionOnClick

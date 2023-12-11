@@ -43,14 +43,14 @@ import TableHeader from 'src/views/apps/user/list/TableHeader'
 import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
 import { CircleFlag } from 'react-circle-flags'
 import { Button } from '@mui/material'
-import { getRoles } from 'src/store/apps/role'
+import { getPositions } from 'src/store/apps/position'
 import PageHeader from 'src/@core/components/page-header'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
 
 
 const userStatusObj = {
-    true: 'success',
-    false: 'secondary'
+    'Active': 'success',
+    'Inactive': 'secondary'
 }
 
 const RowOptions = ({ id }) => {
@@ -123,17 +123,16 @@ const columns = [
         field: 'fullName',
         headerName: 'User',
         renderCell: ({ row }) => {
-            const { first_name, last_name, email } = row
-            const fullName = `${first_name} ${last_name}`
+            const { fullName, email } = row
 
             return (
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{ mr: 2.5 }}><CircleFlag countryCode={row.user_profile?.country?.toLowerCase()} height="35" /></Box>
+                    <Box sx={{ mr: 2.5 }}><CircleFlag countryCode={row.userProfile?.country?.toLowerCase()} height="35" /></Box>
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
                         <Typography
                             noWrap
                             component={Link}
-                            href='/apps/user/view/account'
+                            href={`/users/${row.id}`}
                             sx={{
                                 fontWeight: 500,
                                 textDecoration: 'none',
@@ -153,26 +152,19 @@ const columns = [
     },
     {
         flex: 0.15,
-        field: 'role',
+        field: 'position',
         minWidth: 170,
-        headerName: 'Role',
+        headerName: 'Position',
         renderCell: ({ row }) => {
             return (
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    {/* <CustomAvatar
-                        skin='light'
-                        sx={{ mr: 4, width: 30, height: 30 }}
-                        color={userRoleObj[row.role]?.color || 'primary'}
-                    >
-                        <Icon icon={userRoleObj[row.role]?.icon} />
-                    </CustomAvatar> */}
                     <Box sx={{
                         borderRadius: 1,
-                        bgcolor: row.user_profile?.role.color,
+                        bgcolor: row.userProfile?.position?.color,
                         p: 1,
                     }}>
                         <Typography color={'white'}>
-                            {row.user_profile?.role.name}
+                            {row.userProfile?.position.name}
                         </Typography>
                     </Box>
                 </Box>
@@ -190,8 +182,8 @@ const columns = [
                     rounded
                     skin='light'
                     size='small'
-                    label={row.is_active ? 'Active' : 'Inactive'}
-                    color={userStatusObj[row.is_active]}
+                    label={row.status}
+                    color={userStatusObj[row.status]}
                     sx={{ textTransform: 'capitalize' }}
                 />
             )
@@ -211,7 +203,7 @@ const UserList = ({ apiData }) => {
     // ** Hooks
     const dispatch = useDispatch()
     const storeUsers = useSelector(state => state.storeUsers)
-    const storeRoles = useSelector(state => state.storeRoles)
+    const storePositions = useSelector(state => state.storePositions)
 
     // ** State
     const [role, setRole] = useState('')
@@ -228,7 +220,7 @@ const UserList = ({ apiData }) => {
 
     useEffect(() => {
         dispatch(getUsers())
-        dispatch(getRoles())
+        dispatch(getPositions())
     }, [dispatch])
 
     const handleFilter = useCallback(val => {
@@ -299,7 +291,7 @@ const UserList = ({ apiData }) => {
                                     fullWidth
                                     defaultValue='All'
                                     label='Role'
-                                    disabled={storeRoles.loading}
+                                    disabled={storePositions.loading}
                                     SelectProps={{
                                         value: role,
                                         displayEmpty: true,
@@ -307,7 +299,7 @@ const UserList = ({ apiData }) => {
                                     }}
                                 >
                                     <MenuItem selected value=''><em>All</em></MenuItem>
-                                    {storeRoles.roles?.map((role, index) => (
+                                    {storePositions.positions?.map((role, index) => (
                                         <MenuItem key={index} value={role.id}>
                                             {role.name}
                                         </MenuItem>
@@ -386,7 +378,7 @@ const UserList = ({ apiData }) => {
                 </Card>
             </Grid>
 
-            <AddUserDrawer storeRoles={storeRoles} open={addUserOpen} toggle={toggleAddUserDrawer} />
+            <AddUserDrawer storePositions={storePositions} open={addUserOpen} toggle={toggleAddUserDrawer} />
         </Grid>
     )
 }
@@ -404,7 +396,7 @@ const UserList = ({ apiData }) => {
 
 UserList.acl = {
     action: true,
-    subject: 'can_see_branch_users'
+    subject: 'can_view_branch_users'
 }
 
 export default UserList

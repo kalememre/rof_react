@@ -14,6 +14,13 @@ export const getUsers = createAsyncThunk('appUser/getUsers', async () => {
     return response.data
 })
 
+// ** Get User by ID
+export const getUserById = createAsyncThunk('appUser/getUserById', async (id) => {
+    const response = await axiosInstance.get(`/user/${id}/`)
+
+    return response.data
+})
+
 // ** Add new User
 export const addUser = createAsyncThunk('appUser/addUser', async (user) => {
     const response = await axiosInstance.post('/user/', user)
@@ -26,6 +33,7 @@ export const appUserSlice = createSlice({
     name: 'appUser',
     initialState: {
         users: [],
+        user: {},
         error: null,
         userLoading: false,
     },
@@ -53,6 +61,19 @@ export const appUserSlice = createSlice({
             state.userLoading = false
         })
         builder.addCase(addUser.rejected, (state, action) => {
+            state.error = action.payload
+            toast.error('Something went wrong')
+            state.userLoading = false
+        })
+        builder.addCase(getUserById.pending, (state, action) => {
+            state.userLoading = true
+        })
+        builder.addCase(getUserById.fulfilled, (state, action) => {
+            state.user = action.payload
+            toast.success('User loaded successfully')
+            state.userLoading = false
+        })
+        builder.addCase(getUserById.rejected, (state, action) => {
             state.error = action.payload
             toast.error('Something went wrong')
             state.userLoading = false

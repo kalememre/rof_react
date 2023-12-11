@@ -9,16 +9,30 @@ export const AppAbility = Ability
  */
 const defineRulesFor = (role, subject, ability) => {
   const { can, rules } = new AbilityBuilder(AppAbility)
-  if (role === 'admin') {
-    can('manage', 'all')
-  } else if (role === 'client') {
-    // create rules for each filtered ability
-    ability.forEach(item => {
-      can(true, item.ability.code)
+  console.log('role', role);
+  console.log('role.length', Array.isArray(role));
+
+  // check role if array or string
+
+
+  if (Array.isArray(role)) {
+    role.forEach(item => {
+      item === 'admin' ? can('manage', 'all') : can(true, item)
     })
   } else {
-    can(['read', 'create', 'update', 'delete'], subject)
+    role === 'admin' ? can('manage', 'all') : can(true, role)
   }
+
+  // if (role === 'admin') {
+  //   can('manage', 'all')
+  // } else if (role === 'client') {
+  //   // create rules for each filtered ability
+  //   ability.forEach(item => {
+  //     can(true, item.ability.code)
+  //   })
+  // } else {
+  //   can(['read', 'create', 'update', 'delete'], subject)
+  // }
 
   return rules
 }

@@ -1,22 +1,13 @@
 // ** React Imports
-import { useState, forwardRef, useEffect } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
 import Grid from '@mui/material/Grid'
-import Card from '@mui/material/Card'
-import Switch from '@mui/material/Switch'
-import Dialog from '@mui/material/Dialog'
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
-import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
 import Fade from '@mui/material/Fade'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import IconButton from '@mui/material/IconButton'
 
 // ** Custom Component Import
@@ -54,6 +45,7 @@ const CreateBranch = props => {
     const { open, toggle, title, row } = props
 
 
+    const [rowId, setRowId] = useState(0);
 
     // ** States
     const dispatch = useDispatch()
@@ -83,24 +75,22 @@ const CreateBranch = props => {
     })
 
     useEffect(() => {
-        if (row) {
-            setValue('name', row?.name || '');
-            setValue('phone', row?.branch_detail?.phone || '');
-            setValue('email', row?.branch_detail?.email || '');
-            setValue('address', row?.branch_detail?.address || '');
-        }
-    }, [row, setValue]);
+        setValue('name', row?.name ?? '');
+        setValue('phone', row?.phone ?? '');
+        setValue('email', row?.email ?? '');
+        setValue('address', row?.address ?? '');
+        setRowId(prevRowId => prevRowId + 1);
+    }, [row, setValue])
 
     const onSubmit = data => {
+        const branch = {
+            id: row?.id || null,
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            address: data.address
+        }
         if (title === 'Create') {
-            const branch = {
-                name: data.name,
-                branch_detail: {
-                    phone: data.phone,
-                    email: data.email,
-                    address: data.address
-                }
-            }
             dispatch(addBranch(branch))
                 .then((res) => {
                     if (!res.error) {
@@ -109,15 +99,7 @@ const CreateBranch = props => {
                     }
                 })
         } else {
-            const branch = {
-                id: row.id,
-                name: data.name,
-                branch_detail: {
-                    phone: data.phone,
-                    email: data.email,
-                    address: data.address
-                }
-            }
+
             dispatch(updateBranch(branch))
                 .then((res) => {
                     if (!res.error) {
@@ -151,7 +133,7 @@ const CreateBranch = props => {
             sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 500 } } }}
         >
             <Header>
-                <Typography variant='h5'>Add Branch</Typography>
+                <Typography variant='h5'>{title} Branch</Typography>
                 <IconButton
                     size='small'
                     onClick={handleClose}
