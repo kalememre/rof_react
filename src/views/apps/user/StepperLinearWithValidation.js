@@ -71,7 +71,7 @@ const defaultAccountValues = {
   last_name: '',
   phone: '',
   email: '',
-  role: '',
+  position: '',
   branch: []
 }
 
@@ -93,7 +93,7 @@ const accountSchema = yup.object().shape({
   // last_name: yup.string().required('Surname field is required'),
   // phone: yup.string().required('Phone field is required'),
   // email: yup.string().email('Invalid email').required('Email field is required'),
-  // role: yup.string().required('Role field is required'),
+  // position: yup.string().required('Position field is required'),
   // branch: yup.array().min(1, 'Branch field is required'),
 })
 
@@ -233,7 +233,8 @@ const StepperLinearWithValidation = () => {
     setValue: setValueAccount,
     trigger: triggerAccount,
     getValues: getAccountValues,
-    formState: { errors: accountErrors }
+    formState: { errors: accountErrors },
+    setError: setAccountError
   } = useForm({
     defaultValues: defaultAccountValues,
     resolver: yupResolver(accountSchema)
@@ -282,7 +283,7 @@ const StepperLinearWithValidation = () => {
   const handleMainSubmit = () => {
     // get all form data
     const user_profile = {
-      role: getAccountValues().role,
+      position: getAccountValues().position,
       country: getPersonalValues().country,
       PPSN: getPersonalValues().PPSN,
       passport: getPersonalValues().passport,
@@ -290,12 +291,12 @@ const StepperLinearWithValidation = () => {
     }
 
     const data = {
-      first_name: getAccountValues().first_name,
-      last_name: getAccountValues().last_name,
+      firstName: getAccountValues().first_name,
+      lastName: getAccountValues().last_name,
       email: getAccountValues().email,
-      user_profile: user_profile,
-      branches: getAccountValues().branch,
-      permissions: selectedCheckbox
+      userProfile: user_profile,
+      branches: getAccountValues().branch.map(branch => branch.id),
+      roles: selectedCheckbox
     }
     const result = dispatch(addUser(data))
     result.then(res => {
@@ -322,11 +323,19 @@ const StepperLinearWithValidation = () => {
 
   const groupedPermissions = {};
   storePermissions.permissions.forEach((permission) => {
-    if (!groupedPermissions[permission.type]) {
-      groupedPermissions[permission.type] = [];
+    if (!groupedPermissions[permission.roleType]) {
+      groupedPermissions[permission.roleType] = [];
     }
-    groupedPermissions[permission.type].push(permission);
+    groupedPermissions[permission.roleType].push(permission);
   });
+
+  const onEmailBlur = (e) => {
+    // console.log('email blur', e.target.value)
+    // setAccountError('email', {
+    //   type: 'manual',
+    //   message: 'Email already exists'
+    // })
+  }
 
   const getStepContent = step => {
     switch (step) {
@@ -385,13 +394,14 @@ const StepperLinearWithValidation = () => {
                   name='email'
                   control={accountControl}
                   rules={{ required: true }}
-                  render={({ field: { value, onChange } }) => (
+                  render={({ field: { value, onChange, onBlur } }) => (
                     <CustomTextField
                       fullWidth
                       type='email'
                       value={value}
                       label='Email'
                       onChange={onChange}
+                      onBlur={onEmailBlur}
                       error={Boolean(accountErrors.email)}
                       placeholder='carterleonard@gmail.com'
                       aria-describedby='stepper-linear-account-email'
@@ -421,7 +431,7 @@ const StepperLinearWithValidation = () => {
               </Grid>
               <Grid item sm={6} xs={12}>
                 <Controller
-                  name='role'
+                  name='position'
                   control={accountControl}
                   rules={{ required: true }}
                   defaultValue=''
@@ -429,22 +439,22 @@ const StepperLinearWithValidation = () => {
                     <CustomTextField
                       select
                       fullWidth
-                      label='Role'
+                      label='Position'
                       sx={{ mb: 2 }}
                       disabled={storePositions.loading}
-                      defaultValue='Select Role'
-                      error={Boolean(accountErrors.role)}
-                      {...(accountErrors.role && { helperText: accountErrors.role.message })}
+                      defaultValue='Select Position'
+                      error={Boolean(accountErrors.position)}
+                      {...(accountErrors.position && { helperText: accountErrors.position.message })}
                       SelectProps={{
                         value: value,
                         displayEmpty: true,
                         onChange: onChange,
                       }}
                     >
-                      <MenuItem selected disabled value=''><em>Select Role</em></MenuItem>
-                      {storePositions.positions?.map((role, index) => (
-                        <MenuItem key={index} value={role.id}>
-                          {role.name}
+                      <MenuItem selected disabled value=''><em>Select Position</em></MenuItem>
+                      {storePositions.positions?.map((position, index) => (
+                        <MenuItem key={index} value={position.id}>
+                          {position.name}
                         </MenuItem>
                       ))}
                     </CustomTextField>
@@ -604,7 +614,7 @@ const StepperLinearWithValidation = () => {
                 <TableContainer>
                   <Table size='small'>
                     <TableBody>
-                      {Object.keys(groupedPermissions).map((type, index) => (
+                      {Object.keys(groupedPermissions).map((roleType, index) => (
                         <TableRow
                           key={index} // Adding key prop for TableRow
                           sx={{
@@ -617,7 +627,7 @@ const StepperLinearWithValidation = () => {
                           }}
                         >
                           <TableCell
-                            key={type} // Adding key prop for TableCell
+                            key={roleType} // Adding key prop for TableCell
                             sx={{
                               fontWeight: 600,
                               whiteSpace: 'nowrap',
@@ -629,15 +639,15 @@ const StepperLinearWithValidation = () => {
                             }}
                           >
                             <Typography variant='h5' sx={{ fontWeight: 600, color: 'primary.main', textTransform: 'capitalize' }}>
-                              {type} Management
+                              {roleType.toLowerCase()} Management
                             </Typography>
-                            {groupedPermissions[type].map((permission, permissionIndex) => (
+                            {groupedPermissions[roleType].map((permission, permissionIndex) => (
                               <FormControlLabel
                                 key={permissionIndex} // Adding key prop for FormControlLabel
                                 label={
                                   <div>
                                     <Typography variant='body' sx={{ fontWeight: 600, color: 'text.primary' }}>
-                                      {permission.name}
+                                      {permission.roleLabel}
                                     </Typography>
                                     <FormHelperText>{permission.description}</FormHelperText>
                                   </div>
@@ -646,9 +656,9 @@ const StepperLinearWithValidation = () => {
                                 control={
                                   <Checkbox
                                     size='small'
-                                    id={permission.code}
-                                    onChange={() => togglePermission(permission.code)}
-                                    checked={selectedCheckbox.includes(permission.code)}
+                                    id={permission.id}
+                                    onChange={() => togglePermission(permission.id)}
+                                    checked={selectedCheckbox.includes(permission.id)}
                                   />
                                 }
                               />
@@ -702,7 +712,7 @@ const StepperLinearWithValidation = () => {
                 </Typography>
                 <Divider sx={{ my: 1 }} />
                 <Typography variant='body2' sx={{ color: 'text.primary' }}>
-                  Name: {getAccountValues().name}
+                  Name: {getAccountValues().first_name} {getAccountValues().last_name}
                 </Typography>
                 <Typography variant='body2' sx={{ color: 'text.primary' }}>
                   Email: {getAccountValues().email}
@@ -711,7 +721,7 @@ const StepperLinearWithValidation = () => {
                   Phone: {getAccountValues().phone}
                 </Typography>
                 <Typography variant='body2' sx={{ color: 'text.primary' }}>
-                  Position: {storePositions.positions?.find(role => role.id === getAccountValues().role)?.name}
+                  Position: {storePositions.positions?.find(position => position.id === getAccountValues().position)?.name}
                 </Typography>
                 <Typography variant='body2' sx={{ color: 'text.primary' }}>
                   Branches: {getAccountValues().branch?.map(branch => branch.name).join(', ')}
@@ -785,7 +795,7 @@ const StepperLinearWithValidation = () => {
                     accountErrors.last_name ||
                     accountErrors.phone ||
                     accountErrors.email ||
-                    accountErrors.role ||
+                    accountErrors.position ||
                     accountErrors.branch &&
                     activeStep === 0
                   )) {

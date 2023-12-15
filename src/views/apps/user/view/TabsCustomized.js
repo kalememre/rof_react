@@ -12,6 +12,9 @@ import MuiTab from '@mui/material/Tab'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
+import UserViewNotification from './UserViewNotification'
+import { useRouter } from 'next/router'
+import { useSelector } from 'react-redux'
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
@@ -27,7 +30,7 @@ const TabList = styled(MuiTabList)(({ theme }) => ({
   '&, & .MuiTabs-scroller': {
     boxSizing: 'content-box',
     padding: theme.spacing(1.25, 1.25, 2),
-    margin: `${theme.spacing(-1.25, -1.25, -2)} !important`
+    margin: `${theme.spacing(-1.25, -1.25, -1)} !important`
   },
   '& .MuiTabs-indicator': {
     display: 'none'
@@ -47,8 +50,10 @@ const TabList = styled(MuiTabList)(({ theme }) => ({
 }))
 
 const TabsCustomized = () => {
+
   // ** State
   const [value, setValue] = useState('1')
+  const storePermissions = useSelector(state => state.storePermissions)
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
@@ -63,21 +68,18 @@ const TabsCustomized = () => {
         aria-label='forced scroll tabs example'
         sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}` }}
       >
-        <Tab value='1' label='Details' icon={<Icon fontSize='1.125rem' icon='tabler:user-check' />} />
+        <Tab value='1' label='Details' icon={<Icon fontSize='1.125rem' icon='tabler:user-check' />} disabled={storePermissions?.permissionLoading} />
         <Tab value='2' label='Permissions' icon={<Icon fontSize='1.125rem' icon='tabler:fingerprint' />} />
-        <Tab value='3' label='Holidays' icon={<Icon fontSize='1.125rem' icon='tabler:beach' />} />
+        <Tab value='3' label='Holidays' icon={<Icon fontSize='1.125rem' icon='tabler:beach' />} disabled={storePermissions?.permissionLoading} />
       </TabList>
-      <TabPanel value='1'>
+      <TabPanel sx={{ p: 0 }} value='1'>
         <Typography>
           Cake apple pie chupa chups biscuit liquorice tootsie roll liquorice sugar plum. Cotton candy wafer wafer jelly
           cake caramels brownie gummies.
         </Typography>
       </TabPanel>
-      <TabPanel value='2'>
-        <Typography>
-          Chocolate bar carrot cake candy canes sesame snaps. Cupcake pie gummi bears jujubes candy canes. Chupa chups
-          sesame snaps halvah.
-        </Typography>
+      <TabPanel sx={{ p: 0 }} value='2'>
+        <UserViewNotification />
       </TabPanel>
       <TabPanel value='3'>
         <Typography>
