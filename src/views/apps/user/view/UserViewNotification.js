@@ -70,21 +70,12 @@ const UserViewNotification = () => {
           </Typography>
           <TableContainer sx={{ borderRadius: '6px !important', border: theme => `1px solid ${theme.palette.divider}` }}>
             <Table sx={{ minWidth: 500 }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Type</TableCell>
-                  <TableCell align='right'>Access</TableCell>
-                </TableRow>
-              </TableHead>
-
               <TableBody sx={{ '& .MuiTableRow-root:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
                 {
                   storePermissions?.permissions?.map((permission, index) => (
                     <TableRow key={index}>
                       <TableCell>
                         <FormControlLabel
-
-                          // key={permissionIndex}
                           label={
                             <div>
                               <Typography variant='body' sx={{ fontWeight: 600, color: 'text.primary' }}>
@@ -103,19 +94,6 @@ const UserViewNotification = () => {
                             />
                           }
                         />
-                        {/* <Typography variant='body' sx={{ fontWeight: 600, color: 'text.primary' }}>
-                          {permission.roleLabel}
-                        </Typography>
-                        <FormHelperText>{permission.description}</FormHelperText> */}
-                      </TableCell>
-                      <TableCell align='right'>
-                        {/* <Checkbox
-                          id={permission.roleId}
-                          checked={permission.hasRole}
-                          onChange={() => togglePermission(permission.roleId)}
-                          color='primary'
-                          inputProps={{ 'aria-label': 'secondary checkbox' }}
-                        /> */}
                       </TableCell>
                     </TableRow>
                   ))
@@ -137,7 +115,7 @@ const UserViewNotification = () => {
         </CardActions>
 
         <Backdrop
-          open={storePermissions?.permissionsLoading || false}
+          open={storePermissions?.permissionLoading || false}
           sx={{
             position: 'absolute',
             color: 'common.white',

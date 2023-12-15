@@ -7,7 +7,6 @@ import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
-import Switch from '@mui/material/Switch'
 import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import { styled } from '@mui/material/styles'
@@ -16,10 +15,7 @@ import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import InputAdornment from '@mui/material/InputAdornment'
 import LinearProgress from '@mui/material/LinearProgress'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import DialogContentText from '@mui/material/DialogContentText'
 
 // ** Icon Imports
@@ -35,6 +31,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getUserById } from 'src/store/apps/user'
 import { CircleFlag } from 'react-circle-flags'
 import { Backdrop, CircularProgress } from '@mui/material'
+import DialogConfirmation from './DialogConfirmation'
 
 const data = {
   id: 1,
@@ -83,13 +80,14 @@ const Sub = styled('sub')(({ theme }) => ({
 const UserViewLeft = (params) => {
   const { id } = params
   const dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(getUserById(id))
-  }, [dispatch, id])
 
   // ** Store Vars
   const storeUsers = useSelector(state => state.storeUsers)
   const user = storeUsers?.user
+
+  useEffect(() => {
+    dispatch(getUserById(id))
+  }, [dispatch, id])
 
   // ** States
   const [openEdit, setOpenEdit] = useState(false)
@@ -171,8 +169,8 @@ const UserViewLeft = (params) => {
                       rounded
                       skin='light'
                       size='small'
-                      label={user?.status}
-                      color={statusColors[user.status]}
+                      label={user?.isActive ? 'Active' : 'Inactive'}
+                      color={statusColors[user.isActive ? 'Active' : 'Inactive']}
                       sx={{
                         textTransform: 'capitalize'
                       }}
@@ -187,13 +185,19 @@ const UserViewLeft = (params) => {
               </CardContent>
 
               <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button variant='contained' sx={{ mr: 2 }} onClick={handleEditClickOpen}>
+                {/* <Button variant='contained' sx={{ mr: 2 }} onClick={handleEditClickOpen}>
                   Edit
-                </Button>
+                </Button> */}
                 <Button color='error' variant='tonal' onClick={() => setSuspendDialogOpen(true)}>
-                  Suspend
+                  {user?.isActive ? 'Suspend' : 'Activate'}
                 </Button>
               </CardActions>
+              <DialogConfirmation
+                suspendDialogOpen={suspendDialogOpen}
+                setSuspendDialogOpen={setSuspendDialogOpen}
+                id={id}
+                storeUsers={storeUsers}
+              />
               <Backdrop
                 open={storeUsers.userLoading}
                 sx={{

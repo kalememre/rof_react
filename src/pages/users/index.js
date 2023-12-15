@@ -174,16 +174,18 @@ const columns = [
     {
         flex: 0.1,
         minWidth: 110,
-        field: 'status',
+        field: 'isActive',
         headerName: 'Status',
         renderCell: ({ row }) => {
+            const status = row.isActive ? 'Active' : 'Inactive'
+
             return (
                 <CustomChip
                     rounded
                     skin='light'
                     size='small'
-                    label={row.status}
-                    color={userStatusObj[row.status]}
+                    label={status}
+                    color={userStatusObj[status]}
                     sx={{ textTransform: 'capitalize' }}
                 />
             )
@@ -230,8 +232,8 @@ const UserList = ({ apiData }) => {
 
     const handleApplyFilter = useCallback(() => {
         const filteredRows = storeUsers.users.filter(row => {
-            if (role && row.role.id !== role) return false
-            if (status && row.status !== status) return false
+            if (role && row?.userProfile?.position.id !== role) return false
+            if (status && row.isActive !== status) return false
 
             return true
         })
