@@ -380,7 +380,7 @@ const UserList = ({ apiData }) => {
                 </Card>
             </Grid>
 
-            <AddUserDrawer storePositions={storePositions} open={addUserOpen} toggle={toggleAddUserDrawer} />
+            {/* <AddUserDrawer storePositions={storePositions} open={addUserOpen} toggle={toggleAddUserDrawer} /> */}
         </Grid>
     )
 }

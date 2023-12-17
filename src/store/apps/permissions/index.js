@@ -41,12 +41,14 @@ export const appPermissionSlice = createSlice({
         })
         builder.addCase(getPermissions.fulfilled, (state, action) => {
             state.permissions = action.payload
-            toast.success('Successfully loaded permissions')
+
+            // toast.success('Successfully loaded permissions')
             state.permissionLoading = false
         })
         builder.addCase(getPermissions.rejected, (state, action) => {
             state.error = action.error.message
-            toast.error(`Failed to load permissions\n"${action.error.message}"`)
+
+            // toast.error(`Failed to load permissions\n"${action.error.message}"`)
             state.permissionLoading = false
         })
         builder.addCase(getUserPermissions.pending, (state, action) => {
@@ -54,12 +56,14 @@ export const appPermissionSlice = createSlice({
         })
         builder.addCase(getUserPermissions.fulfilled, (state, action) => {
             state.userPermissions = action.payload
-            toast.success('Successfully loaded user permissions')
+
+            // toast.success('Successfully loaded user permissions')
             state.permissionLoading = false
         })
         builder.addCase(getUserPermissions.rejected, (state, action) => {
             state.error = action.error.message
-            toast.error(`Failed to load user permissions\n"${action.error.message}"`)
+
+            // toast.error(`Failed to load user permissions\n"${action.error.message}"`)
             state.permissionLoading = false
         })
         builder.addCase(updateUserPermissions.pending, (state, action) => {
@@ -67,12 +71,14 @@ export const appPermissionSlice = createSlice({
         })
         builder.addCase(updateUserPermissions.fulfilled, (state, action) => {
             state.userPermissions = action.payload
-            toast.success('Successfully updated user permissions')
+
+            // toast.success('Successfully updated user permissions')
             state.permissionLoading = false
         })
         builder.addCase(updateUserPermissions.rejected, (state, action) => {
             state.error = action.error.message
-            toast.error(`Failed to update user permissions\n"${action.error.message}"`)
+
+            // toast.error(`Failed to update user permissions\n"${action.error.message}"`)
             state.permissionLoading = false
         })
     }

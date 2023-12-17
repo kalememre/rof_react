@@ -78,16 +78,12 @@ const Sub = styled('sub')(({ theme }) => ({
 }))
 
 const UserViewLeft = (params) => {
-  const { id } = params
-  const dispatch = useDispatch()
+  const { storeUsers } = params
 
   // ** Store Vars
-  const storeUsers = useSelector(state => state.storeUsers)
   const user = storeUsers?.user
 
-  useEffect(() => {
-    dispatch(getUserById(id))
-  }, [dispatch, id])
+
 
   // ** States
   const [openEdit, setOpenEdit] = useState(false)
@@ -127,7 +123,7 @@ const UserViewLeft = (params) => {
 
               <CardContent sx={{ pt: theme => `${theme.spacing(2)} !important` }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Box sx={{ mr: 8, display: 'flex', alignItems: 'center' }}>
+                  {/* <Box sx={{ mr: 8, display: 'flex', alignItems: 'center' }}>
                     <CustomAvatar color='info' skin='light' variant='rounded' sx={{ mr: 2.5, width: 38, height: 38 }}>
                       <Icon fontSize='1.75rem' icon='tabler:briefcase' />
                     </CustomAvatar>
@@ -135,7 +131,7 @@ const UserViewLeft = (params) => {
                       <Typography sx={{ fontWeight: 500, color: 'text.secondary' }}>568</Typography>
                       <Typography variant='body2'>Hours Worked</Typography>
                     </div>
-                  </Box>
+                  </Box> */}
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <CustomAvatar color='info' skin='light' variant='rounded' sx={{ mr: 2.5, width: 38, height: 38 }}>
                       <Icon fontSize='1.75rem' icon='tabler:beach' />
@@ -195,11 +191,11 @@ const UserViewLeft = (params) => {
               <DialogConfirmation
                 suspendDialogOpen={suspendDialogOpen}
                 setSuspendDialogOpen={setSuspendDialogOpen}
-                id={id}
+                id={user?.id}
                 storeUsers={storeUsers}
               />
               <Backdrop
-                open={storeUsers.userLoading}
+                open={storeUsers?.userLoading}
                 sx={{
                   position: 'absolute',
                   color: 'common.white',

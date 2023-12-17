@@ -15,6 +15,10 @@ import Icon from 'src/@core/components/icon'
 import UserViewNotification from './UserViewNotification'
 import { useRouter } from 'next/router'
 import { useSelector } from 'react-redux'
+import UserDetail from './UserDetail'
+import UserProfile from './UserProfile'
+import { Grid } from '@mui/material'
+import UserBranches from './UserBranches'
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
@@ -49,7 +53,9 @@ const TabList = styled(MuiTabList)(({ theme }) => ({
   }
 }))
 
-const TabsCustomized = () => {
+const TabsCustomized = (props) => {
+  const { storeUsers } = props
+  const user = storeUsers?.user
 
   // ** State
   const [value, setValue] = useState('1')
@@ -68,18 +74,25 @@ const TabsCustomized = () => {
         aria-label='forced scroll tabs example'
         sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}` }}
       >
-        <Tab value='1' label='Details' icon={<Icon fontSize='1.125rem' icon='tabler:user-check' />} disabled={storePermissions?.permissionLoading} />
-        <Tab value='2' label='Permissions' icon={<Icon fontSize='1.125rem' icon='tabler:fingerprint' />} />
-        <Tab value='3' label='Holidays' icon={<Icon fontSize='1.125rem' icon='tabler:beach' />} disabled={storePermissions?.permissionLoading} />
+        <Tab value='1' label='Details' icon={<Icon fontSize='1.125rem' icon='tabler:user-check' />} />
+        <Tab value='2' label='Permissions' icon={<Icon fontSize='1.125rem' icon='tabler:fingerprint' />} disabled={!user?.isActive} />
+        <Tab value='3' label='Holidays' icon={<Icon fontSize='1.125rem' icon='tabler:beach' />} disabled={!user?.isActive} />
       </TabList>
       <TabPanel sx={{ p: 0 }} value='1'>
-        <Typography>
-          Cake apple pie chupa chups biscuit liquorice tootsie roll liquorice sugar plum. Cotton candy wafer wafer jelly
-          cake caramels brownie gummies.
-        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <UserDetail storeUsers={storeUsers} />
+          </Grid>
+          <Grid item xs={12}>
+            <UserProfile storeUsers={storeUsers} />
+          </Grid>
+          <Grid item xs={12}>
+            <UserBranches storeUsers={storeUsers} />
+          </Grid>
+        </Grid>
       </TabPanel>
       <TabPanel sx={{ p: 0 }} value='2'>
-        <UserViewNotification />
+        <UserViewNotification storeUsers={storeUsers} />
       </TabPanel>
       <TabPanel value='3'>
         <Typography>
