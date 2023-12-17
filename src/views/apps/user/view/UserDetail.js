@@ -96,8 +96,8 @@ const UserDetail = (props) => {
                                             label='Name'
                                             onChange={onChange}
                                             placeholder="Enter user's name"
-                                            error={Boolean(errors.first_name)}
-                                            {...(errors.first_name && { helperText: errors.first_name.message })}
+                                            error={Boolean(errors.firstName)}
+                                            {...(errors.firstName && { helperText: errors.firstName.message })}
                                         />
                                     )}
                                 />
@@ -115,8 +115,8 @@ const UserDetail = (props) => {
                                             label='Surname'
                                             onChange={onChange}
                                             placeholder="Enter user's surname"
-                                            error={Boolean(errors.last_name)}
-                                            {...(errors.last_name && { helperText: errors.last_name.message })}
+                                            error={Boolean(errors.lastName)}
+                                            {...(errors.lastName && { helperText: errors.lastName.message })}
                                         />
                                     )}
                                 />

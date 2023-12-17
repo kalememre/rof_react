@@ -17,15 +17,11 @@ import { CircleFlag } from 'react-circle-flags'
 
 // ** Data
 import { countries } from 'src/@fake-db/autocomplete'
+import { updateUserProfile } from 'src/store/apps/user'
 
 
 const schema = yup.object().shape({
-    first_name: yup.string().required('Name field is required'),
-    last_name: yup.string().required('Surname field is required'),
-    phone: yup.string().required('Phone field is required'),
-    email: yup.string().email('Invalid email').required('Email field is required'),
-    position: yup.string().required('Position field is required'),
-    branch: yup.array().min(1, 'Branch field is required'),
+    positionId: yup.string().required('Position field is required'),
 })
 
 const UserProfile = (props) => {
@@ -36,9 +32,9 @@ const UserProfile = (props) => {
     const user = storeUsers?.user
 
     const defaultValues = {
-        position: user?.userProfile?.position.id || '',
+        positionId: user?.userProfile?.position.id || '',
         country: user?.userProfile?.country || '',
-        PPSN: user?.userProfile?.ppsn || '',
+        ppsn: user?.userProfile?.ppsn || '',
         passport: user?.userProfile?.passport || '',
     }
 
@@ -71,9 +67,9 @@ const UserProfile = (props) => {
     useEffect(() => {
         reset();
         reset({
-            position: user?.userProfile?.position.id || '',
+            positionId: user?.userProfile?.position.id || '',
             country: user?.userProfile?.country || '',
-            PPSN: user?.userProfile?.ppsn || '',
+            ppsn: user?.userProfile?.ppsn || '',
             passport: user?.userProfile?.passport || '',
         });
     }, [user, reset]);
@@ -87,7 +83,11 @@ const UserProfile = (props) => {
 
 
     const onSubmit = data => {
-        console.log(data)
+        const userData = {
+            ...data,
+            id: user?.id,
+        }
+        dispatch(updateUserProfile(userData))
     }
 
     return (
@@ -102,7 +102,7 @@ const UserProfile = (props) => {
                         <Grid container spacing={5}>
                             <Grid item sm={6} xs={12}>
                                 <Controller
-                                    name='position'
+                                    name='positionId'
                                     control={control}
                                     rules={{ required: true }}
                                     defaultValue=''
@@ -114,8 +114,8 @@ const UserProfile = (props) => {
                                             sx={{ mb: 2 }}
                                             disabled={storePositions.loading}
                                             defaultValue='Select Position'
-                                            error={Boolean(errors.position)}
-                                            {...(errors.position && { helperText: errors.position.message })}
+                                            error={Boolean(errors.positionId)}
+                                            {...(errors.positionId && { helperText: errors.positionId.message })}
                                             SelectProps={{
                                                 value: value,
                                                 displayEmpty: true,
@@ -182,7 +182,7 @@ const UserProfile = (props) => {
                             </Grid>
                             <Grid item sm={6} xs={12}>
                                 <Controller
-                                    name='PPSN'
+                                    name='ppsn'
                                     control={control}
                                     rules={{ required: true }}
                                     render={({ field: { value, onChange } }) => (
@@ -193,8 +193,8 @@ const UserProfile = (props) => {
                                             label='PPSN / Tax / VAT'
                                             onChange={onChange}
                                             placeholder='Enter PPSN / Tax / VAT'
-                                            error={Boolean(errors.PPSN)}
-                                            {...(errors.PPSN && { helperText: errors.PPSN.message })}
+                                            error={Boolean(errors.ppsn)}
+                                            {...(errors.ppsn && { helperText: errors.ppsn.message })}
                                         />
                                     )}
                                 />
