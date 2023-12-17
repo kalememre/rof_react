@@ -157,7 +157,7 @@ const UserViewLeft = (params) => {
                   </Box>
                   <Box sx={{ display: 'flex', mb: 3 }}>
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Contact:</Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>{user?.userProfile?.phone}</Typography>
+                    <Typography sx={{ color: 'text.secondary' }}>{user?.phone}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', mb: 3, alignItems: 'center' }}>
                     <Typography sx={{ mr: 2, fontWeight: 500, color: 'text.secondary' }}>Status:</Typography>

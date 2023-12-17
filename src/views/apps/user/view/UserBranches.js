@@ -22,7 +22,7 @@ const UserBranches = (props) => {
                 </CardContent>
             </Card>
             <Backdrop
-                open={storeUsers.userLoading || storeBranches.branchesLoading}
+                open={storeUsers.userLoading || storeBranches.branchLoading}
                 sx={{
                     position: 'absolute',
                     color: 'common.white',

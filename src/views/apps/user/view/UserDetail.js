@@ -11,12 +11,13 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomTextField from 'src/@core/components/mui/text-field'
 import { useDispatch, useSelector } from 'react-redux'
+import { updateUser } from 'src/store/apps/user'
 
 
 
 const schema = yup.object().shape({
-    first_name: yup.string().required('Name field is required'),
-    last_name: yup.string().required('Surname field is required'),
+    firstName: yup.string().required('Name field is required'),
+    lastName: yup.string().required('Surname field is required'),
     phone: yup.string().required('Phone field is required'),
     email: yup.string().email('Invalid email').required('Email field is required'),
 })
@@ -29,9 +30,9 @@ const UserDetail = (props) => {
     const user = storeUsers?.user
 
     const defaultValues = {
-        first_name: user?.firstName || '',
-        last_name: user?.lastName || '',
-        phone: user?.userProfile?.phone || '',
+        firstName: user?.firstName || '',
+        lastName: user?.lastName || '',
+        phone: user?.phone || '',
         email: user?.email || '',
     }
 
@@ -55,9 +56,9 @@ const UserDetail = (props) => {
 
     useEffect(() => {
         reset({
-            first_name: user?.firstName || '',
-            last_name: user?.lastName || '',
-            phone: user?.userProfile?.phone || '',
+            firstName: user?.firstName || '',
+            lastName: user?.lastName || '',
+            phone: user?.phone || '',
             email: user?.email || '',
         });
     }, [user, reset]);
@@ -65,7 +66,11 @@ const UserDetail = (props) => {
 
 
     const onSubmit = data => {
-        console.log(data)
+        const userData = {
+            ...data,
+            id: user?.id,
+        }
+        dispatch(updateUser(userData))
     }
 
     return (
@@ -80,7 +85,7 @@ const UserDetail = (props) => {
                         <Grid container spacing={5}>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name='first_name'
+                                    name='firstName'
                                     control={control}
                                     rules={{ required: true }}
                                     render={({ field: { value, onChange } }) => (
@@ -99,7 +104,7 @@ const UserDetail = (props) => {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Controller
-                                    name='last_name'
+                                    name='lastName'
                                     control={control}
                                     rules={{ required: true }}
                                     render={({ field: { value, onChange } }) => (
