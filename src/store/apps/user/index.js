@@ -49,6 +49,13 @@ export const updateUserProfile = createAsyncThunk('appUser/updateUserProfile', a
     return response.data
 })
 
+// ** Update User Branches
+export const updateUserBranches = createAsyncThunk('appUser/updateUserBranches', async (data) => {
+    const response = await axiosInstance.put(`/user/branches/${data.id}/`, data.branches)
+
+    return response.data
+})
+
 
 export const appUserSlice = createSlice({
     name: 'appUser',
@@ -57,6 +64,8 @@ export const appUserSlice = createSlice({
         user: {},
         error: null,
         userLoading: false,
+        userProfileLoading: false,
+        userBranchesLoading: false
     },
     reducers: {},
     extraReducers: builder => {
@@ -107,20 +116,26 @@ export const appUserSlice = createSlice({
         })
         builder.addCase(suspendUser.pending, (state, action) => {
             state.userLoading = true
+            state.userProfileLoading = true
+            state.userBranchesLoading = true
         })
         builder.addCase(suspendUser.fulfilled, (state, action) => {
             const index = state.users.findIndex(user => user.id === action.payload.id)
             state.users[index] = action.payload
             state.user = action.payload
 
-            // toast.success('User suspended successfully')
+            toast.success('User suspended successfully')
             state.userLoading = false
+            state.userProfileLoading = false
+            state.userBranchesLoading = false
         })
         builder.addCase(suspendUser.rejected, (state, action) => {
             state.error = action.payload
 
-            // toast.error('Something went wrong')
+            toast.error('Something went wrong')
             state.userLoading = false
+            state.userProfileLoading = false
+            state.userBranchesLoading = false
         })
         builder.addCase(updateUser.pending, (state, action) => {
             state.userLoading = true
@@ -138,19 +153,34 @@ export const appUserSlice = createSlice({
             state.userLoading = false
         })
         builder.addCase(updateUserProfile.pending, (state, action) => {
-            state.userLoading = true
+            state.userProfileLoading = true
         })
         builder.addCase(updateUserProfile.fulfilled, (state, action) => {
             const index = state.users.findIndex(user => user.id === action.payload.id)
             state.users[index] = action.payload
             state.user = action.payload
             toast.success('User profile updated successfully')
-            state.userLoading = false
+            state.userProfileLoading = false
         })
         builder.addCase(updateUserProfile.rejected, (state, action) => {
             state.error = action.payload
             toast.error('Something went wrong')
-            state.userLoading = false
+            state.userProfileLoading = false
+        })
+        builder.addCase(updateUserBranches.pending, (state, action) => {
+            state.userBranchesLoading = true
+        })
+        builder.addCase(updateUserBranches.fulfilled, (state, action) => {
+            const index = state.users.findIndex(user => user.id === action.payload.id)
+            state.users[index] = action.payload
+            state.user = action.payload
+            toast.success('User branches updated successfully')
+            state.userBranchesLoading = false
+        })
+        builder.addCase(updateUserBranches.rejected, (state, action) => {
+            state.error = action.payload
+            toast.error('Something went wrong')
+            state.userBranchesLoading = false
         })
     }
 })

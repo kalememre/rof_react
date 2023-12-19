@@ -170,8 +170,9 @@ const UserProfile = (props) => {
                                             <MenuItem selected disabled value=''><em>Select Country</em></MenuItem>
                                             {countries.map((position, index) => (
                                                 <MenuItem key={index} value={position.code}>
-                                                    <CircleFlag countryCode={position.code.toLowerCase()} height='20' />
-                                                    <span style={{ marginLeft: 5 }}>
+                                                    {/* <CircleFlag countryCode={position.code.toLowerCase()} height='20' /> */}
+                                                    <img src={`/flags/${position.code.toLowerCase()}.svg`} alt={position.label} height='24' />
+                                                    <span style={{ marginLeft: 10 }}>
                                                         {position.label}
                                                     </span>
                                                 </MenuItem>
@@ -228,7 +229,7 @@ const UserProfile = (props) => {
                 </CardContent>
             </Card>
             <Backdrop
-                open={storePositions.userLoading || false}
+                open={storePositions.positionLoading || storeUsers.userProfileLoading}
                 sx={{
                     position: 'absolute',
                     color: 'common.white',

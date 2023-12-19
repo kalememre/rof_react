@@ -41,11 +41,7 @@ const UserDetail = (props) => {
         reset,
         control,
         handleSubmit,
-        setValue,
-        trigger,
-        getValues,
         formState: { errors: errors },
-        setError
     } = useForm({
         defaultValues: defaultValues,
         resolver: yupResolver(schema)

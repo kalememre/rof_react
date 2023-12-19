@@ -19,6 +19,7 @@ import UserDetail from './UserDetail'
 import UserProfile from './UserProfile'
 import { Grid } from '@mui/material'
 import UserBranches from './UserBranches'
+import UserTab from './UserTab'
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
@@ -79,17 +80,7 @@ const TabsCustomized = (props) => {
         <Tab value='3' label='Holidays' icon={<Icon fontSize='1.125rem' icon='tabler:beach' />} disabled={!user?.isActive} />
       </TabList>
       <TabPanel sx={{ p: 0 }} value='1'>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <UserDetail storeUsers={storeUsers} />
-          </Grid>
-          <Grid item xs={12}>
-            <UserProfile storeUsers={storeUsers} />
-          </Grid>
-          <Grid item xs={12}>
-            <UserBranches storeUsers={storeUsers} />
-          </Grid>
-        </Grid>
+        <UserTab storeUsers={storeUsers} />
       </TabPanel>
       <TabPanel sx={{ p: 0 }} value='2'>
         <UserViewNotification storeUsers={storeUsers} />

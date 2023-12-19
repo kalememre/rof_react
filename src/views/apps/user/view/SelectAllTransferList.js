@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getBranches } from 'src/store/apps/branch';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { updateUserBranches } from 'src/store/apps/user';
 
 function not(a, b) {
     return a.filter((value) => b.indexOf(value) === -1);
@@ -81,9 +82,20 @@ export default function SelectAllTransferList(props) {
         setChecked(not(checked, rightChecked));
     };
 
+    const onSubmit = () => {
+        const branchIds = right.map(branch => branch.id)
+
+        const userData = {
+            id: user?.id,
+            branches: branchIds
+        }
+
+        dispatch(updateUserBranches(userData))
+    }
+
     useEffect(() => {
-        dispatch(getBranches());
-    }, [dispatch])
+        user?.isActive && dispatch(getBranches());
+    }, [dispatch, user?.isActive])
 
     useEffect(() => {
         setRight(user?.branches)
@@ -158,33 +170,42 @@ export default function SelectAllTransferList(props) {
     );
 
     return (
-        <Grid container spacing={2} justifyContent="center" alignItems="center">
-            <Grid item xs={5}>{customList('Choices', left)}</Grid>
-            <Grid item xs={2}>
-                <Grid container direction="column" alignItems="center">
-                    <Button
-                        sx={{ my: 0.5 }}
-                        variant="outlined"
-                        size="small"
-                        onClick={handleCheckedRight}
-                        disabled={leftChecked.length === 0}
-                        aria-label="move selected right"
-                    >
-                        &gt;
-                    </Button>
-                    <Button
-                        sx={{ my: 0.5 }}
-                        variant="outlined"
-                        size="small"
-                        onClick={handleCheckedLeft}
-                        disabled={rightChecked.length === 0}
-                        aria-label="move selected left"
-                    >
-                        &lt;
-                    </Button>
+        <>
+            <Grid container spacing={2} justifyContent="center" alignItems="center">
+                <Grid item xs={5}>{customList('Choices', left)}</Grid>
+                <Grid item xs={2}>
+                    <Grid container direction="column" alignItems="center">
+                        <Button
+                            sx={{ my: 0.5 }}
+                            variant="outlined"
+                            size="small"
+                            onClick={handleCheckedRight}
+                            disabled={leftChecked.length === 0}
+                            aria-label="move selected right"
+                        >
+                            &gt;
+                        </Button>
+                        <Button
+                            sx={{ my: 0.5 }}
+                            variant="outlined"
+                            size="small"
+                            onClick={handleCheckedLeft}
+                            disabled={rightChecked.length === 0}
+                            aria-label="move selected left"
+                        >
+                            &lt;
+                        </Button>
+                    </Grid>
                 </Grid>
+                <Grid item xs={5}>{customList('Chosen', right)}</Grid>
             </Grid>
-            <Grid item xs={5}>{customList('Chosen', right)}</Grid>
-        </Grid>
+            <Grid item xs={12} mt={5} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                    onClick={onSubmit}
+                    variant='contained' disabled={!user.isActive}>
+                    Save Changes
+                </Button>
+            </Grid>
+        </>
     );
 }
