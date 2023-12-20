@@ -6,7 +6,7 @@ const navigation = () => {
       path: '/home',
       icon: 'tabler:smart-home',
       action: true,
-      subject: 'can_view_home_page'
+      subject: 'CAN_VIEW_HOME_PAGE'
     },
     {
       title: 'Announcements',
@@ -20,7 +20,7 @@ const navigation = () => {
       path: '/users',
       icon: 'tabler:users',
       action: true,
-      subject: 'can_view_branch_users',
+      subject: 'CAN_VIEW_USERS_PAGE',
     },
     {
       title: 'Roster',

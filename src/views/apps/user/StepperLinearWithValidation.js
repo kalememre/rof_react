@@ -287,13 +287,13 @@ const StepperLinearWithValidation = () => {
       country: getPersonalValues().country,
       PPSN: getPersonalValues().PPSN,
       passport: getPersonalValues().passport,
-      phone: getAccountValues().phone,
     }
 
     const data = {
       firstName: getAccountValues().first_name,
       lastName: getAccountValues().last_name,
       email: getAccountValues().email,
+      phone: getAccountValues().phone,
       userProfile: user_profile,
       branches: getAccountValues().branch.map(branch => branch.id),
       roles: selectedCheckbox

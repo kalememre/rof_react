@@ -101,7 +101,6 @@ const PositionCards = () => {
   const [roleColor, setRoleColor] = useState(null)
   const [selectedRole, setSelectedRole] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const [authGroup, setAuthGroup] = useState('')
 
   const {
     control,
@@ -130,19 +129,12 @@ const PositionCards = () => {
 
   const handleClose = () => {
     setOpen(false)
-    setAuthGroup('')
     reset()
   }
 
   useEffect(() => {
     dispatch(getPositions())
   }, [dispatch])
-
-  const handleAuthGroupChange = (e) => {
-    setAuthGroup(e.target.value)
-    setValue('authGroup', e.target.value)
-    trigger('authGroup')
-  }
 
   const renderCards = () =>
     storePositions?.positions?.map((item, index) => (
@@ -265,13 +257,13 @@ const PositionCards = () => {
                 <Box sx={{ textAlign: 'right' }}>
                   <Button
                     variant='outlined'
-                    sx={{ mb: 3, whiteSpace: 'nowrap' }}
+                    sx={{ mb: 3, whiteSpace: 'nowrap', width: '80%' }}
                     onClick={() => {
                       handleClickOpen()
                       setDialogTitle('Add')
                     }}
                   >
-                    Add New Position
+                    Add New
                   </Button>
                   <Typography sx={{ color: 'text.secondary' }}>Add position, if it doesn't exist.</Typography>
 

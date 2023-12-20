@@ -37,7 +37,7 @@ const Home = () => {
 
 Home.acl = {
   action: true,
-  subject: 'can_view_home_page'
+  subject: 'CAN_VIEW_HOME_PAGE'
 }
 
 export default Home

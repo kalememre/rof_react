@@ -398,7 +398,7 @@ const UserList = ({ apiData }) => {
 
 UserList.acl = {
     action: true,
-    subject: 'can_view_branch_users'
+    subject: 'CAN_VIEW_USERS_PAGE'
 }
 
 export default UserList
