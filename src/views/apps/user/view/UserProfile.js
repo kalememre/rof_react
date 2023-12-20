@@ -61,7 +61,7 @@ const UserProfile = (props) => {
     const storePositions = useSelector(state => state.storePositions)
 
     useEffect(() => {
-        user?.isActive && dispatch(getPositions())
+        dispatch(getPositions())
     }, [dispatch, user?.isActive])
 
     useEffect(() => {
@@ -105,7 +105,6 @@ const UserProfile = (props) => {
                                     name='positionId'
                                     control={control}
                                     rules={{ required: true }}
-                                    defaultValue=''
                                     render={({ field: { value, onChange } }) => (
                                         <CustomTextField
                                             select
@@ -138,12 +137,12 @@ const UserProfile = (props) => {
                                     name='country'
                                     control={control}
                                     rules={{ required: true }}
-                                    defaultValue=''
                                     render={({ field: { value, onChange } }) => (
                                         <CustomTextField
                                             select
                                             fullWidth
                                             label='Country'
+                                            id='country'
                                             sx={{
                                                 mb: 2,
                                                 '& .MuiSelect-select': {

@@ -14,16 +14,16 @@ const getErrorMessage = (error) => {
         : error.response.data.detail;
 };
 
-axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response && error.response.status === 401) {
-            localStorage.clear()
-            throw Error(getErrorMessage(error))
-        }
-        else if (error.request) { throw Error('No response received from the server.') }
-        else { throw Error('An error occurred while making the request.') }
-    }
-);
+// axiosInstance.interceptors.response.use(
+//     (response) => response,
+//     (error) => {
+//         if (error.response && error.response.status === 401) {
+//             localStorage.clear()
+//             throw Error(getErrorMessage(error))
+//         }
+//         else if (error.request) { throw Error(error.request) }
+//         else { throw Error('An error occurred while making the request.') }
+//     }
+// );
 
 export default axiosInstance;

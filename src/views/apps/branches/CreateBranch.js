@@ -18,9 +18,9 @@ import Icon from 'src/@core/components/icon'
 import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { addBranch, updateBranch } from 'src/store/apps/branch'
-import { Drawer } from '@mui/material'
+import { Backdrop, CircularProgress, Drawer } from '@mui/material'
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Fade ref={ref} {...props} />
@@ -49,6 +49,7 @@ const CreateBranch = props => {
 
     // ** States
     const dispatch = useDispatch()
+    const storeBranches = useSelector(state => state.storeBranches)
 
     const schema = yup.object().shape({
         name: yup.string().required('Branch Name is required'),
@@ -252,6 +253,19 @@ const CreateBranch = props => {
                     </Button>
                 </Box>
             </Box>
+            <Backdrop
+                open={storeBranches.branchLoading}
+                sx={{
+                    position: 'absolute',
+                    color: 'common.white',
+                    zIndex: theme => theme.zIndex.mobileStepper - 1,
+                    borderRadius: '6px !important',
+                    margin: '10px !important',
+                    opacity: '0.5 !important',
+                }}
+            >
+                <CircularProgress color='inherit' />
+            </Backdrop>
         </Drawer>
     )
 }
