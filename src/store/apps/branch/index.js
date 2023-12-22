@@ -79,7 +79,6 @@ export const appBranchSlice = createSlice({
         })
         builder.addCase(addBranch.rejected, (state, action) => {
             state.error = action.error.message
-            toast.error(`Failed to add branch\n\n${action.error.message}`)
             state.branchLoading = false
         })
         builder.addCase(updateBranch.pending, (state, action) => {
@@ -94,7 +93,6 @@ export const appBranchSlice = createSlice({
         })
         builder.addCase(updateBranch.rejected, (state, action) => {
             state.error = action.error.message
-            toast.error(`Failed to update branch\n\n${action.error.message}`)
             state.branchLoading = false
         })
         builder.addCase(deleteBranch.pending, (state, action) => {
@@ -108,7 +106,6 @@ export const appBranchSlice = createSlice({
         })
         builder.addCase(deleteBranch.rejected, (state, action) => {
             state.error = action.error.message
-            toast.error(`Failed to delete branch\n\n${action.error.message}`)
             state.branchLoading = false
 
         })

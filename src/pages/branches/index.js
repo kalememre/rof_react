@@ -53,4 +53,9 @@ const Branch = () => {
     )
 }
 
+Branch.acl = {
+    action: true,
+    subject: 'CAN_VIEW_HOME_PAGE'
+}
+
 export default Branch

@@ -14,7 +14,7 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 import Icon from 'src/@core/components/icon'
 import { Alert, AlertTitle, Divider, Grid, Typography } from '@mui/material'
 import CustomTextField from 'src/@core/components/mui/text-field'
-import { formatDate } from 'src/@core/utils/format'
+import { formatDate, formatDateTime } from 'src/@core/utils/format'
 import { useState } from 'react'
 
 const StyledList = styled(List)(({ theme }) => ({
@@ -40,15 +40,24 @@ const StyledList = styled(List)(({ theme }) => ({
   }
 }))
 
+const HolidayStatusEnum = {
+  PENDING: 0,
+  APPROVED: 1,
+  REJECTED: 2,
+  CANCELLED: 3,
+};
+
 const ApprovedSection = ({ event }) => {
   const eventStatus = event?.extendedProps?.status
-  const statusTitle = eventStatus === 'approved' ? 'Approved' : 'Rejected'
+  const statusTitle = eventStatus === HolidayStatusEnum.APPROVED ? 'Approved' : 'Rejected'
+  const avatarColor = eventStatus === HolidayStatusEnum.APPROVED ? 'success' : 'error'
+  const avatarIcon = eventStatus === HolidayStatusEnum.APPROVED ? 'tabler:check' : 'tabler:x'
 
   return (
     <ListItem>
       <ListItemAvatar>
-        <CustomAvatar skin='light' variant='rounded' color={eventStatus === 'approved' ? 'success' : 'error'} sx={{ height: 36, width: 36 }}>
-          <Icon icon={eventStatus === 'approved' ? 'tabler:check' : 'tabler:x'} />
+        <CustomAvatar skin='light' variant='rounded' color={avatarColor} sx={{ height: 36, width: 36 }}>
+          <Icon icon={avatarIcon} />
         </CustomAvatar>
       </ListItemAvatar>
       <Box sx={{ width: '100%' }}>
@@ -60,16 +69,16 @@ const ApprovedSection = ({ event }) => {
             <CustomTextField
               fullWidth
               disabled
-              label='Approved By'
-              defaultValue={event?.extendedProps?.processed_by}
+              label='Proceed By'
+              defaultValue={event?.extendedProps?.proceedBy}
             />
           </Grid>
           <Grid item sm={6} xs={12}>
             <CustomTextField
               fullWidth
               disabled
-              label='Approved Date'
-              defaultValue={event?.extendedProps?.processed_on}
+              label='Proceed Date'
+              defaultValue={formatDateTime(event?.extendedProps?.proceedDate)}
             />
           </Grid>
         </Grid>
@@ -83,16 +92,13 @@ const ApprovedSection = ({ event }) => {
 
 const CustomAlert = ({ status }) => {
   const statusConfig = {
-    pending: { message: 'This holiday is pending for approval', severity: 'info' },
-    approved: { message: 'This holiday has been approved', severity: 'success' },
-    rejected: { message: 'This holiday has been rejected', severity: 'error' },
-    cancelled: { message: 'This holiday has been cancelled', severity: 'warning' },
+    0: { message: 'This holiday is pending for approval', severity: 'info' },
+    1: { message: 'This holiday has been approved', severity: 'success' },
+    2: { message: 'This holiday has been rejected', severity: 'error' },
+    3: { message: 'This holiday has been cancelled', severity: 'warning' },
   };
 
   return <Alert severity={statusConfig[status].severity}>
-    <AlertTitle sx={{
-      textTransform: 'capitalize',
-    }}>{status}</AlertTitle>
     {statusConfig[status].message}
   </Alert>;
 }
@@ -129,8 +135,8 @@ const DialogDetailList = props => {
               <CustomTextField
                 fullWidth
                 disabled
-                label='Role'
-                defaultValue={event?.extendedProps?.role}
+                label='Position'
+                defaultValue={event?.extendedProps?.position}
               />
             </Grid>
           </Grid>
@@ -178,13 +184,13 @@ const DialogDetailList = props => {
                 fullWidth
                 disabled
                 label='Created Date'
-                defaultValue={event?.extendedProps?.created_on}
+                defaultValue={formatDateTime(event?.extendedProps?.createdDate)}
               />
             </Grid>
           </Grid>
         </Box>
       </ListItem>
-      {holidayStatus !== 'pending' && <ApprovedSection event={event} />}
+      {holidayStatus !== HolidayStatusEnum.PENDING && <ApprovedSection event={event} />}
     </StyledList>
   )
 }

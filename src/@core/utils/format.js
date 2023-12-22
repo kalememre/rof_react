@@ -22,6 +22,12 @@ export const formatDate = (value, formatting = { month: 'numeric', day: 'numeric
   return new Intl.DateTimeFormat('en-GB', formatting).format(new Date(value))
 }
 
+export const formatDateTime = (value, formatting = { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' }) => {
+  if (!value) return value
+
+  return new Intl.DateTimeFormat('en-GB', formatting).format(new Date(value))
+}
+
 // ** Returns short month of passed date
 export const formatDateToMonthShort = (value, toTimeForCurrentDay = true) => {
   const date = new Date(value)

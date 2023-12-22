@@ -68,7 +68,6 @@ export const appPositionSlice = createSlice({
         })
         builder.addCase(getPositions.rejected, (state, action) => {
             state.error = action.error.message
-            toast.error(`Failed to load positions\n\n"${action.error.message}"`)
             state.positionLoading = false
         })
         builder.addCase(addPosition.pending, (state, action) => {
@@ -77,12 +76,11 @@ export const appPositionSlice = createSlice({
         builder.addCase(addPosition.fulfilled, (state, action) => {
             const newPosition = action.payload
             state.positions.push(newPosition)
-            toast.success('Successfully added role')
+            toast.success('Successfully added position')
             state.positionLoading = false
         })
         builder.addCase(addPosition.rejected, (state, action) => {
             state.error = action.error.message
-            toast.error(`Failed to add role\n\n"${action.error.message}"`)
             state.positionLoading = false
         })
         builder.addCase(updatePosition.pending, (state, action) => {
@@ -92,12 +90,11 @@ export const appPositionSlice = createSlice({
             const updatedPosition = action.payload
             const index = state.positions.findIndex(role => role.id === updatedPosition.id)
             state.positions[index] = updatedPosition
-            toast.success('Successfully updated role')
+            toast.success('Successfully updated position')
             state.positionLoading = false
         })
         builder.addCase(updatePosition.rejected, (state, action) => {
             state.error = action.error.message
-            toast.error(`Failed to update role\n\n"${action.error.message}"`)
             state.positionLoading = false
         })
         builder.addCase(deletePosition.pending, (state, action) => {
@@ -106,12 +103,11 @@ export const appPositionSlice = createSlice({
         builder.addCase(deletePosition.fulfilled, (state, action) => {
             const deletedPosition = action.payload
             state.positions = state.positions.filter(role => role.id !== deletedPosition)
-            toast.success('Successfully deleted role')
+            toast.success('Successfully deleted position')
             state.positionLoading = false
         })
         builder.addCase(deletePosition.rejected, (state, action) => {
             state.error = action.error.message
-            toast.error(`Failed to delete role\n\n"${action.error.message}"`)
             state.positionLoading = false
         })
     }

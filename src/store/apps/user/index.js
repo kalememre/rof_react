@@ -106,7 +106,6 @@ export const appUserSlice = createSlice({
         })
         builder.addCase(getUsers.rejected, (state, action) => {
             state.error = action.payload
-            toast.error(`Something went wrong\n\n${action.error.message}`)
             state.userLoading = false
         })
         builder.addCase(addUser.pending, (state, action) => {
@@ -119,7 +118,6 @@ export const appUserSlice = createSlice({
         })
         builder.addCase(addUser.rejected, (state, action) => {
             state.error = action.payload
-            toast.error(`Something went wrong\n\n${action.error.message}`)
             state.userLoading = false
         })
         builder.addCase(getUserById.pending, (state, action) => {
@@ -131,7 +129,6 @@ export const appUserSlice = createSlice({
         })
         builder.addCase(getUserById.rejected, (state, action) => {
             state.error = action.payload
-            toast.error(`Something went wrong\n\n${action.error.message}`)
             state.userLoading = false
         })
         builder.addCase(suspendUser.pending, (state, action) => {
@@ -150,7 +147,6 @@ export const appUserSlice = createSlice({
         })
         builder.addCase(suspendUser.rejected, (state, action) => {
             state.error = action.payload
-            toast.error(`Something went wrong\n\n${action.error.message}`)
             state.userLoading = false
             state.userProfileLoading = false
             state.userBranchesLoading = false
@@ -167,7 +163,6 @@ export const appUserSlice = createSlice({
         })
         builder.addCase(updateUser.rejected, (state, action) => {
             state.error = action.payload
-            toast.error(`Something went wrong\n\n${action.error.message}`)
             state.userLoading = false
         })
         builder.addCase(updateUserProfile.pending, (state, action) => {
@@ -182,7 +177,6 @@ export const appUserSlice = createSlice({
         })
         builder.addCase(updateUserProfile.rejected, (state, action) => {
             state.error = action.payload
-            toast.error(`Something went wrong\n\n${action.error.message}`)
             state.userProfileLoading = false
         })
         builder.addCase(updateUserBranches.pending, (state, action) => {
@@ -197,7 +191,6 @@ export const appUserSlice = createSlice({
         })
         builder.addCase(updateUserBranches.rejected, (state, action) => {
             state.error = action.payload
-            toast.error(`Something went wrong\n\n${action.error.message}`)
             state.userBranchesLoading = false
         })
     }

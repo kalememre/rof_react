@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useSettings } from 'src/@core/hooks/useSettings'
 import CalendarWrapper from 'src/@core/styles/libs/fullcalendar'
 import Calendar from 'src/views/apps/holidays/Calendar'
-import { getHolidays } from 'src/store/apps/holidays'
+import { getBranchHolidays, getHolidays } from 'src/store/apps/holidays'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
 import { Grid, Typography, useMediaQuery } from '@mui/material'
 import SidebarLeft from 'src/views/apps/holidays/SidebarLeft'
@@ -55,7 +55,7 @@ const HolidaysPage = () => {
     }, [can_see_branch_holidays, dispatch])
 
     const selectBranch = (e) => {
-        if (e.target.value !== 'None') dispatch(getHolidays(e.target.value))
+        if (e.target.value !== 'None') dispatch(getBranchHolidays(e.target.value))
     }
 
     return (
@@ -113,7 +113,7 @@ const HolidaysPage = () => {
 
 HolidaysPage.acl = {
     action: true,
-    subject: 'can_create_user'
+    subject: 'CAN_VIEW_USERS_PAGE'
 }
 
 export default HolidaysPage

@@ -34,7 +34,7 @@ const navigation = () => {
       path: '/holidays',
       icon: 'tabler:beach',
       action: true,
-      subject: 'can_view_holiday_page',
+      subject: 'CAN_VIEW_HOLIDAY_PAGE',
     },
     {
       title: 'Managements',
@@ -43,6 +43,8 @@ const navigation = () => {
         {
           title: 'Branches',
           path: '/branches',
+          action: true,
+          subject: 'CAN_VIEW_HOME_PAGE'
         },
         {
           title: 'Positions',

@@ -16,6 +16,7 @@ import Slide from '@mui/material/Slide'
 import Icon from 'src/@core/components/icon'
 import DialogDetailList from './DialogDetailList'
 import DialogConfirmation from './DialogConfirmation'
+import { HolidayStatusEnum } from './HolidayEnum'
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />
@@ -92,7 +93,7 @@ const DialogHolidayDetail = props => {
         }}
       >
         {can_see_branch_holidays && can_approve_holidays && (
-          holidayStatus === 'pending' && (
+          holidayStatus === HolidayStatusEnum.PENDING && (
             <>
               <Button variant='tonal' color='error' onClick={() => {
                 setProcess('refuse')

@@ -9,15 +9,25 @@ import axiosInstance from 'src/store/axiosDefaults'
 
 
 // ** Get Holidays
-export const getHolidays = createAsyncThunk('appHolidays/getHolidays', async (branch) => {
-    const response = await axiosInstance.get('/holidays/', {
-        params: {
-            branch: branch
-        }
-    })
+export const getHolidays = createAsyncThunk('appHolidays/getHolidays', async () => {
+    const response = await axiosInstance.get('/holiday/user/')
 
     return response.data
 })
+
+// ** Get Branch Holidays
+export const getBranchHolidays = createAsyncThunk('appHolidays/getBranchHolidays', async (branch) => {
+    try {
+        const response = await axiosInstance.get(`/holiday/branch/${branch}/`)
+
+        return response.data
+    }
+    catch (error) {
+        throw error.response.data
+    }
+})
+
+
 
 // ** Add Holidays
 
@@ -67,7 +77,6 @@ export const appHolidaysSlice = createSlice({
         })
         builder.addCase(getHolidays.rejected, (state, action) => {
             state.error = action.error.message
-            toast.error('Failed to load holidays')
             state.holidayLoading = false
         })
         builder.addCase(patchHoliday.pending, (state, action) => {
@@ -93,6 +102,20 @@ export const appHolidaysSlice = createSlice({
         builder.addCase(patchHoliday.rejected, (state, action) => {
             state.error = action.error.message
             toast.error(action.error.message)
+            state.holidayLoading = false
+        })
+        builder.addCase(getBranchHolidays.pending, (state, action) => {
+            state.holidayLoading = true
+        })
+        builder.addCase(getBranchHolidays.fulfilled, (state, action) => {
+            state.holidays = action.payload
+            state.filteredHolidays = action.payload
+            toast.success('Successfully loaded holidays')
+            state.holidayLoading = false
+            state.selectedColors = action.payload.map(holidays => holidays.color)
+        })
+        builder.addCase(getBranchHolidays.rejected, (state, action) => {
+            state.error = action.error.message
             state.holidayLoading = false
         })
     }

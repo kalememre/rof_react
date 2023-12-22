@@ -123,8 +123,12 @@ const PositionCards = () => {
       description: data.description,
       color: data.roleColor,
     }
-    dialogTitle === 'Add' ? dispatch(addPosition(position)) : dispatch(updatePosition(position))
-    handleClose()
+    dispatch(dialogTitle === 'Add' ? addPosition(position) : updatePosition(position))
+      .then((res) => {
+        if (!res.error) {
+          handleClose()
+        }
+      })
   }
 
   const handleClose = () => {
