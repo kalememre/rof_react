@@ -8,6 +8,7 @@ import storeUsers from 'src/store/apps/user'
 import storeBranches from 'src/store/apps/branch'
 import storePositions from 'src/store/apps/position'
 import storePermissions from 'src/store/apps/permissions'
+import storeAnnouncements from 'src/store/apps/announcements'
 
 export const store = configureStore({
     reducer: {
@@ -16,7 +17,8 @@ export const store = configureStore({
         storeUsers,
         storeBranches,
         storePositions,
-        storePermissions
+        storePermissions,
+        storeAnnouncements
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
