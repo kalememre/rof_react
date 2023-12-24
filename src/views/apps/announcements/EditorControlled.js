@@ -55,10 +55,10 @@ const EditorControlled = () => {
   }
 
   const accountSchema = yup.object().shape({
-    // title: yup.string().required('Title field is required'),
-    // description: yup.string().required('Description field is required'),
-    // position: yup.array().min(1, 'Position field is required'),
-    // branch: yup.array().min(1, 'Branch field is required'),
+    title: yup.string().required('Title field is required'),
+    description: yup.string().required('Description field is required'),
+    position: yup.array().min(1, 'Position field is required'),
+    branch: yup.array().min(1, 'Branch field is required'),
   })
 
   // ** Hooks

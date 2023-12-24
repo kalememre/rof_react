@@ -118,8 +118,8 @@ const SidebarLeft = props => {
           storeHolidays={storeHolidays}
           selectBranch={selectBranch}
         />
-        <Divider sx={{ width: '100%', m: '0 !important' }} />
-        <Box sx={{ p: 6, width: '100%', display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
+        ‰        <Divider sx={{ width: '100%', m: '0 !important' }} />
+        <Box sx={{ p: 6, width: '100%', display: 'flex', alignItems: 'flex-start', flexDirection: 'column', maxHeight: '573px', overflowY: 'auto' }}>
           <Typography variant='body2' sx={{ mb: 2, color: 'text.disabled', textTransform: 'uppercase' }}>
             Filters
           </Typography>
@@ -136,6 +136,7 @@ const SidebarLeft = props => {
           />
           {renderFilters}
         </Box>
+
       </Drawer>
     )
   } else {
