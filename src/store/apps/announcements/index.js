@@ -27,10 +27,10 @@ export const addAnnouncement = createAsyncThunk('appUser/addAnnouncement', async
     }
 })
 
-// ** Get Announcements For User
-export const getAnnouncementsForUser = createAsyncThunk('appUser/getAnnouncementsForUser', async () => {
+// ** Get Announcement By Id
+export const getAnnouncementById = createAsyncThunk('appUser/getAnnouncementById', async (id) => {
     try {
-        const response = await axiosInstance.get(`/announcement/user/`)
+        const response = await axiosInstance.get(`/announcement/${id}`)
 
         return response.data
     } catch (error) {
@@ -42,6 +42,7 @@ export const appAnnouncementSlice = createSlice({
     name: 'appAnnouncement',
     initialState: {
         announcements: [],
+        announcement: {},
         error: null,
         announcementLoading: false,
     },
@@ -69,18 +70,17 @@ export const appAnnouncementSlice = createSlice({
         builder.addCase(addAnnouncement.rejected, (state, action) => {
             state.announcementLoading = false
             state.error = action.payload
-            toast.error('Something went wrong')
         })
-        builder.addCase(getAnnouncementsForUser.pending, (state) => {
+        builder.addCase(getAnnouncementById.pending, (state, action) => {
             state.announcementLoading = true
         })
-        builder.addCase(getAnnouncementsForUser.fulfilled, (state, action) => {
+        builder.addCase(getAnnouncementById.fulfilled, (state, action) => {
+            state.announcement = action.payload
             state.announcementLoading = false
-            state.announcements = action.payload
         })
-        builder.addCase(getAnnouncementsForUser.rejected, (state, action) => {
-            state.announcementLoading = false
+        builder.addCase(getAnnouncementById.rejected, (state, action) => {
             state.error = action.payload
+            state.announcementLoading = false
         })
     }
 })
