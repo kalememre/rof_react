@@ -19,6 +19,7 @@ import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import RoleListAccordion from './RoleListAccordion'
 import CardActionsRefresh from './CardActionsRefresh'
 import { toggleColor } from 'src/store/apps/holidays'
+import { Stack } from '@mui/system'
 
 const SidebarLeft = props => {
   const {
@@ -110,32 +111,93 @@ const SidebarLeft = props => {
             <Icon icon='tabler:cancel' fontSize='1.125rem' />
             Close Drawer
           </Button>
-        </Box> */}
-
-        {/* <Divider sx={{ width: '100%', m: '0 !important' }} /> */}
-        <CardActionsRefresh
-          storeBranches={storeBranches}
-          storeHolidays={storeHolidays}
-          selectBranch={selectBranch}
-        />
-        ‰        <Divider sx={{ width: '100%', m: '0 !important' }} />
-        <Box sx={{ p: 6, width: '100%', display: 'flex', alignItems: 'flex-start', flexDirection: 'column', maxHeight: '573px', overflowY: 'auto' }}>
-          <Typography variant='body2' sx={{ mb: 2, color: 'text.disabled', textTransform: 'uppercase' }}>
-            Filters
-          </Typography>
-          <FormControlLabel
-            label='Pending'
-            sx={{ '& .MuiFormControlLabel-label': { color: 'text.secondary' } }}
-            control={
-              <Checkbox
-                color='secondary'
-                checked={storeHolidays.selectedColors.includes('lightgray')}
-                onChange={() => dispatch(toggleColor('lightgray'))}
-              />
-            }
-          />
-          {renderFilters}
         </Box>
+
+        <Divider sx={{ width: '100%', m: '0 !important' }} /> */}
+        <Stack sx={{ p: 0, height: '100%', width: '100%' }} direction='column' spacing={2}>
+          <Stack direction={'row'} >
+            <CardActionsRefresh
+              storeBranches={storeBranches}
+              storeHolidays={storeHolidays}
+              selectBranch={selectBranch}
+            />
+          </Stack>
+          <Divider sx={{ width: '100%', m: '0 !important' }} />
+          <Stack direction={'row'}>
+            <Box sx={{
+              p: 6,
+              width: '100%',
+              flexDirection: 'column',
+              display: 'flex',
+              alignItems: 'flex-start',
+              height: '100%',
+              maxHeight: '10px',
+            }}>
+              <Typography variant='body2' sx={{ mb: 2, color: 'text.disabled', textTransform: 'uppercase' }}>
+                Filters
+              </Typography>
+              <FormControlLabel
+                label='Pending'
+                sx={{ '& .MuiFormControlLabel-label': { color: 'text.secondary' } }}
+                control={
+                  <Checkbox
+                    color='secondary'
+                    checked={storeHolidays.selectedColors.includes('lightgray')}
+                    onChange={() => dispatch(toggleColor('lightgray'))}
+                  />
+                }
+              />
+              {renderFilters}
+            </Box>
+          </Stack>
+
+        </Stack>
+        {/* <Stack sx={{ p: 6, height: '100%', width: '100%' }} direction='row' spacing={2}>
+
+          <Box sx={{ flexGrow: 0.11 }}>
+            <CardActionsRefresh
+              storeBranches={storeBranches}
+              storeHolidays={storeHolidays}
+              selectBranch={selectBranch}
+            />
+          </Box>
+          <Divider sx={{ width: '100%', m: '0 !important' }} />
+
+          <Box sx={{
+            flexGrow: 0.8,
+            p: 6,
+            width: '100%',
+
+            display: 'flex',
+
+            alignItems: 'flex-start',
+
+            flexDirection: 'column',
+            height: '100%',
+
+            // maxHeight: '400px',
+            // overflowY: 'auto',
+            bottom: '0px !important',
+
+            position: 'absolute !important',
+          }}>
+            <Typography variant='body2' sx={{ mb: 2, color: 'text.disabled', textTransform: 'uppercase' }}>
+              Filters
+            </Typography>
+            <FormControlLabel
+              label='Pending'
+              sx={{ '& .MuiFormControlLabel-label': { color: 'text.secondary' } }}
+              control={
+                <Checkbox
+                  color='secondary'
+                  checked={storeHolidays.selectedColors.includes('lightgray')}
+                  onChange={() => dispatch(toggleColor('lightgray'))}
+                />
+              }
+            />
+            {renderFilters}
+          </Box>
+        </Stack> */}
 
       </Drawer>
     )
