@@ -169,40 +169,7 @@ const EditorControlled = () => {
           {accountErrors.description && accountErrors.description.message}
         </FormHelperText>
       </Grid>
-      <Grid item sm={6} xs={12}>
-        <CustomTextField
-          select
-          fullWidth
-          label='Branch'
-          id='select-branch-chip'
-          sx={{ mb: 2 }}
-          error={Boolean(accountErrors.branch)}
-          {...(accountErrors.branch && { helperText: accountErrors.branch.message })}
-          SelectProps={{
-            MenuProps,
-            multiple: true,
-            value: branch,
-            onChange: e => {
-              setBranch(e.target.value)
-              setValueAccount('branch', e.target.value)
-              triggerAccount('branch')
-            },
-            renderValue: selected => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                {selected.map(value => (
-                  <CustomChip key={value.id} label={value.name} sx={{ m: 0.75 }} skin='light' color='primary' />
-                ))}
-              </Box>
-            )
-          }}
-        >
-          {storeBranches.branches.map(branch => (
-            <MenuItem key={branch.id} value={branch}>
-              {branch.name}
-            </MenuItem>
-          ))}
-        </CustomTextField>
-      </Grid>
+
       <Grid item sm={6} xs={12}>
         <CustomTextField
           select
@@ -237,7 +204,40 @@ const EditorControlled = () => {
           ))}
         </CustomTextField>
       </Grid>
-
+      <Grid item sm={6} xs={12}>
+        <CustomTextField
+          select
+          fullWidth
+          label='Branch'
+          id='select-branch-chip'
+          sx={{ mb: 2 }}
+          error={Boolean(accountErrors.branch)}
+          {...(accountErrors.branch && { helperText: accountErrors.branch.message })}
+          SelectProps={{
+            MenuProps,
+            multiple: true,
+            value: branch,
+            onChange: e => {
+              setBranch(e.target.value)
+              setValueAccount('branch', e.target.value)
+              triggerAccount('branch')
+            },
+            renderValue: selected => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                {selected.map(value => (
+                  <CustomChip key={value.id} label={value.name} sx={{ m: 0.75 }} skin='light' color='primary' />
+                ))}
+              </Box>
+            )
+          }}
+        >
+          {storeBranches.branches.map(branch => (
+            <MenuItem key={branch.id} value={branch}>
+              {branch.name}
+            </MenuItem>
+          ))}
+        </CustomTextField>
+      </Grid>
       <Grid item xs={12} textAlign={'right'}>
         <Button
           color='primary'
