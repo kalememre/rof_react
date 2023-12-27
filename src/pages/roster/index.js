@@ -68,12 +68,14 @@ const RosterPage = () => {
         >
             {/* <SidebarLeft
                 store={store}
-                mdAbove={mdAbove}
+
+                // mdAbove={mdAbove}
                 dispatch={dispatch}
                 calendarApi={calendarApi}
                 calendarsColor={calendarsColor}
-                leftSidebarOpen={leftSidebarOpen}
-                leftSidebarWidth={leftSidebarWidth}
+                leftSidebarOpen={true}
+
+                // leftSidebarWidth={leftSidebarWidth}
                 handleSelectEvent={handleSelectEvent}
                 handleAllCalendars={handleAllCalendars}
                 handleCalendarsUpdate={handleCalendarsUpdate}

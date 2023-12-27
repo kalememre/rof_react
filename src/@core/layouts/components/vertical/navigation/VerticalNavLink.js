@@ -36,11 +36,9 @@ const MenuNavLink = styled(ListItemButton)(({ theme }) => ({
   '&.active': {
     '&, &:hover': {
       boxShadow: `0px 2px 6px ${hexToRGBA(theme.palette.primary.main, 0.48)}`,
-      background: `linear-gradient(72.47deg, ${
-        theme.direction === 'ltr' ? theme.palette.primary.main : hexToRGBA(theme.palette.primary.main, 0.7)
-      } 22.16%, ${
-        theme.direction === 'ltr' ? hexToRGBA(theme.palette.primary.main, 0.7) : theme.palette.primary.main
-      } 76.47%)`,
+      background: `linear-gradient(72.47deg, ${theme.direction === 'ltr' ? theme.palette.primary.main : hexToRGBA(theme.palette.primary.main, 0.7)
+        } 22.16%, ${theme.direction === 'ltr' ? hexToRGBA(theme.palette.primary.main, 0.7) : theme.palette.primary.main
+        } 76.47%)`,
       '&.Mui-focusVisible': {
         background: `linear-gradient(72.47deg, ${theme.palette.primary.dark} 22.16%, ${hexToRGBA(
           theme.palette.primary.dark,
@@ -83,7 +81,7 @@ const VerticalNavLink = ({
   const icon = parent && !item.icon ? themeConfig.navSubItemIcon : item.icon
 
   const isNavLinkActive = () => {
-    if (router.pathname === item.path || handleURLQueries(router, item.path)) {
+    if (router.pathname.startsWith(item.path) || handleURLQueries(router, item.path)) {
       return true
     } else {
       return false

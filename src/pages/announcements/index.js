@@ -66,7 +66,8 @@ const Announcements = () => {
                                     fontWeight: 500,
                                     textDecoration: 'none',
                                     color: 'text.secondary',
-                                    '&:hover': { color: 'primary.main' }
+                                    '&:hover': { color: 'primary.main' },
+                                    whiteSpace: 'pre-line'
                                 }}
                             >
                                 {row.title}
@@ -115,16 +116,23 @@ const Announcements = () => {
                                     display: 'flex',
                                     alignItems: 'center',
                                 }}>
-                                    <Box sx={{
-                                        borderRadius: 1,
-                                        bgcolor: position.isDeleted ? 'secondary.main' : position.color,
-                                        opacity: position.isDeleted ? 0.3 : 1,
-                                        p: 1,
-                                    }}>
-                                        <Typography variant='subtitle' color={'white'}>
-                                            {position.name}
-                                        </Typography>
-                                    </Box>
+                                    {!position.isDeleted ? (
+                                        <Box sx={{
+                                            borderRadius: 1,
+                                            bgcolor: position.color,
+                                            color: 'white',
+                                            p: 1,
+                                        }}>
+                                            <Typography variant='subtitle'>
+                                                {position.name}
+                                            </Typography>
+                                        </Box>
+                                    ) : (
+                                        <Chip
+                                            className='deletedPosition'
+                                            label={position.name}
+                                        />
+                                    )}
                                 </Box>
                             ))}
                         </Box>
@@ -157,21 +165,18 @@ const Announcements = () => {
                         {allBranches ? (
                             <Chip
                                 label='All Branches'
-                                color='secondary'
-                                variant='outlined'
                                 sx={{
                                     mr: 1,
+                                    borderWidth: 1,
+                                    borderStyle: 'solid',
                                 }}
                             />
                         ) : (
-                            row.branches.map((branch, index) => (
+                            row.branches?.map((branch, index) => (
                                 <Chip
+                                    className={!branch.isDeleted ? 'chipBranch' : 'deletedBranch'}
                                     key={index}
                                     label={branch.name}
-                                    sx={{
-                                        mr: 1,
-                                        mb: 1,
-                                    }}
                                 />
                             ))
                         )}

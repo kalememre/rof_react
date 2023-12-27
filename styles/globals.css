@@ -15,10 +15,33 @@ code {
   color: #d400ff;
   border-radius: 0.1335rem;
 }
+
 code:not([class*='language-']):before,
 code:not([class*='language-']):after {
   content: '`';
 }
+
 code[class*='language-'] {
   padding: 0;
+}
+
+.deletedPosition {
+  border-radius: 8px !important;
+  opacity: 0.5;
+  color: 'text.disabled';
+}
+
+.deletedBranch {
+  opacity: 0.5;
+  color: 'text.disabled';
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+.chipBranch {
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: #d400ff;
 }
