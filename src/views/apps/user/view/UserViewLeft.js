@@ -32,6 +32,7 @@ import { getUserById } from 'src/store/apps/user'
 import { CircleFlag } from 'react-circle-flags'
 import { Backdrop, CircularProgress } from '@mui/material'
 import DialogConfirmation from './DialogConfirmation'
+import { getInitials } from 'src/@core/utils/get-initials'
 
 const data = {
   id: 1,
@@ -106,8 +107,18 @@ const UserViewLeft = (params) => {
           <Card>
             <Box sx={{ position: 'relative' }}>
               <CardContent sx={{ pt: 13.5, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-                {/* <CircleFlag countryCode={user?.userProfile?.country.toLowerCase()} height='100' width='100' /> */}
-                <img src={`/flags/${user.userProfile?.country.toLowerCase()}.svg`} alt='user flag' width='100' height='100' />
+                {!user.userProfile?.country ? (
+                  <CustomAvatar
+                    skin='light'
+
+                    // color={row.avatarColor}
+                    sx={{ width: 100, height: 100, fontWeight: 500, fontSize: theme => theme.typography.h2.fontSize }}
+                  >
+                    {getInitials(user.fullName ? user.fullName : 'John Doe')}
+                  </CustomAvatar>
+                ) : (
+                  <img src={`/flags/${user.userProfile?.country.toLowerCase()}.svg`} alt='user flag' width='100' height='100' />
+                )}
                 <Typography variant='h4' sx={{ mb: 3 }}>
                   {user.fullName}
                 </Typography>
