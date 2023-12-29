@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardContent, CardHeader, Checkbox, Chip, Divider, FormControlLabel, Grid, MenuItem, Stack, Typography } from '@mui/material'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAnnouncements, getAnnouncementsForUser } from 'src/store/apps/announcements'
 
@@ -15,6 +15,7 @@ import { formatDateTime } from 'src/@core/utils/format'
 // ** Custom Component Import
 import CustomChip from 'src/@core/components/mui/chip'
 import { getBranches } from 'src/store/apps/branch'
+import { AbilityContext } from 'src/layouts/components/acl/Can'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -29,6 +30,9 @@ const MenuProps = {
 }
 
 const Announcements = () => {
+    const ability = useContext(AbilityContext)
+    const CAN_ADD_ANNOUNCEMENT = ability.can(true, 'CAN_ADD_ANNOUNCEMENT')
+
     // ** State
     const [filteredData, setFilteredData] = useState(null)
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
@@ -254,16 +258,18 @@ const Announcements = () => {
                     }
                 />
             </Grid>
-            <Grid item xs={6} sx={{
-                alignSelf: 'center',
-                textAlign: 'right'
-            }}>
-                <Link href='/announcements/add'>
-                    <Button variant="contained">
-                        Create Announcement
-                    </Button>
-                </Link>
-            </Grid>
+            {CAN_ADD_ANNOUNCEMENT && (
+                <Grid item xs={6} sx={{
+                    alignSelf: 'center',
+                    textAlign: 'right'
+                }}>
+                    <Link href='/announcements/add'>
+                        <Button variant="contained">
+                            Create Announcement
+                        </Button>
+                    </Link>
+                </Grid>
+            )}
             <Grid item xs={12}>
                 <Card>
                     <CardHeader title='Search Filters' />

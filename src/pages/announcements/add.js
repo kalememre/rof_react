@@ -132,4 +132,9 @@ const AddAnnouncement = () => {
     )
 }
 
+AddAnnouncement.acl = {
+    action: true,
+    subject: 'CAN_ADD_ANNOUNCEMENT'
+}
+
 export default AddAnnouncement

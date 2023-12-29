@@ -13,14 +13,14 @@ const navigation = () => {
       path: '/announcements',
       icon: 'tabler:bell-ringing',
       action: true,
-      subject: 'can_view_announcement_page',
+      subject: 'CAN_VIEW_ANNOUNCEMENT_PAGE',
     },
     {
       title: 'Users',
       path: '/users',
       icon: 'tabler:users',
       action: true,
-      subject: 'CAN_VIEW_USERS_PAGE',
+      subject: 'CAN_VIEW_BRANCH_USERS',
     },
     {
       title: 'Roster',
@@ -43,8 +43,6 @@ const navigation = () => {
         {
           title: 'Branches',
           path: '/branches',
-          action: true,
-          subject: 'CAN_VIEW_HOME_PAGE'
         },
         {
           title: 'Positions',
