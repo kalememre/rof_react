@@ -11,6 +11,7 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import { TimeField } from '@mui/x-date-pickers';
 
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
@@ -24,6 +25,11 @@ import Icon from 'src/@core/components/icon'
 
 // ** Styled Components
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import { getUserByBranch } from 'src/store/apps/user'
+import { useSelector } from 'react-redux'
+import { Checkbox, Chip, FormGroup, FormHelperText, Stack } from '@mui/material'
+import { addShift } from 'src/store/apps/roster'
+import { formatDate, formatDateRegular, formatDateTime, formatDateToMonthShort, formatTime } from 'src/@core/utils/format'
 
 const capitalize = string => string && string[0].toUpperCase() + string.slice(1)
 
@@ -34,13 +40,15 @@ const defaultState = {
   allDay: true,
   description: '',
   endDate: new Date(),
-  calendar: 'Business',
+
+  // calendar: 'Business',
   startDate: new Date()
 }
 
 const AddEventSidebar = props => {
   // ** Props
   const {
+    branch,
     store,
     dispatch,
     addEvent,
@@ -56,6 +64,52 @@ const AddEventSidebar = props => {
   // ** States
   const [values, setValues] = useState(defaultState)
 
+  // ** Roster States
+  const [selectedDates, setSelectedDates] = useState([]);
+  const [editStartTime, setEditStartTime] = useState('');
+  const [editEndTime, setEditEndTime] = useState('');
+  const [selectedTimes, setSelectedTimes] = useState({});
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const handleCheckboxChange = (date) => {
+    setSelectedTimes(prevState => ({
+      ...prevState,
+      [date]: prevState[date] ? null : { startTime: '', endTime: '' } // Set initial time values
+    }));
+  };
+
+  const handleTimeChange = (date, field, value) => {
+    setSelectedTimes(prevState => ({
+      ...prevState,
+      [date]: {
+        ...prevState[date],
+        [field]: value
+      }
+    }));
+  };
+
+
+
+  const loadDates = () => {
+    const start = calendarApi?.view.activeStart;
+    const end = calendarApi?.view.activeEnd;
+    const dateArray = [];
+
+    while (start < end) {
+
+      const date = new Date(start);
+
+      // add one day
+      dateArray.push(date);
+      start.setDate(start.getDate() + 1);
+
+    }
+
+    setSelectedDates(dateArray);
+  }
+
+  const storeUsers = useSelector(state => state.storeUsers)
+
   const {
     control,
     setValue,
@@ -65,33 +119,50 @@ const AddEventSidebar = props => {
   } = useForm({ defaultValues: { title: '' } })
 
   const handleSidebarClose = async () => {
-    setValues(defaultState)
-    clearErrors()
-    dispatch(handleSelectEvent(null))
+    // setValues(defaultState)
+    // clearErrors()
+    // dispatch(handleSelectEvent(null))
+    setSelectedUser(null);
+    setSelectedDates([]);
+    setSelectedTimes({});
     handleAddEventSidebarToggle()
   }
 
   const onSubmit = data => {
-    const modifiedEvent = {
-      url: values.url,
-      display: 'block',
-      title: data.title,
-      end: values.endDate,
-      allDay: values.allDay,
-      start: values.startDate,
-      extendedProps: {
-        calendar: capitalize(values.calendar),
-        guests: values.guests && values.guests.length ? values.guests : undefined,
-        description: values.description.length ? values.description : undefined
+    const customErrors = [];
+
+    const selectedData = Object.entries(selectedTimes).reduce((acc, [date, times]) => {
+      if (times && times.startTime && times.endTime) {
+        acc.push({
+          date,
+          startTime: times.startTime,
+          endTime: times.endTime
+        });
+      } else if (times) {
+        customErrors.push(`Please fill the ${date} time`);
       }
-    }
-    if (store.selectedEvent === null || (store.selectedEvent !== null && !store.selectedEvent.title.length)) {
-      dispatch(addEvent(modifiedEvent))
-    } else {
-      dispatch(updateEvent({ id: store.selectedEvent.id, ...modifiedEvent }))
-    }
-    calendarApi.refetchEvents()
-    handleSidebarClose()
+
+
+      return acc;
+    }, []);
+
+    // add branchId and userId to data
+
+    selectedData.forEach((data) => {
+      data.date = formatDateRegular(data.date);
+      data.startTime = formatTime(data.startTime);
+      data.endTime = formatTime(data.endTime);
+      data.branchId = branch.id;
+      data.userId = selectedUser;
+    });
+
+    dispatch(addShift(selectedData))
+      .then((res) => {
+        if (!res.error) {
+
+          handleSidebarClose();
+        }
+      })
   }
 
   const handleDeleteEvent = () => {
@@ -109,34 +180,46 @@ const AddEventSidebar = props => {
     }
   }
 
-  const resetToStoredValues = useCallback(() => {
-    if (store.selectedEvent !== null) {
-      const event = store.selectedEvent
-      setValue('title', event.title || '')
-      setValues({
-        url: event.url || '',
-        title: event.title || '',
-        allDay: event.allDay,
-        guests: event.extendedProps.guests || [],
-        description: event.extendedProps.description || '',
-        calendar: event.extendedProps.calendar || 'Business',
-        endDate: event.end !== null ? event.end : event.start,
-        startDate: event.start !== null ? event.start : new Date()
-      })
-    }
-  }, [setValue, store.selectedEvent])
+  const handleSelectUser = (e) => {
+    setSelectedUser(e.target.value);
+    loadDates();
+  }
+
+  // const resetToStoredValues = useCallback(() => {
+  //   if (store.selectedEvent !== null) {
+  //     const event = store.selectedEvent
+  //     setValue('title', event.title || '')
+  //     setValues({
+  //       url: event.url || '',
+  //       title: event.title || '',
+  //       allDay: event.allDay,
+  //       guests: event.extendedProps.guests || [],
+  //       description: event.extendedProps.description || '',
+  //       calendar: event.extendedProps.calendar || 'Business',
+  //       endDate: event.end !== null ? event.end : event.start,
+  //       startDate: event.start !== null ? event.start : new Date()
+  //     })
+  //   }
+  // }, [setValue, store.selectedEvent])
 
   const resetToEmptyValues = useCallback(() => {
     setValue('title', '')
     setValues(defaultState)
   }, [setValue])
+
+  // useEffect(() => {
+  //   if (store.selectedEvent !== null) {
+  //     resetToStoredValues()
+  //   } else {
+  //     resetToEmptyValues()
+  //   }
+  // }, [addEventSidebarOpen, resetToStoredValues, resetToEmptyValues, store.selectedEvent])
+
   useEffect(() => {
-    if (store.selectedEvent !== null) {
-      resetToStoredValues()
-    } else {
-      resetToEmptyValues()
+    if (addEventSidebarOpen) {
+      dispatch(getUserByBranch(branch.id))
     }
-  }, [addEventSidebarOpen, resetToStoredValues, resetToEmptyValues, store.selectedEvent])
+  }, [addEventSidebarOpen, branch, dispatch])
 
   const PickersComponent = forwardRef(({ ...props }, ref) => {
     return (
@@ -152,38 +235,26 @@ const AddEventSidebar = props => {
   })
 
   const RenderSidebarFooter = () => {
-    if (store.selectedEvent === null || (store.selectedEvent !== null && !store.selectedEvent.title.length)) {
-      return (
-        <Fragment>
-          <Button type='submit' variant='contained' sx={{ mr: 4 }}>
-            Add
-          </Button>
-          <Button variant='tonal' color='secondary' onClick={resetToEmptyValues}>
-            Reset
-          </Button>
-        </Fragment>
-      )
-    } else {
-      return (
-        <Fragment>
-          <Button type='submit' variant='contained' sx={{ mr: 4 }}>
-            Update
-          </Button>
-          <Button variant='tonal' color='secondary' onClick={resetToStoredValues}>
-            Reset
-          </Button>
-        </Fragment>
-      )
-    }
+    return (
+      <Fragment>
+        <Button type='submit' onClick={onSubmit} variant='contained' sx={{ mr: 4 }}>
+          Add
+        </Button>
+        <Button variant='tonal' color='secondary' onClick={resetToEmptyValues}>
+          Reset
+        </Button>
+      </Fragment>
+    )
   }
 
   return (
     <Drawer
       anchor='right'
       open={addEventSidebarOpen}
+      variant='temporary'
       onClose={handleSidebarClose}
       ModalProps={{ keepMounted: true }}
-      sx={{ '& .MuiDrawer-paper': { width: ['100%', drawerWidth] } }}
+      sx={{ '& .MuiDrawer-paper': { width: { xs: 300, sm: 500 } } }}
     >
       <Box
         className='sidebar-header'
@@ -194,18 +265,9 @@ const AddEventSidebar = props => {
         }}
       >
         <Typography variant='h5'>
-          {store.selectedEvent !== null && store.selectedEvent.title.length ? 'Update Event' : 'Add Event'}
+          Add Roster
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {store.selectedEvent !== null && store.selectedEvent.title.length ? (
-            <IconButton
-              size='small'
-              onClick={handleDeleteEvent}
-              sx={{ color: 'text.primary', mr: store.selectedEvent !== null ? 1 : 0 }}
-            >
-              <Icon icon='tabler:trash' fontSize='1.25rem' />
-            </IconButton>
-          ) : null}
           <IconButton
             size='small'
             onClick={handleSidebarClose}
@@ -227,19 +289,16 @@ const AddEventSidebar = props => {
         <DatePickerWrapper>
           <form onSubmit={handleSubmit(onSubmit)} autoComplete='off'>
             <Controller
-              name='title'
+              name='branch'
               control={control}
               rules={{ required: true }}
               render={({ field: { value, onChange } }) => (
                 <CustomTextField
                   fullWidth
-                  label='Title'
-                  value={value}
+                  label='Branch Name'
+                  value={branch?.name ?? ''}
+                  disabled
                   sx={{ mb: 4 }}
-                  onChange={onChange}
-                  placeholder='Event Title'
-                  error={Boolean(errors.title)}
-                  {...(errors.title && { helperText: 'This field is required' })}
                 />
               )}
             />
@@ -247,92 +306,78 @@ const AddEventSidebar = props => {
               select
               fullWidth
               sx={{ mb: 4 }}
-              label='Calendar'
+              label='User'
+              defaultValue=''
               SelectProps={{
-                value: values.calendar,
-                onChange: e => setValues({ ...values, calendar: e.target.value })
+                value: selectedUser,
+                displayEmpty: true,
+                onChange: e => handleSelectUser(e),
               }}
             >
-              <MenuItem value='Personal'>Personal</MenuItem>
-              <MenuItem value='Business'>Business</MenuItem>
-              <MenuItem value='Family'>Family</MenuItem>
-              <MenuItem value='Holiday'>Holiday</MenuItem>
-              <MenuItem value='ETC'>ETC</MenuItem>
-            </CustomTextField>
-            <Box sx={{ mb: 4 }}>
-              <DatePicker
-                selectsStart
-                id='event-start-date'
-                endDate={values.endDate}
-                selected={values.startDate}
-                startDate={values.startDate}
-                showTimeSelect={!values.allDay}
-                dateFormat={!values.allDay ? 'yyyy-MM-dd hh:mm' : 'yyyy-MM-dd'}
-                customInput={<PickersComponent label='Start Date' registername='startDate' />}
-                onChange={date => setValues({ ...values, startDate: new Date(date) })}
-                onSelect={handleStartDate}
-              />
-            </Box>
-            <Box sx={{ mb: 4 }}>
-              <DatePicker
-                selectsEnd
-                id='event-end-date'
-                endDate={values.endDate}
-                selected={values.endDate}
-                minDate={values.startDate}
-                startDate={values.startDate}
-                showTimeSelect={!values.allDay}
-                dateFormat={!values.allDay ? 'yyyy-MM-dd hh:mm' : 'yyyy-MM-dd'}
-                customInput={<PickersComponent label='End Date' registername='endDate' />}
-                onChange={date => setValues({ ...values, endDate: new Date(date) })}
-              />
-            </Box>
-            <FormControl sx={{ mb: 4 }}>
-              <FormControlLabel
-                label='All Day'
-                control={
-                  <Switch checked={values.allDay} onChange={e => setValues({ ...values, allDay: e.target.checked })} />
-                }
-              />
-            </FormControl>
-            <CustomTextField
-              fullWidth
-              type='url'
-              id='event-url'
-              sx={{ mb: 4 }}
-              label='Event URL'
-              value={values.url}
-              placeholder='https://www.google.com'
-              onChange={e => setValues({ ...values, url: e.target.value })}
-            />
+              {storeUsers.users.map((user, index) => (
+                <MenuItem key={index} value={user.id}>
+                  <Stack direction='row' alignItems='flex-start' justifyContent='flex-start'>
+                    {user.fullName}
 
-            <CustomTextField
-              select
-              fullWidth
-              label='Guests'
-              sx={{ mb: 4 }}
-              SelectProps={{
-                multiple: true,
-                value: values.guests,
-                onChange: e => setValues({ ...values, guests: e.target.value })
-              }}
-            >
-              <MenuItem value='bruce'>Bruce</MenuItem>
-              <MenuItem value='clark'>Clark</MenuItem>
-              <MenuItem value='diana'>Diana</MenuItem>
-              <MenuItem value='john'>John</MenuItem>
-              <MenuItem value='barry'>Barry</MenuItem>
+                    <Box key={index} ml={1} sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}>
+                      <Box sx={{
+                        borderRadius: 1,
+                        bgcolor: user.userProfile?.position.color,
+                        color: 'white',
+                        pr: 1,
+                        pl: 1,
+                      }}>
+                        <span style={{
+                          fontSize: '0.72rem',
+                        }}>{user.userProfile?.position?.name}
+                        </span>
+                      </Box>
+
+                    </Box>
+
+                  </Stack>
+                </MenuItem>
+              ))}
             </CustomTextField>
-            <CustomTextField
-              rows={4}
-              multiline
-              fullWidth
-              sx={{ mb: 6.5 }}
-              label='Description'
-              id='event-description'
-              value={values.description}
-              onChange={e => setValues({ ...values, description: e.target.value })}
-            />
+            {selectedDates.map((date, i) => (
+              <Stack key={i} mb={1} direction="row" alignItems="center" justifyContent="center" spacing={1}>
+                <FormControl component="fieldset" sx={{ m: 1, width: "100%" }}>
+                  <FormGroup aria-label="position" row>
+                    <FormControlLabel
+                      value="end"
+                      control={<Checkbox checked={!!selectedTimes[date]} onChange={() => handleCheckboxChange(date)} />}
+                      label={formatDateRegular(date)}
+                      labelPlacement="end"
+                    />
+                  </FormGroup>
+                </FormControl>
+                <FormControl sx={{ m: 1, width: "50%" }}>
+                  <TimeField
+                    label="Start Time"
+                    format="HH:mm"
+                    size='small'
+                    disabled={!selectedTimes[date]}
+
+                    // value={selectedTimes[date]?.startTime || ''}
+                    onChange={(value) => handleTimeChange(date, 'startTime', value)}
+                  />
+                </FormControl>
+                <FormControl sx={{ m: 1, width: "50%" }}>
+                  <TimeField
+                    label="End Time"
+                    format="HH:mm"
+                    size='small'
+                    disabled={!selectedTimes[date]}
+
+                    // value={selectedTimes[date]?.endTime || ''}
+                    onChange={(value) => handleTimeChange(date, 'endTime', value)}
+                  />
+                </FormControl>
+              </Stack>
+            ))}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <RenderSidebarFooter />
             </Box>

@@ -22,11 +22,33 @@ export const formatDate = (value, formatting = { month: 'numeric', day: 'numeric
   return new Intl.DateTimeFormat('en-GB', formatting).format(new Date(value))
 }
 
+export const formatTime = (value) => {
+  if (!value) return value;
+
+  const formattedTime = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(value));
+
+  return formattedTime;
+};
+
+
+export const formatDateRegular = (value, formatting = { year: 'numeric', month: '2-digit', day: '2-digit' }) => {
+  if (!value) return value;
+
+  const formattedDate = new Intl.DateTimeFormat('en-GB', formatting).format(new Date(value));
+
+  // Dönen tarihi "dd/mm/yyyy" formatından "yyyy-mm-dd" formatına çevirme
+  const [day, month, year] = formattedDate.split('/');
+
+  return `${year}-${month}-${day}`;
+};
+
 export const formatDateTime = (value, formatting = { month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' }) => {
   if (!value) return value
 
   return new Intl.DateTimeFormat('en-GB', formatting).format(new Date(value))
 }
+
+
 
 // ** Returns short month of passed date
 export const formatDateToMonthShort = (value, toTimeForCurrentDay = true) => {

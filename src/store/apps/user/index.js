@@ -84,6 +84,17 @@ export const updateUserBranches = createAsyncThunk('appUser/updateUserBranches',
     }
 })
 
+// ** Get user by branch
+export const getUserByBranch = createAsyncThunk('appUser/getUserByBranch', async (branchId) => {
+    try {
+        const response = await axiosInstance.get(`/user/branches/${branchId}/`)
+
+        return response.data
+    } catch (error) {
+        throw error.response.data
+    }
+})
+
 
 export const appUserSlice = createSlice({
     name: 'appUser',
@@ -192,6 +203,17 @@ export const appUserSlice = createSlice({
         builder.addCase(updateUserBranches.rejected, (state, action) => {
             state.error = action.payload
             state.userBranchesLoading = false
+        })
+        builder.addCase(getUserByBranch.pending, (state, action) => {
+            state.userLoading = true
+        })
+        builder.addCase(getUserByBranch.fulfilled, (state, action) => {
+            state.users = action.payload
+            state.userLoading = false
+        })
+        builder.addCase(getUserByBranch.rejected, (state, action) => {
+            state.error = action.payload
+            state.userLoading = false
         })
     }
 })

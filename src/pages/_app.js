@@ -55,6 +55,8 @@ import 'src/iconify-bundle/icons-bundle-react'
 
 // ** Global css styles
 import '../../styles/globals.css'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 
 const clientSideEmotionCache = createEmotionCache()
@@ -98,57 +100,61 @@ const App = props => {
 
   return (
     <Provider store={store}>
-      <CacheProvider value={emotionCache}>
-        <Head>
-          <title>{`${themeConfig.templateName} - Roster On Fire`}</title>
-          <meta
-            name='description'
-            content={`${themeConfig.templateName} – Roster On Fire`}
-          />
-          <meta name='keywords' content='Roster,Holidays,Work,Clock List' />
-          <meta name='viewport' content='initial-scale=1, width=device-width' />
-        </Head>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
 
-        <AuthProvider>
-          <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
-            <SettingsConsumer>
-              {({ settings }) => {
-                return (
-                  <ThemeComponent settings={settings}>
-                    <Guard authGuard={authGuard} guestGuard={guestGuard}>
-                      <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard} authGuard={authGuard}>
-                        {getLayout(<Component {...pageProps} />)}
-                      </AclGuard>
-                    </Guard>
-                    <ReactHotToast>
-                      <Toaster
-                        position={settings.toastPosition} toastOptions={{
-                          className: 'react-hot-toast',
-                          success: {
-                            style: {
-                              border: '1px solid #4caf50',
-                            }
-                          },
-                          error: {
-                            style: {
-                              border: '1px solid #f44336',
-                            }
-                          },
-                          loading: {
-                            style: {
-                              border: '1px solid #2196f3',
-                            }
-                          }
+        <CacheProvider value={emotionCache}>
+          <Head>
+            <title>{`${themeConfig.templateName} - Roster On Fire`}</title>
+            <meta
+              name='description'
+              content={`${themeConfig.templateName} – Roster On Fire`}
+            />
+            <meta name='keywords' content='Roster,Holidays,Work,Clock List' />
+            <meta name='viewport' content='initial-scale=1, width=device-width' />
+          </Head>
 
-                        }} />
-                    </ReactHotToast>
-                  </ThemeComponent>
-                )
-              }}
-            </SettingsConsumer>
-          </SettingsProvider>
-        </AuthProvider>
-      </CacheProvider>
+          <AuthProvider>
+            <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
+              <SettingsConsumer>
+                {({ settings }) => {
+                  return (
+                    <ThemeComponent settings={settings}>
+                      <Guard authGuard={authGuard} guestGuard={guestGuard}>
+                        <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard} authGuard={authGuard}>
+                          {getLayout(<Component {...pageProps} />)}
+                        </AclGuard>
+                      </Guard>
+                      <ReactHotToast>
+                        <Toaster
+                          position={settings.toastPosition} toastOptions={{
+                            className: 'react-hot-toast',
+                            success: {
+                              style: {
+                                border: '1px solid #4caf50',
+                              }
+                            },
+                            error: {
+                              style: {
+                                border: '1px solid #f44336',
+                              }
+                            },
+                            loading: {
+                              style: {
+                                border: '1px solid #2196f3',
+                              }
+                            }
+
+                          }} />
+                      </ReactHotToast>
+                    </ThemeComponent>
+                  )
+                }}
+              </SettingsConsumer>
+            </SettingsProvider>
+          </AuthProvider>
+        </CacheProvider>
+      </LocalizationProvider>
+
     </Provider>
   )
 }

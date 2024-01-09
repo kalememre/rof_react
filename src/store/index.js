@@ -9,10 +9,11 @@ import storeBranches from 'src/store/apps/branch'
 import storePositions from 'src/store/apps/position'
 import storePermissions from 'src/store/apps/permissions'
 import storeAnnouncements from 'src/store/apps/announcements'
+import storeRoster from 'src/store/apps/roster'
 
 export const store = configureStore({
     reducer: {
-        roster,
+        storeRoster,
         storeHolidays,
         storeUsers,
         storeBranches,

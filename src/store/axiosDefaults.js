@@ -15,10 +15,10 @@ axiosInstance.interceptors.response.use(
 
         // 401 Unauthorized
         if (error.response && error.response.status === 401) {
-            toast.error("You'are not logged in");
             window.localStorage.removeItem('userData')
             window.localStorage.removeItem(authConfig.storageTokenKeyName)
             window.location.href = '/login'
+            throw toast.error("You'are not logged in");
         }
 
         // 403 Forbidden

@@ -11,6 +11,10 @@ import interactionPlugin from '@fullcalendar/interaction'
 
 // ** Third Party Style Import
 import 'bootstrap-icons/font/bootstrap-icons.css'
+import { Backdrop, Box, CircularProgress, Divider, Stack, Typography } from '@mui/material'
+import { getShifts, publishRoster, updateShift } from 'src/store/apps/roster'
+import moment from 'moment';
+import toast from 'react-hot-toast'
 
 const blankEvent = {
   title: '',
@@ -29,7 +33,9 @@ const blankEvent = {
 const Calendar = props => {
   // ** Props
   const {
-    store,
+    can_create_roster,
+    branch,
+    storeRoster,
     dispatch,
     direction,
     updateEvent,
@@ -42,23 +48,73 @@ const Calendar = props => {
   } = props
 
   // ** Refs
-  const calendarRef = useRef()
+  const calendarRef = useRef(null)
+
   useEffect(() => {
     if (calendarApi === null) {
       // @ts-ignore
       setCalendarApi(calendarRef.current?.getApi())
     }
   }, [calendarApi, setCalendarApi])
-  if (store) {
+
+
+  const handlerGetShifts = () => {
+
+    if (branch) {
+      const data = {
+        branchId: branch.id,
+        startDate: moment(calendarApi?.view?.currentStart).format('YYYY-MM-DD'),
+        endDate: moment(calendarApi?.view?.currentEnd).format('YYYY-MM-DD')
+      }
+
+      dispatch(getShifts(data))
+    }
+  }
+
+  const EventRender = ({ event }) => (
+    <>
+      <Box p={1}>
+        <Typography sx={{
+          whiteSpace: 'initial',
+          fontWeight: 'bold',
+        }} color={'white'}>
+          {event.title}
+        </Typography>
+        <Divider sx={{
+          borderColor: 'white',
+        }} />
+        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+          <Typography color={'white'} fontSize={'lg'}>
+            {event.extendedProps.startTime} - {event.extendedProps.endTime}
+          </Typography>
+          {/* {event.extendedProps.seen && (
+          <CheckCircle fontSize='small' />
+        )} */}
+        </Stack>
+      </Box>
+    </>
+  )
+
+  const handlePublishShifts = () => {
+    const data = {
+      branchId: branch.id,
+      startDate: moment(calendarApi.view.activeStart).format('YYYY-MM-DD'),
+      endDate: moment(calendarApi.view.activeEnd).format('YYYY-MM-DD')
+    }
+    dispatch(publishRoster(data))
+  }
+
+  if (storeRoster) {
     // ** calendarOptions(Props)
     const calendarOptions = {
-      events: store.events.length ? store.events : [],
+      events: storeRoster.shifts,
+      eventContent: EventRender,
       plugins: [dayGridPlugin, timeGridPlugin, listPlugin, bootstrap5Plugin, interactionPlugin],
       initialView: 'dayGridWeek',
       headerToolbar: {
-        left: 'prev,next ,today',
+        left: 'prev,next',
         center: 'title',
-        right: ',addEvent' // user can switch between the two
+        right: 'excel,pdf' // user can switch between the two
       },
       views: {
         week: {
@@ -66,17 +122,31 @@ const Calendar = props => {
         }
       },
 
+
+      datesSet: handlerGetShifts,
+
       /*
             Enable dragging and resizing event
             ? Docs: https://fullcalendar.io/docs/editable
           */
       editable: true,
+      eventDurationEditable: false,
+      showNonCurrentDates: false,
+
+      // eventDragStop: (info) => {
+      //   console.log('stop', info.event.start)
+      //   console.log('stop', info.event)
+      // },
+      // eventDragStart: (info) => {
+      //   console.log('start', info.event.start)
+      //   console.log('start', info.event)
+      // },
 
       /*
             Enable resizing event from start
             ? Docs: https://fullcalendar.io/docs/eventResizableFromStart
           */
-      eventResizableFromStart: true,
+      // eventResizableFromStart: true,
 
       /*
               Automatically scroll the scroll-containers during event drag-and-drop and date selecting
@@ -88,23 +158,27 @@ const Calendar = props => {
               Max number of events within a given day
               ? Docs: https://fullcalendar.io/docs/dayMaxEvents
             */
-      dayMaxEvents: 2,
+      // dayMaxEvents: 2,
 
       /*
               Determines if day names and week names are clickable
               ? Docs: https://fullcalendar.io/docs/navLinks
             */
-      navLinks: true,
-      eventClassNames({ event: calendarEvent }) {
-        // @ts-ignore
-        const colorName = calendarsColor[calendarEvent._def.extendedProps.calendar]
+      // navLinks: true,
 
-        return [
-          // Background Color
-          `bg-${colorName}`
-        ]
-      },
+      // eventClassNames({ event: calendarEvent }) {
+      //   // @ts-ignore
+      //   const colorName = calendarsColor[calendarEvent._def.extendedProps.calendar]
+
+      //   return [
+      //     // Background Color
+      //     `bg-${colorName}`
+      //   ]
+      // },
       eventClick({ event: clickedEvent }) {
+        // check if event date older than today
+
+
         dispatch(handleSelectEvent(clickedEvent))
         handleAddEventSidebarToggle()
 
@@ -114,21 +188,16 @@ const Calendar = props => {
         // isAddNewEventSidebarActive.value = true
       },
       customButtons: {
-        sidebarToggle: {
-          icon: 'bi bi-list',
-          click() {
-            handleLeftSidebarToggle()
-          }
+        excel: {
+          text: 'Excel',
+          click: handlePublishShifts
         },
-        addEvent: {
-          text: 'Add Event',
-
-          // icon: 'bi bi-plus',
-          click() {
-            handleAddEventSidebarToggle()
-          }
+        pdf: {
+          text: 'PDF',
+          click: handlePublishShifts
         }
       },
+
       dateClick(info) {
         const ev = { ...blankEvent }
         ev.start = info.date
@@ -140,22 +209,18 @@ const Calendar = props => {
         handleAddEventSidebarToggle()
       },
 
-      /*
-              Handle event drop (Also include dragged event)
-              ? Docs: https://fullcalendar.io/docs/eventDrop
-              ? We can use `eventDragStop` but it doesn't return updated event so we have to use `eventDrop` which returns updated event
-            */
-      eventDrop({ event: droppedEvent }) {
-        dispatch(updateEvent(droppedEvent))
+      eventDrop({ event: droppedEvent, oldEvent, delta, revert, jsEvent, view }) {
+        if (!moment(droppedEvent.start).isBefore(moment(), 'day')) {
+          dispatch(updateShift(droppedEvent))
+        } else {
+          revert()
+          toast.error('You cannot move shift to past date')
+        }
       },
 
-      /*
-              Handle event resize
-              ? Docs: https://fullcalendar.io/docs/eventResize
-            */
-      eventResize({ event: resizedEvent }) {
-        dispatch(updateEvent(resizedEvent))
-      },
+      // eventResize({ event: resizedEvent }) {
+      //   dispatch(updateEvent(resizedEvent))
+      // },
       ref: calendarRef,
 
       // Get direction from app state (store)
@@ -163,7 +228,21 @@ const Calendar = props => {
     }
 
     // @ts-ignore
-    return <FullCalendar {...calendarOptions} />
+    return (
+      <>
+        <FullCalendar {...calendarOptions} />
+        <Backdrop
+          open={storeRoster.shiftLoading}
+          sx={{
+            position: 'absolute',
+            color: 'common.white',
+            zIndex: theme => theme.zIndex.mobileStepper - 1
+          }}
+        >
+          <CircularProgress color='inherit' />
+        </Backdrop>
+      </>
+    )
   } else {
     return null
   }
