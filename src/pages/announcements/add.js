@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getBranches } from 'src/store/apps/branch'
 import { getPositions } from 'src/store/apps/position'
 import { useRouter } from 'next/router'
+import { Roles } from 'src/Roles'
 
 const AddAnnouncement = () => {
     const router = useRouter()
@@ -134,7 +135,7 @@ const AddAnnouncement = () => {
 
 AddAnnouncement.acl = {
     action: true,
-    subject: 'CAN_ADD_ANNOUNCEMENT'
+    subject: Roles.CAN_CREATE_ANNOUNCEMENT
 }
 
 export default AddAnnouncement

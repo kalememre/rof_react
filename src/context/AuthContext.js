@@ -46,8 +46,22 @@ const AuthProvider = ({ children }) => {
             }
           })
           .then(async response => {
+            localStorage.removeItem('userData')
+            localStorage.removeItem('refreshToken')
+            localStorage.removeItem('accessToken')
             setLoading(false)
-            setUser({ ...response.data })
+
+            // setUser({ ...response.data })
+            window.localStorage.setItem(authConfig.storageTokenKeyName, response.data.access)
+            const returnUrl = router.query.returnUrl
+
+            // decode jwt token
+            const decodedToken = jwt.decode(response.data.access, { complete: true })
+            const userData = { ...decodedToken.payload }
+            setUser(userData)
+            window.localStorage.setItem('userData', JSON.stringify(userData))
+            const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+            router.replace(redirectURL)
           })
           .catch(() => {
             localStorage.removeItem('userData')

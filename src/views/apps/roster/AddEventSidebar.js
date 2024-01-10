@@ -69,7 +69,7 @@ const AddEventSidebar = props => {
   const [editStartTime, setEditStartTime] = useState('');
   const [editEndTime, setEditEndTime] = useState('');
   const [selectedTimes, setSelectedTimes] = useState({});
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState('');
 
   const handleCheckboxChange = (date) => {
     setSelectedTimes(prevState => ({
@@ -122,7 +122,7 @@ const AddEventSidebar = props => {
     // setValues(defaultState)
     // clearErrors()
     // dispatch(handleSelectEvent(null))
-    setSelectedUser(null);
+    setSelectedUser('');
     setSelectedDates([]);
     setSelectedTimes({});
     handleAddEventSidebarToggle()

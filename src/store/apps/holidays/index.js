@@ -6,6 +6,7 @@ import axios from 'axios'
 
 import toast from 'react-hot-toast'
 import axiosInstance from 'src/store/axiosDefaults'
+import { HolidayStatusEnum } from 'src/views/apps/holidays/HolidayEnum'
 
 
 // ** Get Holidays
@@ -33,11 +34,15 @@ export const getBranchHolidays = createAsyncThunk('appHolidays/getBranchHolidays
 
 
 // ** Update Holidays
-export const patchHoliday = createAsyncThunk('appHolidays/addHolidays', async ({ id, process, processed_reason }) => {
-    console.log(id, process, processed_reason);
-    const response = await axiosInstance.patch(`/holidays/${id}/`, { process, processed_reason })
+export const patchHoliday = createAsyncThunk('appHolidays/addHolidays', async (holiday) => {
+    try {
+        const response = await axiosInstance.patch(`/holiday/${holiday.id}/`, holiday)
 
-    return response.data
+        return response.data
+    }
+    catch (error) {
+        throw error.response.data
+    }
 })
 
 // ** Delete Holidays
@@ -84,20 +89,15 @@ export const appHolidaysSlice = createSlice({
         })
         builder.addCase(patchHoliday.fulfilled, (state, action) => {
             const holiday = action.payload
-            const holidayStatus = holiday.extendedProps.status
-            if (holidayStatus === 'refused') {
-                const index = state.holidays.findIndex(holidays => holidays.id === holiday.id)
-                state.holidays.splice(index, 1)
-                state.filteredHolidays.splice(index, 1)
-                toast.success('Successfully refused  holiday')
-                state.holidayLoading = false
-            } else if (holidayStatus === 'approved') {
-                const index = state.holidays.findIndex(holidays => holidays.id === holiday.id)
-                state.holidays[index] = holiday
-                state.filteredHolidays[index] = holiday
-                toast.success('Successfully approved holiday')
-                state.holidayLoading = false
+            const holidayIndex = state.filteredHolidays.findIndex(h => h.id === holiday.id)
+            if (holiday.extendedProps.status === HolidayStatusEnum.APPROVED) {
+                state.filteredHolidays[holidayIndex] = holiday
+            } else {
+                state.filteredHolidays.splice(holidayIndex, 1)
             }
+            state.selectedColors = state.filteredHolidays.map(holidays => holidays.color)
+            state.holidays = state.filteredHolidays
+            state.holidayLoading = false
         })
         builder.addCase(patchHoliday.rejected, (state, action) => {
             state.error = action.error.message

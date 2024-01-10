@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import PageHeader from 'src/@core/components/page-header';
+import { Roles } from 'src/Roles';
 import { getAnnouncementById } from 'src/store/apps/announcements';
 import { getBranches } from 'src/store/apps/branch';
 import { getPositions } from 'src/store/apps/position';
@@ -56,6 +57,11 @@ const ViewAnnouncement = () => {
             </Grid>
         </Grid>
     )
+}
+
+ViewAnnouncement.acl = {
+    action: true,
+    subject: Roles.CAN_CREATE_ANNOUNCEMENT
 }
 
 export default ViewAnnouncement

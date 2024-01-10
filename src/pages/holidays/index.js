@@ -19,6 +19,7 @@ import { Grid, Typography, useMediaQuery } from '@mui/material'
 import SidebarLeft from 'src/views/apps/holidays/SidebarLeft'
 import { getBranches } from 'src/store/apps/branch'
 import { getPositions } from 'src/store/apps/position'
+import { Roles } from 'src/Roles'
 
 
 const HolidaysPage = () => {
@@ -30,8 +31,8 @@ const HolidaysPage = () => {
 
     // ** Hooks
     const ability = useContext(AbilityContext)
-    const can_see_branch_holidays = ability?.can(true, 'can_see_branch_holidays')
-    const can_approve_holidays = ability.can(true, 'can_approve_holidays')
+    const CAN_VIEW_BRANCH_HOLIDAYS = ability?.can(true, Roles.CAN_VIEW_BRANCH_HOLIDAYS)
+    const CAN_APPROVE_BRANCH_HOLIDAYS = ability.can(true, Roles.CAN_APPROVE_BRANCH_HOLIDAYS)
 
     // ** States
     const [calendarApi, setCalendarApi] = useState(null)
@@ -46,13 +47,9 @@ const HolidaysPage = () => {
     const mdAbove = useMediaQuery(theme => theme.breakpoints.up('md'))
     const xsAbove = useMediaQuery(theme => theme.breakpoints.down('sm'))
     useEffect(() => {
-        if (!can_see_branch_holidays) {
-            dispatch(getHolidays())
-        } else {
-            dispatch(getBranches())
-            dispatch(getPositions())
-        }
-    }, [can_see_branch_holidays, dispatch])
+        dispatch(getBranches())
+        dispatch(getPositions())
+    }, [dispatch])
 
     const selectBranch = (e) => {
         if (e.target.value !== 'None') dispatch(getBranchHolidays(e.target.value))
@@ -69,19 +66,17 @@ const HolidaysPage = () => {
                         ...(skin === 'bordered' && { border: theme => `1px solid ${theme.palette.divider}` })
                     }}
                 >
-                    {can_see_branch_holidays &&
-                        <SidebarLeft
-                            storeHolidays={storeHolidays}
-                            mdAbove={mdAbove}
-                            dispatch={dispatch}
-                            calendarApi={calendarApi}
-                            storeBranches={storeBranches}
-                            selectBranch={selectBranch}
-                            storePositions={storePositions}
-                            leftSidebarWidth={leftSidebarWidth}
-                            can_see_branch_holidays={can_see_branch_holidays}
-                        />
-                    }
+                    <SidebarLeft
+                        storeHolidays={storeHolidays}
+                        mdAbove={mdAbove}
+                        dispatch={dispatch}
+                        calendarApi={calendarApi}
+                        storeBranches={storeBranches}
+                        selectBranch={selectBranch}
+                        storePositions={storePositions}
+                        leftSidebarWidth={leftSidebarWidth}
+                        CAN_VIEW_BRANCH_HOLIDAYS={CAN_VIEW_BRANCH_HOLIDAYS}
+                    />
                     <Box
                         sx={{
                             p: 6,
@@ -90,7 +85,7 @@ const HolidaysPage = () => {
                             borderRadius: 1,
                             boxShadow: 'none',
                             backgroundColor: 'background.paper',
-                            ...(can_see_branch_holidays && mdAbove ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } : {})
+                            ...(CAN_VIEW_BRANCH_HOLIDAYS && mdAbove ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } : {})
 
                         }}
                     >
@@ -100,8 +95,8 @@ const HolidaysPage = () => {
                             direction={direction}
                             calendarApi={calendarApi}
                             setCalendarApi={setCalendarApi}
-                            can_see_branch_holidays={can_see_branch_holidays}
-                            can_approve_holidays={can_approve_holidays}
+                            CAN_VIEW_BRANCH_HOLIDAYS={CAN_VIEW_BRANCH_HOLIDAYS}
+                            CAN_APPROVE_BRANCH_HOLIDAYS={CAN_APPROVE_BRANCH_HOLIDAYS}
                         />
                     </Box>
 
@@ -113,7 +108,7 @@ const HolidaysPage = () => {
 
 HolidaysPage.acl = {
     action: true,
-    subject: 'CAN_VIEW_USERS_PAGE'
+    subject: Roles.CAN_VIEW_BRANCH_HOLIDAYS
 }
 
 export default HolidaysPage

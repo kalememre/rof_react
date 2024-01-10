@@ -23,8 +23,8 @@ const Calendar = props => {
   const {
     storeHolidays,
     calendarApi,
-    can_approve_holidays,
-    can_see_branch_holidays,
+    CAN_APPROVE_BRANCH_HOLIDAYS,
+    CAN_VIEW_BRANCH_HOLIDAYS,
     setCalendarApi,
     handleLeftSidebarToggle,
     dispatch,
@@ -60,7 +60,7 @@ const Calendar = props => {
   if (storeHolidays) {
     const calendarOptions = {
       ref: calendarRef,
-      events: can_see_branch_holidays ? storeHolidays.filteredHolidays : storeHolidays.holidays,
+      events: CAN_VIEW_BRANCH_HOLIDAYS ? storeHolidays.filteredHolidays : storeHolidays.holidays,
       eventContent: EventRender,
       plugins: [dayGridPlugin, timeGridPlugin, listPlugin, bootstrap5Plugin, interactionPlugin],
       initialView: 'dayGridMonth',
@@ -107,8 +107,8 @@ const Calendar = props => {
       <Fragment>
         <FullCalendar {...calendarOptions} />
         <DialogHolidayDetail
-          can_see_branch_holidays={can_see_branch_holidays}
-          can_approve_holidays={can_approve_holidays}
+          CAN_VIEW_BRANCH_HOLIDAYS={CAN_VIEW_BRANCH_HOLIDAYS}
+          CAN_APPROVE_BRANCH_HOLIDAYS={CAN_APPROVE_BRANCH_HOLIDAYS}
           show={show}
           setShow={setShow}
           event={event}

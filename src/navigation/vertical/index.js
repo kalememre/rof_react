@@ -1,3 +1,4 @@
+import { Roles } from "src/Roles"
 
 const navigation = () => {
   return [
@@ -6,35 +7,35 @@ const navigation = () => {
       path: '/home',
       icon: 'tabler:smart-home',
       action: true,
-      subject: 'CAN_VIEW_HOME_PAGE'
+      subject: 'HomePage'
     },
     {
       title: 'Announcements',
       path: '/announcements',
       icon: 'tabler:bell-ringing',
       action: true,
-      subject: 'CAN_VIEW_ANNOUNCEMENT_PAGE',
+      subject: Roles.CAN_CREATE_ANNOUNCEMENT
     },
     {
       title: 'Users',
       path: '/users',
       icon: 'tabler:users',
       action: true,
-      subject: 'CAN_VIEW_BRANCH_USERS',
+      subject: Roles.CAN_VIEW_BRANCH_USERS
     },
     {
       title: 'Roster',
       path: '/roster',
       icon: 'tabler:report',
       action: true,
-      subject: 'can_view_roster_page',
+      subject: Roles.CAN_CREATE_ROSTER
     },
     {
       title: 'Holidays',
       path: '/holidays',
       icon: 'tabler:beach',
       action: true,
-      subject: 'CAN_VIEW_HOLIDAY_PAGE',
+      subject: Roles.CAN_VIEW_BRANCH_HOLIDAYS
     },
     {
       title: 'Managements',

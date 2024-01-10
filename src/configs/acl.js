@@ -9,6 +9,7 @@ export const AppAbility = Ability
  */
 const defineRulesFor = (role, subject, ability) => {
   const { can, rules } = new AbilityBuilder(AppAbility)
+  can(true, 'HomePage')
   if (Array.isArray(role)) {
     role.forEach(item => {
       item === 'ADMIN' ? can('manage', 'all') : can(true, item)

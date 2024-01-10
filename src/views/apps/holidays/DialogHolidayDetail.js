@@ -44,8 +44,8 @@ const DialogHolidayDetail = props => {
     show,
     setShow,
     event,
-    can_see_branch_holidays,
-    can_approve_holidays,
+    CAN_VIEW_BRANCH_HOLIDAYS,
+    CAN_APPROVE_BRANCH_HOLIDAYS,
   } = props
 
   // ** State
@@ -92,17 +92,17 @@ const DialogHolidayDetail = props => {
           pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
         }}
       >
-        {can_see_branch_holidays && can_approve_holidays && (
+        {CAN_VIEW_BRANCH_HOLIDAYS && CAN_APPROVE_BRANCH_HOLIDAYS && (
           holidayStatus === HolidayStatusEnum.PENDING && (
             <>
               <Button variant='tonal' color='error' onClick={() => {
-                setProcess('refuse')
+                setProcess(HolidayStatusEnum.REJECTED)
                 setOpen(true)
               }}>
-                Refuse
+                Reject
               </Button>
               <Button variant='contained' color='success' sx={{ mr: 1 }} onClick={() => {
-                setProcess('approve')
+                setProcess(HolidayStatusEnum.APPROVED)
                 setOpen(true)
               }}>
                 Approve

@@ -30,7 +30,7 @@ const SidebarLeft = props => {
     storePositions,
     leftSidebarWidth,
     mdAbove,
-    can_see_branch_holidays
+    CAN_VIEW_BRANCH_HOLIDAYS
   } = props
 
   const colorsArr = storePositions.positions.map((role) => {
@@ -75,7 +75,7 @@ const SidebarLeft = props => {
     return (
       <Drawer
 
-        open={can_see_branch_holidays}
+        open={true}
 
         // onClose={handleLeftSidebarToggle}
         variant={mdAbove ? 'permanent' : 'temporary'}

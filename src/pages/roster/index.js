@@ -37,6 +37,7 @@ import PageHeader from 'src/@core/components/page-header'
 import Link from 'next/link'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
 import toast from 'react-hot-toast'
+import { Roles } from 'src/Roles'
 
 // ** CalendarColors
 const calendarsColor = {
@@ -50,7 +51,7 @@ const calendarsColor = {
 const RosterPage = () => {
     // ** Abilities
     const ability = useContext(AbilityContext)
-    const can_create_roster = ability?.can(true, 'can_create_roster')
+    const CAN_CREATE_ROSTER = ability?.can(true, Roles.CAN_CREATE_ROSTER)
 
     // ** States
     const [calendarApi, setCalendarApi] = useState(null)
@@ -117,7 +118,7 @@ const RosterPage = () => {
                     }
                 />
             </Grid>
-            {can_create_roster &&
+            {CAN_CREATE_ROSTER &&
                 <Grid item xs={6} sx={{
                     alignSelf: 'center',
                     textAlign: 'right'
@@ -191,7 +192,7 @@ const RosterPage = () => {
                         </FormControl>
                         <Divider variant={'fullWidth'} sx={{ mr: 0, mb: 6, mt: 6 }} />
                         <Calendar
-                            can_create_roster={can_create_roster}
+                            can_create_roster={CAN_CREATE_ROSTER}
                             branch={branch}
                             storeRoster={storeRoster}
                             dispatch={dispatch}
@@ -231,7 +232,7 @@ const RosterPage = () => {
 }
 RosterPage.acl = {
     action: true,
-    subject: 'can_access_roster_page'
+    subject: Roles.CAN_CREATE_ROSTER
 }
 
 

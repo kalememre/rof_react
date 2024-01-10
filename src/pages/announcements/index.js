@@ -16,6 +16,7 @@ import { formatDateTime } from 'src/@core/utils/format'
 import CustomChip from 'src/@core/components/mui/chip'
 import { getBranches } from 'src/store/apps/branch'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
+import { Roles } from 'src/Roles'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -31,7 +32,7 @@ const MenuProps = {
 
 const Announcements = () => {
     const ability = useContext(AbilityContext)
-    const CAN_ADD_ANNOUNCEMENT = ability.can(true, 'CAN_ADD_ANNOUNCEMENT')
+    const CAN_CREATE_ANNOUNCEMENT = ability.can(true, Roles.CAN_CREATE_ANNOUNCEMENT)
 
     // ** State
     const [filteredData, setFilteredData] = useState(null)
@@ -90,57 +91,43 @@ const Announcements = () => {
             minWidth: 170,
             headerName: 'Positions',
             renderCell: ({ row }) => {
-                const allPositions = storePositions.positions.every((position) =>
-                    row.positions.some((pos) => pos.id === position.id)
-                );
-
                 return (
-                    allPositions ? (
-                        <Chip
-                            label='All Positions'
-                            color='secondary'
-                            variant='outlined'
-                            sx={{
-                                mr: 1,
-                            }}
-                        />
-                    ) : (
-                        <Box
-                            sx={{
+
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            whiteSpace: 'nowrap',
+                            mt: 2,
+                            mb: 2,
+                            width: '100%',
+                        }}
+                    >
+                        {row?.positions?.map((position, index) => (
+                            <Box key={index} mr={1} mb={1} sx={{
                                 display: 'flex',
-                                flexWrap: 'wrap',
-                                whiteSpace: 'nowrap',
-                                mt: 2,
-                                mb: 2,
-                                width: '100%',
-                            }}
-                        >
-                            {row?.positions?.map((position, index) => (
-                                <Box key={index} mr={1} mb={1} sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                }}>
-                                    {!position.isDeleted ? (
-                                        <Box sx={{
-                                            borderRadius: 1,
-                                            bgcolor: position.color,
-                                            color: 'white',
-                                            p: 1,
-                                        }}>
-                                            <Typography variant='subtitle'>
-                                                {position.name}
-                                            </Typography>
-                                        </Box>
-                                    ) : (
-                                        <Chip
-                                            className='deletedPosition'
-                                            label={position.name}
-                                        />
-                                    )}
-                                </Box>
-                            ))}
-                        </Box>
-                    )
+                                alignItems: 'center',
+                            }}>
+                                {!position.isDeleted ? (
+                                    <Box sx={{
+                                        borderRadius: 1,
+                                        bgcolor: position.color,
+                                        color: 'white',
+                                        p: 1,
+                                    }}>
+                                        <Typography variant='subtitle'>
+                                            {position.name}
+                                        </Typography>
+                                    </Box>
+                                ) : (
+                                    <Chip
+                                        className='deletedPosition'
+                                        label={position.name}
+                                    />
+                                )}
+                            </Box>
+                        ))}
+                    </Box>
                 )
             },
         },
@@ -150,11 +137,6 @@ const Announcements = () => {
             minWidth: 170,
             headerName: 'Branches',
             renderCell: ({ row }) => {
-                // check if all branches included by id
-                const allBranches = storeBranches.branches.every((branch) =>
-                    row.branches.some((br) => br.id === branch.id)
-                );
-
                 return (
                     <Box
                         sx={{
@@ -166,24 +148,13 @@ const Announcements = () => {
                             width: '100%',
                         }}
                     >
-                        {allBranches ? (
+                        {row.branches?.map((branch, index) => (
                             <Chip
-                                label='All Branches'
-                                sx={{
-                                    mr: 1,
-                                    borderWidth: 1,
-                                    borderStyle: 'solid',
-                                }}
+                                className={!branch.isDeleted ? 'chipBranch' : 'deletedBranch'}
+                                key={index}
+                                label={branch.name}
                             />
-                        ) : (
-                            row.branches?.map((branch, index) => (
-                                <Chip
-                                    className={!branch.isDeleted ? 'chipBranch' : 'deletedBranch'}
-                                    key={index}
-                                    label={branch.name}
-                                />
-                            ))
-                        )}
+                        ))}
                     </Box>
 
                 )
@@ -258,7 +229,7 @@ const Announcements = () => {
                     }
                 />
             </Grid>
-            {CAN_ADD_ANNOUNCEMENT && (
+            {CAN_CREATE_ANNOUNCEMENT && (
                 <Grid item xs={6} sx={{
                     alignSelf: 'center',
                     textAlign: 'right'
@@ -422,6 +393,11 @@ const Announcements = () => {
             </Grid>
         </Grid>
     )
+}
+
+Announcements.acl = {
+    action: true,
+    subject: Roles.CAN_CREATE_ANNOUNCEMENT
 }
 
 export default Announcements

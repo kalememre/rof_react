@@ -12,12 +12,13 @@ import { LinearProgress } from '@mui/material'
 import { useDispatch } from 'react-redux'
 import { patchHoliday } from 'src/store/apps/holidays'
 import CustomTextField from 'src/@core/components/mui/text-field'
+import { HolidayStatusEnum } from './HolidayEnum'
 
 
 const DialogConfirmation = props => {
     // ** Props
     const { open, setOpen, eventId, setShow, process, holidayLoading } = props
-    const approved = process === 'approve'
+    const approved = process === HolidayStatusEnum.APPROVED
 
     const handleClose = () => {
         setOpen(false)
@@ -29,7 +30,12 @@ const DialogConfirmation = props => {
     const dispatch = useDispatch()
 
     const handleSubmit = () => {
-        dispatch(patchHoliday({ id: eventId, process, processed_reason: reason }))
+        const data = {
+            id: eventId,
+            status: process,
+            proceedReason: reason
+        }
+        dispatch(patchHoliday(data))
         handleClose()
         setShow(false)
     }
@@ -50,7 +56,11 @@ const DialogConfirmation = props => {
                 <DialogTitle id='alert-dialog-title'>{'Confirm'}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id='alert-dialog-description'>
-                        Are you sure you want to <code style={{ color: approved ? 'green' : 'red' }}>{process}</code> this holiday?
+                        Are you sure you want to
+                        <code style={{ color: approved ? 'green' : 'red' }}>
+                            {approved ? ' approve ' : ' reject '}
+                        </code>
+                        this holiday?
                         <br />
                         It won't be possible to undo this action
                     </DialogContentText>
