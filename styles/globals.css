@@ -45,3 +45,24 @@ code[class*='language-'] {
   border-style: solid !important;
   border-color: #d400ff;
 }
+
+@font-face {
+  font-family: 'digital-7';
+  src: url('../public/fonts/digital-7.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'technology';
+  src: url('../public/fonts/Technology-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'digital-dismay';
+  src: url('../public/fonts/Digital\ Dismay.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}

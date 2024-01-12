@@ -11,10 +11,12 @@ import interactionPlugin from '@fullcalendar/interaction'
 
 // ** Third Party Style Import
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import { Backdrop, Box, CircularProgress, Divider, Stack, Typography } from '@mui/material'
+import { Backdrop, Box, CircularProgress, Divider, FormHelperText, Stack, Typography } from '@mui/material'
 import { getShifts, publishRoster, updateShift } from 'src/store/apps/roster'
 import moment from 'moment';
 import toast from 'react-hot-toast'
+import { GridCheckCircleIcon, GridCheckIcon } from '@mui/x-data-grid'
+import { Icon } from '@iconify/react'
 
 const blankEvent = {
   title: '',
@@ -73,23 +75,33 @@ const Calendar = props => {
 
   const EventRender = ({ event }) => (
     <>
-      <Box p={1}>
+      <Box p={0.1}>
         <Typography sx={{
           whiteSpace: 'initial',
           fontWeight: 'bold',
         }} color={'white'}>
           {event.title}
+          <FormHelperText sx={{ color: 'white', py: 0 }}>
+            <i>{event.extendedProps.position}</i>
+          </FormHelperText>
         </Typography>
         <Divider sx={{
           borderColor: 'white',
+          py: 0.5
         }} />
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-          <Typography color={'white'} fontSize={'lg'}>
+          <Typography color={'white'} fontSize={'lg'}
+            variant='h4'
+            sx={{
+              fontFamily: 'technology',
+            }}
+          >
             {event.extendedProps.startTime} - {event.extendedProps.endTime}
+
           </Typography>
-          {/* {event.extendedProps.seen && (
-          <CheckCircle fontSize='small' />
-        )} */}
+          {event.extendedProps.seen && (
+            <Icon icon="tabler:checks" width="20" height="20" />
+          )}
         </Stack>
       </Box>
     </>
