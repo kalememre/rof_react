@@ -30,6 +30,24 @@ export const formatTime = (value) => {
   return formattedTime;
 };
 
+export const mergeDateAndTime = (date, time) => {
+  if (!date || !time) return null;
+
+  try {
+    const ime = new Date(time);
+    const hour = ime.getHours();
+    const minute = ime.getMinutes();
+
+    return new Date(date.setHours(hour, minute)).toISOString();
+
+  }
+  catch (error) {
+    return null;
+  }
+
+
+};
+
 
 export const formatDateRegular = (value, formatting = { year: 'numeric', month: '2-digit', day: '2-digit' }) => {
   if (!value) return value;

@@ -82,6 +82,17 @@ const TableColumns = params => {
       )
     },
     {
+      flex: 0.2,
+      minWidth: 110,
+      field: 'limitWorkHours',
+      headerName: 'Limit Work Hours',
+      renderCell: params => (
+        <Typography variant='body2' sx={{ color: 'text.primary' }}>
+          {params.row.limitWorkHours}
+        </Typography>
+      )
+    },
+    {
       flex: 0.1,
       field: 'delete',
       minWidth: 10,

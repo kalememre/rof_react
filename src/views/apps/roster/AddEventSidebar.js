@@ -27,9 +27,12 @@ import Icon from 'src/@core/components/icon'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import { getUserByBranch } from 'src/store/apps/user'
 import { useSelector } from 'react-redux'
-import { Checkbox, Chip, FormGroup, FormHelperText, Stack } from '@mui/material'
+import { Checkbox, Chip, FormGroup, FormHelperText, Grid, Stack, TextField } from '@mui/material'
 import { addShift } from 'src/store/apps/roster'
-import { formatDate, formatDateRegular, formatDateTime, formatDateToMonthShort, formatTime } from 'src/@core/utils/format'
+import { formatDate, formatDateRegular, formatDateTime, formatDateToMonthShort, formatTime, mergeDateAndTime } from 'src/@core/utils/format'
+import moment from 'moment'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
 
 const capitalize = string => string && string[0].toUpperCase() + string.slice(1)
 
@@ -71,19 +74,24 @@ const AddEventSidebar = props => {
   const [selectedTimes, setSelectedTimes] = useState({});
   const [selectedUser, setSelectedUser] = useState('');
 
-  const handleCheckboxChange = (date) => {
-    setSelectedTimes(prevState => ({
-      ...prevState,
-      [date]: prevState[date] ? null : { startTime: '', endTime: '' } // Set initial time values
-    }));
-  };
+  // const handleCheckboxChange = (date) => {
+  //   const nd = moment(date).format('YYYY-MM-DD');
+  //   setSelectedTimes(prevState => ({
+  //     ...prevState,
+  //     [nd]: prevState[nd] ? null : { startTime: '', endTime: '' } // Set initial time values
+  //   }));
+  // };
 
   const handleTimeChange = (date, field, value) => {
+    const nd2 = moment(date).format('YYYY-MM-DD');
+    const nd = new Date(date);
+    const newdate = mergeDateAndTime(nd, value);
+
     setSelectedTimes(prevState => ({
       ...prevState,
-      [date]: {
-        ...prevState[date],
-        [field]: value
+      [nd2]: {
+        ...prevState[nd2],
+        [field]: newdate
       }
     }));
   };
@@ -96,19 +104,48 @@ const AddEventSidebar = props => {
     const dateArray = [];
 
     while (start < end) {
-
       const date = new Date(start);
-
-      // add one day
-      dateArray.push(date);
+      dateArray.push({
+        date: date.toISOString().split('T')[0],
+        startTime: '',
+        endTime: '',
+        checked: false
+      });
       start.setDate(start.getDate() + 1);
-
     }
+    console.log('dateArray', dateArray);
+    setWeekEvents(dateArray);
 
-    setSelectedDates(dateArray);
+    // setSelectedDates(dateArray);
   }
 
   const storeUsers = useSelector(state => state.storeUsers)
+
+  // const schema = yup.object().shape({
+  //   events: yup.array().of(
+  //     yup.object().shape({
+  //       // date: yup.string().required('Tarih zorunludur.'),
+  //       start: yup.string().required('Başlangıç saati zorunludur.'),
+  //       end: yup.string().required('Bitiş saati zorunludur.'),
+  //     })
+  //   ),
+  // });
+
+  const schema = yup.object().shape({
+    events: yup.array().of(
+      yup.object().shape({
+        start: yup.string().when('checked', {
+          is: true,
+          then: yup.string().required('Başlangıç saati zorunludur.'),
+        }),
+        end: yup.string().when('checked', {
+          is: true,
+          then: yup.string().required('Bitiş saati zorunludur.'),
+        }),
+        checked: yup.boolean(),
+      })
+    ),
+  });
 
   const {
     control,
@@ -116,11 +153,12 @@ const AddEventSidebar = props => {
     clearErrors,
     handleSubmit,
     formState: { errors }
-  } = useForm({ defaultValues: { title: '' } })
+  } = useForm({ resolver: yupResolver(schema) });
 
   const handleSidebarClose = async () => {
     // setValues(defaultState)
-    // clearErrors()
+    clearErrors()
+
     // dispatch(handleSelectEvent(null))
     setSelectedUser('');
     setSelectedDates([]);
@@ -128,56 +166,50 @@ const AddEventSidebar = props => {
     handleAddEventSidebarToggle()
   }
 
+  const [weekEvents, setWeekEvents] = useState([]);
+
+  const handleCheckboxChange = (index) => {
+    const updatedWeekEvents = [...weekEvents];
+    updatedWeekEvents[index].checked = !updatedWeekEvents[index].checked;
+    setWeekEvents(updatedWeekEvents);
+  };
+
   const onSubmit = data => {
-    const customErrors = [];
+    console.log('data', data);
 
-    const selectedData = Object.entries(selectedTimes).reduce((acc, [date, times]) => {
-      if (times && times.startTime && times.endTime) {
-        acc.push({
-          date,
-          startTime: times.startTime,
-          endTime: times.endTime
-        });
-      } else if (times) {
-        customErrors.push(`Please fill the ${date} time`);
-      }
+    // const customErrors = [];
+    // console.log('selectedTimes', selectedTimes);
+
+    // const selectedData = Object.entries(selectedTimes).reduce((acc, [date, times]) => {
+    //   if (times && times.startTime && times.endTime) {
+    //     acc.push({
+    //       date,
+    //       startTime: times.startTime,
+    //       endTime: times.endTime
+    //     });
+    //   } else if (times) {
+    //     customErrors.push(`Please fill the ${date} time`);
+    //   }
 
 
-      return acc;
-    }, []);
+    //   return acc;
+    // }, []);
 
-    // add branchId and userId to data
+    // selectedData.forEach((data) => {
+    //   data.date = formatDateRegular(data.date);
+    //   data.startTime = formatTime(data.startTime);
+    //   data.endTime = formatTime(data.endTime);
+    //   data.branchId = branch.id;
+    //   data.userId = selectedUser;
+    // });
 
-    selectedData.forEach((data) => {
-      data.date = formatDateRegular(data.date);
-      data.startTime = formatTime(data.startTime);
-      data.endTime = formatTime(data.endTime);
-      data.branchId = branch.id;
-      data.userId = selectedUser;
-    });
+    // dispatch(addShift(selectedData))
+    //   .then((res) => {
+    //     if (!res.error) {
 
-    dispatch(addShift(selectedData))
-      .then((res) => {
-        if (!res.error) {
-
-          handleSidebarClose();
-        }
-      })
-  }
-
-  const handleDeleteEvent = () => {
-    if (store.selectedEvent) {
-      dispatch(deleteEvent(store.selectedEvent.id))
-    }
-
-    // calendarApi.getEventById(store.selectedEvent.id).remove()
-    handleSidebarClose()
-  }
-
-  const handleStartDate = date => {
-    if (date > values.endDate) {
-      setValues({ ...values, startDate: new Date(date), endDate: new Date(date) })
-    }
+    //       handleSidebarClose();
+    //     }
+    //   })
   }
 
   const handleSelectUser = (e) => {
@@ -185,35 +217,7 @@ const AddEventSidebar = props => {
     loadDates();
   }
 
-  // const resetToStoredValues = useCallback(() => {
-  //   if (store.selectedEvent !== null) {
-  //     const event = store.selectedEvent
-  //     setValue('title', event.title || '')
-  //     setValues({
-  //       url: event.url || '',
-  //       title: event.title || '',
-  //       allDay: event.allDay,
-  //       guests: event.extendedProps.guests || [],
-  //       description: event.extendedProps.description || '',
-  //       calendar: event.extendedProps.calendar || 'Business',
-  //       endDate: event.end !== null ? event.end : event.start,
-  //       startDate: event.start !== null ? event.start : new Date()
-  //     })
-  //   }
-  // }, [setValue, store.selectedEvent])
 
-  const resetToEmptyValues = useCallback(() => {
-    setValue('title', '')
-    setValues(defaultState)
-  }, [setValue])
-
-  // useEffect(() => {
-  //   if (store.selectedEvent !== null) {
-  //     resetToStoredValues()
-  //   } else {
-  //     resetToEmptyValues()
-  //   }
-  // }, [addEventSidebarOpen, resetToStoredValues, resetToEmptyValues, store.selectedEvent])
 
   useEffect(() => {
     if (addEventSidebarOpen) {
@@ -221,27 +225,12 @@ const AddEventSidebar = props => {
     }
   }, [addEventSidebarOpen, branch, dispatch])
 
-  const PickersComponent = forwardRef(({ ...props }, ref) => {
-    return (
-      <CustomTextField
-        inputRef={ref}
-        fullWidth
-        {...props}
-        label={props.label || ''}
-        sx={{ width: '100%' }}
-        error={props.error}
-      />
-    )
-  })
 
   const RenderSidebarFooter = () => {
     return (
       <Fragment>
-        <Button type='submit' onClick={onSubmit} variant='contained' sx={{ mr: 4 }}>
+        <Button type='submit' onClick={handleSubmit(onSubmit)} variant='contained' sx={{ mr: 4 }}>
           Add
-        </Button>
-        <Button variant='tonal' color='secondary' onClick={resetToEmptyValues}>
-          Reset
         </Button>
       </Fragment>
     )
@@ -342,14 +331,14 @@ const AddEventSidebar = props => {
                 </MenuItem>
               ))}
             </CustomTextField>
-            {selectedDates.map((date, i) => (
+            {/* {selectedDates.map((date, i) => (
               <Stack key={i} mb={1} direction="row" alignItems="center" justifyContent="center" spacing={1}>
                 <FormControl component="fieldset" sx={{ m: 1, width: "100%" }}>
                   <FormGroup aria-label="position" row>
                     <FormControlLabel
                       value="end"
-                      control={<Checkbox checked={!!selectedTimes[date]} onChange={() => handleCheckboxChange(date)} />}
-                      label={formatDateRegular(date)}
+                      control={<Checkbox checked={!!selectedTimes[moment(date).format('YYYY-MM-DD')]} onChange={() => handleCheckboxChange(date)} />}
+                      label={moment(date).format('DD MMMM YYYY')}
                       labelPlacement="end"
                     />
                   </FormGroup>
@@ -359,9 +348,8 @@ const AddEventSidebar = props => {
                     label="Start Time"
                     format="HH:mm"
                     size='small'
-                    disabled={!selectedTimes[date]}
+                    disabled={!selectedTimes[moment(date).format('YYYY-MM-DD')]}
 
-                    // value={selectedTimes[date]?.startTime || ''}
                     onChange={(value) => handleTimeChange(date, 'startTime', value)}
                   />
                 </FormControl>
@@ -370,13 +358,63 @@ const AddEventSidebar = props => {
                     label="End Time"
                     format="HH:mm"
                     size='small'
-                    disabled={!selectedTimes[date]}
+                    disabled={!selectedTimes[moment(date).format('YYYY-MM-DD')]}
 
-                    // value={selectedTimes[date]?.endTime || ''}
                     onChange={(value) => handleTimeChange(date, 'endTime', value)}
                   />
                 </FormControl>
               </Stack>
+            ))} */}
+            {weekEvents.map((event, index) => (
+              <Grid container spacing={2} key={index}>
+                <Grid item xs={4}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onChange={() => handleCheckboxChange(index)}
+                        checked={event.checked}
+                      />
+                    }
+                    label={event.date}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <Controller
+                    name={`events[${index}].start`}
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TimeField
+                        {...field}
+                        label="Start Time"
+                        format='HH:mm'
+                        size='small'
+                        disabled={!event.checked}
+                        error={!!errors.events && !!errors.events[index]?.start}
+                        helperText={errors.events && errors.events[index]?.start?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <Controller
+                    name={`events[${index}].end`}
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TimeField
+                        {...field}
+                        label="End Time"
+                        format='HH:mm'
+                        size='small'
+                        disabled={!event.checked}
+                        error={!!errors.events && !!errors.events[index]?.end}
+                        helperText={errors.events && errors.events[index]?.end?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
             ))}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <RenderSidebarFooter />

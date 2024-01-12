@@ -73,6 +73,15 @@ const Calendar = props => {
     }
   }
 
+  const shiftTotalHours = (shift) => {
+    const start = moment(shift.extendedProps.startTime)
+    const end = moment(shift.extendedProps.endTime)
+    const duration = moment.duration(end.diff(start))
+    const hours = duration.asHours()
+
+    return hours
+  }
+
   const EventRender = ({ event }) => (
     <>
       <Box p={0.1}>
@@ -96,8 +105,10 @@ const Calendar = props => {
               fontFamily: 'technology',
             }}
           >
-            {event.extendedProps.startTime} - {event.extendedProps.endTime}
-
+            {moment(event.start).format('HH:mm')} - {moment(event.end).format('HH:mm')}
+            <FormHelperText sx={{ color: 'white', py: 0 }}>
+              Total Hours: {shiftTotalHours(event)}h
+            </FormHelperText>
           </Typography>
           {event.extendedProps.seen && (
             <Icon icon="tabler:checks" width="20" height="20" />

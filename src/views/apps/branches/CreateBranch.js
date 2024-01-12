@@ -53,13 +53,20 @@ const CreateBranch = props => {
 
     const schema = yup.object().shape({
         name: yup.string().required('Branch Name is required'),
+        limitworkhours: yup.number()
+            .typeError('Limit Work Hours must be a number')
+            .positive('Limit Work Hours must be a positive number')
+            .integer('Limit Work Hours must be an integer')
+            .moreThan(-1, 'Limit Work Hours must be greater than or equal to 0'),
+        email: yup.string().email('Must be a valid email'),
     })
 
     const defaultValues = {
         name: '',
         phone: '',
         email: '',
-        address: ''
+        address: '',
+        limitworkhours: 0
     }
 
     const {
@@ -80,6 +87,7 @@ const CreateBranch = props => {
         setValue('phone', row?.phone ?? '');
         setValue('email', row?.email ?? '');
         setValue('address', row?.address ?? '');
+        setValue('limitworkhours', row?.limitWorkHours ?? 0);
         setRowId(prevRowId => prevRowId + 1);
     }, [row, setValue])
 
@@ -89,14 +97,14 @@ const CreateBranch = props => {
             name: data.name,
             phone: data.phone,
             email: data.email,
-            address: data.address
+            address: data.address,
+            limitWorkHours: data.limitworkhours
         }
         if (title === 'Create') {
             dispatch(addBranch(branch))
                 .then((res) => {
                     if (!res.error) {
-                        toggle()
-                        reset()
+                        handleClose()
                     }
                 })
         } else {
@@ -104,8 +112,7 @@ const CreateBranch = props => {
             dispatch(updateBranch(branch))
                 .then((res) => {
                     if (!res.error) {
-                        toggle()
-                        reset()
+                        handleClose()
                     }
                 })
         }
@@ -170,6 +177,29 @@ const CreateBranch = props => {
                                     placeholder='Enter Branch Name'
                                     error={Boolean(errors.name)}
                                     {...(errors.name && { helperText: errors.name.message })}
+                                />
+
+                            )}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Controller
+                            name='limitworkhours'
+                            control={control}
+                            render={({ field: { value, onChange, onBlur } }) => (
+                                <CustomTextField
+                                    fullWidth
+                                    autoFocus
+                                    control={control}
+                                    rules={{ required: true }}
+                                    value={value}
+                                    onChange={onChange}
+                                    onBlur={onBlur}
+                                    type='number'
+                                    label='Limit Work Hours'
+                                    placeholder='Enter Limit Work Hours'
+                                    error={Boolean(errors.limitworkhours)}
+                                    {...(errors.limitworkhours && { helperText: errors.limitworkhours.message })}
                                 />
 
                             )}
