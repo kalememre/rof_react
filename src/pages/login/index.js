@@ -119,10 +119,10 @@ const LoginPage = () => {
 
   const onSubmit = data => {
     const { email, password } = data
-    auth.login({ email, password }, () => {
+    auth.login({ email, password }, (res) => {
       setError('email', {
         type: 'manual',
-        message: 'Email or Password is invalid'
+        message: res
       })
     })
   }
