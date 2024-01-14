@@ -119,10 +119,13 @@ const Calendar = props => {
 
 
   const handlePublishShifts = () => {
+    const startDate = moment(calendarApi.view.activeStart).format('YYYY-MM-DD')
+    const endDate = moment(calendarApi.view.activeEnd).format('YYYY-MM-DD')
+
     const data = {
       branchId: branch.id,
-      startDate: moment(calendarApi.view.activeStart).format('YYYY-MM-DD'),
-      endDate: moment(calendarApi.view.activeEnd).format('YYYY-MM-DD')
+      startDate: startDate,
+      endDate: endDate
     }
     dispatch(publishRoster(data))
   }
@@ -156,6 +159,7 @@ const Calendar = props => {
       eventDurationEditable: false,
       showNonCurrentDates: false,
       firstDay: 1,
+      eventOrder: 'sort,start,title,-duration',
 
       // eventDragStop: (info) => {
       //   console.log('stop', info.event.start)
@@ -199,18 +203,9 @@ const Calendar = props => {
       //     `bg-${colorName}`
       //   ]
       // },
-      // eventClick({ event: clickedEvent }) {
-      //   // check if event date older than today
-
-
-      //   dispatch(handleSelectEvent(clickedEvent))
-      //   handleAddEventSidebarToggle()
-
-      //   // * Only grab required field otherwise it goes in infinity loop
-      //   // ! Always grab all fields rendered by form (even if it get `undefined`) otherwise due to Vue3/Composition API you might get: "object is not extensible"
-      //   // event.value = grabEventDataFromEventApi(clickedEvent)
-      //   // isAddNewEventSidebarActive.value = true
-      // },
+      eventClick({ event: clickedEvent }) {
+        console.log(clickedEvent);
+      },
       customButtons: {
         excel: {
           text: 'Excel',

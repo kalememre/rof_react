@@ -7,7 +7,6 @@ import axiosInstance from 'src/store/axiosDefaults'
 
 // ** Get Shifts
 export const getShifts = createAsyncThunk('appRoster/getShifts', async (data) => {
-  console.log('data', data);
   try {
     const response = await axiosInstance.get(`/roster/${data.branchId}`,
       {
