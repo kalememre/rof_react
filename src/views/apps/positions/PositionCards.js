@@ -81,15 +81,12 @@ const rolesArr = [
 
 const schema = yup.object().shape({
   roleName: yup.string().required('Position Name is required'),
-  description: yup.string().required('Description is required'),
+  rosterOrder: yup.number().integer().typeError('Position order must be a number').nullable(),
+  description: yup.string().max(500, 'Description must be less than 500 characters'),
   roleColor: yup.string().required('Position Color is required'),
 })
 
-const defaultValues = {
-  roleName: '',
-  description: '',
-  roleColor: '',
-}
+
 
 const PositionCards = () => {
   // ** States
@@ -101,6 +98,13 @@ const PositionCards = () => {
   const [roleColor, setRoleColor] = useState(null)
   const [selectedRole, setSelectedRole] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
+
+  const defaultValues = {
+    roleName: '',
+    rosterOrder: 0,
+    description: '',
+    roleColor: '',
+  }
 
   const {
     control,
@@ -120,6 +124,7 @@ const PositionCards = () => {
     const position = {
       id: selectedRole?.id,
       name: data.roleName,
+      rosterOrder: data.rosterOrder,
       description: data.description,
       color: data.roleColor,
     }
@@ -178,7 +183,7 @@ const PositionCards = () => {
                       textOverflow: 'ellipsis',
                       overflow: 'hidden',
                     }} color={'text.secondary'} width={'100%'} variant='p'>
-                      {item.description}
+                      Order Number: {item.rosterOrder}
                     </Typography>
                   </Box>
                 </Grid>
@@ -192,7 +197,7 @@ const PositionCards = () => {
                       setValue('roleName', item.name)
                       setValue('description', item.description)
                       setValue('roleColor', item.color)
-                      setValue('authGroup', item.auth_group)
+                      setValue('rosterOrder', item.rosterOrder)
                       setRoleColor(item.color)
                       setSelectedRole(item)
                     }}>
@@ -326,6 +331,29 @@ const PositionCards = () => {
 
               )}
             />
+          </Box>
+          <Box sx={{ my: 4 }}>
+            <Controller
+              name='rosterOrder'
+              control={control}
+              render={({ field: { value, onChange, onBlur } }) => (
+                <CustomTextField
+                  fullWidth
+                  autoFocus
+                  control={control}
+                  rules={{ required: true }}
+                  value={value}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  type='number'
+                  label='Position Order on Roster'
+                  placeholder='Enter Number'
+                  error={Boolean(errors.rosterOrder)}
+                  {...(errors.rosterOrder && { helperText: errors.rosterOrder.message })}
+                />
+              )}
+            />
+            <FormHelperText>The order in which the position will appear on the roster</FormHelperText>
           </Box>
           <Box sx={{ my: 4 }}>
             <FormControl fullWidth>
