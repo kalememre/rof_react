@@ -30,6 +30,15 @@ export const formatTime = (value) => {
   return formattedTime;
 };
 
+// convert value to ISO date format with time
+export const formatISODate = (value) => {
+  if (!value) return value;
+
+  const formattedDate = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(value));
+
+  return formattedDate;
+};
+
 export const mergeDateAndTime = (date, time) => {
   if (!date || !time) return null;
 

@@ -74,40 +74,39 @@ const Calendar = props => {
   }
 
   const shiftTotalHours = (shift) => {
-    const start = moment(shift.extendedProps.startTime)
-    const end = moment(shift.extendedProps.endTime)
+    const start = moment(shift.start)
+    const end = moment(shift.end)
     const duration = moment.duration(end.diff(start))
     const hours = duration.asHours()
 
-    return hours
+    return hours.toFixed(2)
   }
 
-  const EventRender = ({ event }) => (
-    <>
-      <Box p={0.1}>
+  const EventRender = ({ event }) => {
+    const formattedStart = moment(event.start).format('HH:mm');
+    const formattedEnd = moment(event.end).format('HH:mm');
+    const totalHours = shiftTotalHours(event);
+
+    return (
+      <Box>
         <Typography sx={{
           whiteSpace: 'initial',
           fontWeight: 'bold',
         }} color={'white'}>
           {event.title}
-          <FormHelperText sx={{ color: 'white', py: 0 }}>
-            <i>{event.extendedProps.position}</i>
-          </FormHelperText>
         </Typography>
+        <FormHelperText sx={{ color: 'white', py: 0 }}>
+          <i>{event.extendedProps.position}</i>
+        </FormHelperText>
         <Divider sx={{
           borderColor: 'white',
           py: 0.5
         }} />
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-          <Typography color={'white'} fontSize={'lg'}
-            variant='h4'
-            sx={{
-              fontFamily: 'technology',
-            }}
-          >
-            {moment(event.start).format('HH:mm')} - {moment(event.end).format('HH:mm')}
+          <Typography color={'white'} fontSize={'lg'} variant='h4' sx={{ fontFamily: 'technology' }}>
+            {formattedStart} - {formattedEnd}
             <FormHelperText sx={{ color: 'white', py: 0 }}>
-              Total Hours: {shiftTotalHours(event)}h
+              Total Hours: {totalHours} h
             </FormHelperText>
           </Typography>
           {event.extendedProps.seen && (
@@ -115,8 +114,9 @@ const Calendar = props => {
           )}
         </Stack>
       </Box>
-    </>
-  )
+    );
+  };
+
 
   const handlePublishShifts = () => {
     const data = {
@@ -131,6 +131,7 @@ const Calendar = props => {
     // ** calendarOptions(Props)
     const calendarOptions = {
       events: storeRoster.shifts,
+
       eventContent: EventRender,
       plugins: [dayGridPlugin, timeGridPlugin, listPlugin, bootstrap5Plugin, interactionPlugin],
       initialView: 'dayGridWeek',
@@ -145,7 +146,6 @@ const Calendar = props => {
         }
       },
 
-
       datesSet: handlerGetShifts,
 
       /*
@@ -155,6 +155,7 @@ const Calendar = props => {
       editable: true,
       eventDurationEditable: false,
       showNonCurrentDates: false,
+      firstDay: 1,
 
       // eventDragStop: (info) => {
       //   console.log('stop', info.event.start)
@@ -198,18 +199,18 @@ const Calendar = props => {
       //     `bg-${colorName}`
       //   ]
       // },
-      eventClick({ event: clickedEvent }) {
-        // check if event date older than today
+      // eventClick({ event: clickedEvent }) {
+      //   // check if event date older than today
 
 
-        dispatch(handleSelectEvent(clickedEvent))
-        handleAddEventSidebarToggle()
+      //   dispatch(handleSelectEvent(clickedEvent))
+      //   handleAddEventSidebarToggle()
 
-        // * Only grab required field otherwise it goes in infinity loop
-        // ! Always grab all fields rendered by form (even if it get `undefined`) otherwise due to Vue3/Composition API you might get: "object is not extensible"
-        // event.value = grabEventDataFromEventApi(clickedEvent)
-        // isAddNewEventSidebarActive.value = true
-      },
+      //   // * Only grab required field otherwise it goes in infinity loop
+      //   // ! Always grab all fields rendered by form (even if it get `undefined`) otherwise due to Vue3/Composition API you might get: "object is not extensible"
+      //   // event.value = grabEventDataFromEventApi(clickedEvent)
+      //   // isAddNewEventSidebarActive.value = true
+      // },
       customButtons: {
         excel: {
           text: 'Excel',
@@ -221,16 +222,16 @@ const Calendar = props => {
         }
       },
 
-      dateClick(info) {
-        const ev = { ...blankEvent }
-        ev.start = info.date
-        ev.end = info.date
-        ev.allDay = true
+      // dateClick(info) {
+      //   const ev = { ...blankEvent }
+      //   ev.start = info.date
+      //   ev.end = info.date
+      //   ev.allDay = true
 
-        // @ts-ignore
-        dispatch(handleSelectEvent(ev))
-        handleAddEventSidebarToggle()
-      },
+      //   // @ts-ignore
+      //   dispatch(handleSelectEvent(ev))
+      //   handleAddEventSidebarToggle()
+      // },
 
       eventDrop({ event: droppedEvent, oldEvent, delta, revert, jsEvent, view }) {
         if (!moment(droppedEvent.start).isBefore(moment(), 'day')) {

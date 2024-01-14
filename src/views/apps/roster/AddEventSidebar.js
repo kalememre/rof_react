@@ -11,7 +11,7 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import { TimeField } from '@mui/x-date-pickers';
+import { DateField, TimeField } from '@mui/x-date-pickers';
 
 // ** Custom Component Import
 import CustomTextField from 'src/@core/components/mui/text-field'
@@ -29,10 +29,11 @@ import { getUserByBranch } from 'src/store/apps/user'
 import { useSelector } from 'react-redux'
 import { Checkbox, Chip, FormGroup, FormHelperText, Grid, Stack, TextField } from '@mui/material'
 import { addShift } from 'src/store/apps/roster'
-import { formatDate, formatDateRegular, formatDateTime, formatDateToMonthShort, formatTime, mergeDateAndTime } from 'src/@core/utils/format'
+import { formatDate, formatDateRegular, formatDateTime, formatDateToMonthShort, formatISODate, formatTime, mergeDateAndTime } from 'src/@core/utils/format'
 import moment from 'moment'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import dayjs from 'dayjs'
 
 const capitalize = string => string && string[0].toUpperCase() + string.slice(1)
 
@@ -121,48 +122,51 @@ const AddEventSidebar = props => {
 
   const storeUsers = useSelector(state => state.storeUsers)
 
-  // const schema = yup.object().shape({
-  //   events: yup.array().of(
-  //     yup.object().shape({
-  //       // date: yup.string().required('Tarih zorunludur.'),
-  //       start: yup.string().required('Başlangıç saati zorunludur.'),
-  //       end: yup.string().required('Bitiş saati zorunludur.'),
-  //     })
-  //   ),
-  // });
-
   const schema = yup.object().shape({
     events: yup.array().of(
       yup.object().shape({
+        // checked: yup.boolean().oneOf([true], 'At least one event must be checked'),
         start: yup.string().when('checked', {
-          is: true,
-          then: yup.string().required('Başlangıç saati zorunludur.'),
+          is: (checked) => (checked === true),
+          then: (schema) => schema.required('Start time required.'),
+          otherwise: (schema) => schema,
         }),
+
         end: yup.string().when('checked', {
-          is: true,
-          then: yup.string().required('Bitiş saati zorunludur.'),
+          is: (checked) => (checked === true),
+          then: (schema) => schema.required('End time required.'),
+          otherwise: (schema) => schema,
         }),
-        checked: yup.boolean(),
       })
-    ),
+    )
+
+      .test('atLeastOneChecked', 'At least one date must be checked', (events) => {
+        // Check if at least one event is checked
+        return events.some((event) => event.checked === true);
+      }),
   });
+
 
   const {
     control,
     setValue,
     clearErrors,
     handleSubmit,
+    reset,
+    trigger,
+    setError,
+    getValues,
     formState: { errors }
   } = useForm({ resolver: yupResolver(schema) });
 
   const handleSidebarClose = async () => {
     // setValues(defaultState)
     clearErrors()
+    reset()
 
     // dispatch(handleSelectEvent(null))
     setSelectedUser('');
-    setSelectedDates([]);
-    setSelectedTimes({});
+    setWeekEvents([]);
     handleAddEventSidebarToggle()
   }
 
@@ -172,10 +176,41 @@ const AddEventSidebar = props => {
     const updatedWeekEvents = [...weekEvents];
     updatedWeekEvents[index].checked = !updatedWeekEvents[index].checked;
     setWeekEvents(updatedWeekEvents);
+    if (!updatedWeekEvents[index].checked) {
+      trigger(`events[${index}]`)
+    }
+    setValue(`events[${index}].checked`, updatedWeekEvents[index].checked);
   };
 
   const onSubmit = data => {
-    console.log('data', data);
+    const newData = []
+    data?.events.map((event, index) => {
+      if (event.checked) {
+        if (event.end < event.start) {
+          const nextDate = new Date(event.date);
+          nextDate.setDate(nextDate.getDate() + 1);
+          event.end = mergeDateAndTime(nextDate, event.end);
+        } else {
+          event.end = mergeDateAndTime(new Date(event.date), event.end);
+        }
+        newData.push({
+          start: mergeDateAndTime(new Date(event.date), event.start),
+          end: event.end,
+          branchId: branch.id,
+          userId: selectedUser,
+        })
+      }
+    })
+
+    console.log('newData', newData);
+
+    dispatch(addShift(newData))
+      .then((res) => {
+        if (!res.error) {
+
+          handleSidebarClose();
+        }
+      })
 
     // const customErrors = [];
     // console.log('selectedTimes', selectedTimes);
@@ -203,13 +238,6 @@ const AddEventSidebar = props => {
     //   data.userId = selectedUser;
     // });
 
-    // dispatch(addShift(selectedData))
-    //   .then((res) => {
-    //     if (!res.error) {
-
-    //       handleSidebarClose();
-    //     }
-    //   })
   }
 
   const handleSelectUser = (e) => {
@@ -217,6 +245,13 @@ const AddEventSidebar = props => {
     loadDates();
   }
 
+  const emptyForm = () => {
+    setSelectedUser('');
+    setSelectedDates([]);
+    setSelectedTimes({});
+    setWeekEvents([]);
+    clearErrors();
+  }
 
 
   useEffect(() => {
@@ -229,8 +264,11 @@ const AddEventSidebar = props => {
   const RenderSidebarFooter = () => {
     return (
       <Fragment>
-        <Button type='submit' onClick={handleSubmit(onSubmit)} variant='contained' sx={{ mr: 4 }}>
-          Add
+        <Button onClick={emptyForm} variant='tonal' color='secondary' sx={{ mr: 1.5 }}>
+          Reset
+        </Button>
+        <Button type='submit' onClick={handleSubmit(onSubmit)} variant='contained'>
+          Save
         </Button>
       </Fragment>
     )
@@ -307,7 +345,6 @@ const AddEventSidebar = props => {
                 <MenuItem key={index} value={user.id}>
                   <Stack direction='row' alignItems='flex-start' justifyContent='flex-start'>
                     {user.fullName}
-
                     <Box key={index} ml={1} sx={{
                       display: 'flex',
                       alignItems: 'center',
@@ -324,61 +361,56 @@ const AddEventSidebar = props => {
                         }}>{user.userProfile?.position?.name}
                         </span>
                       </Box>
-
                     </Box>
-
                   </Stack>
                 </MenuItem>
               ))}
             </CustomTextField>
-            {/* {selectedDates.map((date, i) => (
-              <Stack key={i} mb={1} direction="row" alignItems="center" justifyContent="center" spacing={1}>
-                <FormControl component="fieldset" sx={{ m: 1, width: "100%" }}>
-                  <FormGroup aria-label="position" row>
-                    <FormControlLabel
-                      value="end"
-                      control={<Checkbox checked={!!selectedTimes[moment(date).format('YYYY-MM-DD')]} onChange={() => handleCheckboxChange(date)} />}
-                      label={moment(date).format('DD MMMM YYYY')}
-                      labelPlacement="end"
-                    />
-                  </FormGroup>
-                </FormControl>
-                <FormControl sx={{ m: 1, width: "50%" }}>
-                  <TimeField
-                    label="Start Time"
-                    format="HH:mm"
-                    size='small'
-                    disabled={!selectedTimes[moment(date).format('YYYY-MM-DD')]}
-
-                    onChange={(value) => handleTimeChange(date, 'startTime', value)}
-                  />
-                </FormControl>
-                <FormControl sx={{ m: 1, width: "50%" }}>
-                  <TimeField
-                    label="End Time"
-                    format="HH:mm"
-                    size='small'
-                    disabled={!selectedTimes[moment(date).format('YYYY-MM-DD')]}
-
-                    onChange={(value) => handleTimeChange(date, 'endTime', value)}
-                  />
-                </FormControl>
-              </Stack>
-            ))} */}
             {weekEvents.map((event, index) => (
-              <Grid container spacing={2} key={index}>
-                <Grid item xs={4}>
+              <Grid container spacing={2} key={index} sx={{ my: 0.5 }}>
+                <Grid item xs={1}>
                   <FormControlLabel
                     control={
                       <Checkbox
                         onChange={() => handleCheckboxChange(index)}
                         checked={event.checked}
+
+                      // value={event.date}
                       />
                     }
-                    label={event.date}
+
+                  // label={moment(event.date).format('DD MMM dddd')}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={5}>
+                  <Controller
+                    name={`events[${index}].date`}
+                    control={control}
+
+                    defaultValue={event.date}
+                    render={({ field }) => (
+
+                      // <CustomTextField
+                      //   {...field}
+                      //   fullWidth
+                      //   label='Date'
+                      //   value={event.date}
+                      //   disabled
+                      //   sx={{ mb: 4 }}
+                      // />
+                      <DateField
+                        {...field}
+                        label="Date"
+                        size='small'
+                        format='DD dddd MMM'
+                        sx={{ '& input': { textAlign: 'left' } }}
+                        disabled={true}
+                        value={dayjs(event.date)}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={3}>
                   <Controller
                     name={`events[${index}].start`}
                     control={control}
@@ -389,6 +421,7 @@ const AddEventSidebar = props => {
                         label="Start Time"
                         format='HH:mm'
                         size='small'
+                        sx={{ '& input': { textAlign: 'center' } }}
                         disabled={!event.checked}
                         error={!!errors.events && !!errors.events[index]?.start}
                         helperText={errors.events && errors.events[index]?.start?.message}
@@ -396,7 +429,7 @@ const AddEventSidebar = props => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Controller
                     name={`events[${index}].end`}
                     control={control}
@@ -407,6 +440,7 @@ const AddEventSidebar = props => {
                         label="End Time"
                         format='HH:mm'
                         size='small'
+                        sx={{ '& input': { textAlign: 'center' } }}
                         disabled={!event.checked}
                         error={!!errors.events && !!errors.events[index]?.end}
                         helperText={errors.events && errors.events[index]?.end?.message}
@@ -416,8 +450,11 @@ const AddEventSidebar = props => {
                 </Grid>
               </Grid>
             ))}
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <RenderSidebarFooter />
+            <FormHelperText sx={{ color: 'red' }}>
+              {errors?.events?.message}
+            </FormHelperText>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 3 }}>
+              {weekEvents.length > 0 && <RenderSidebarFooter />}
             </Box>
           </form>
         </DatePickerWrapper>

@@ -100,7 +100,7 @@ const AuthProvider = ({ children }) => {
         router.replace(redirectURL)
       })
       .catch(err => {
-        if (errorCallback) errorCallback(err.response.data)
+        if (errorCallback) errorCallback(err?.response?.data || err?.message || 'Something went wrong')
       })
   }
 
