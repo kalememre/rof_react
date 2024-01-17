@@ -48,7 +48,14 @@ export const publishRoster = createAsyncThunk('appRoster/publishRoster', async (
 // ** Add Shift
 export const addShift = createAsyncThunk('appRoster/addShift', async (data) => {
   try {
-    const response = await axiosInstance.post(`/roster`, data)
+    const response = await axiosInstance.post(`/roster`, data, {
+      params:
+      {
+        branchId: data['currentWeek'].branchId,
+        start: data['currentWeek'].startDate,
+        end: data['currentWeek'].endDate
+      }
+    })
 
     return response.data
   } catch (error) {
@@ -64,7 +71,12 @@ export const appRoseterSlice = createSlice({
     error: null,
     shiftLoading: false,
   },
-  reducers: {},
+  reducers: {
+    // ** Reset Roster
+    resetRoster: (state) => {
+      state.shifts = []
+    }
+  },
   extraReducers: builder => {
     builder
       .addCase(getShifts.pending, (state) => {
@@ -118,5 +130,8 @@ export const appRoseterSlice = createSlice({
 
   }
 })
+
+// ** Export Roster
+export const { resetRoster } = appRoseterSlice.actions
 
 export default appRoseterSlice.reducer

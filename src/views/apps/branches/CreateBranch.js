@@ -56,7 +56,19 @@ const CreateBranch = props => {
         limitworkhours: yup.number()
             .typeError('Limit Work Hours must be a number')
             .positive('Limit Work Hours must be a positive number')
-            .integer('Limit Work Hours must be an integer')
+            .test(
+                "is-decimal",
+                "The amount should be a decimal with maximum two digits after comma",
+                (val) => {
+                    if (val != undefined) {
+                        let patternTwoDigisAfterComma = /^\d+(\.\d{0,2})?$/;
+
+                        return patternTwoDigisAfterComma.test(val);
+                    }
+
+                    return true;
+                }
+            )
             .moreThan(-1, 'Limit Work Hours must be greater than or equal to 0'),
         email: yup.string().email('Must be a valid email'),
     })

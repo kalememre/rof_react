@@ -106,7 +106,13 @@ export const appUserSlice = createSlice({
         userProfileLoading: false,
         userBranchesLoading: false
     },
-    reducers: {},
+    reducers: {
+        // ** reset users
+        resetUsers: (state) => {
+            state.users = []
+        },
+
+    },
     extraReducers: builder => {
         builder.addCase(getUsers.pending, (state, action) => {
             state.userLoading = true
@@ -217,5 +223,7 @@ export const appUserSlice = createSlice({
         })
     }
 })
+
+export const { resetUsers } = appUserSlice.actions
 
 export default appUserSlice.reducer

@@ -25,7 +25,7 @@ import Icon from 'src/@core/components/icon'
 
 // ** Styled Components
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
-import { getUserByBranch } from 'src/store/apps/user'
+import { getUserByBranch, resetUsers } from 'src/store/apps/user'
 import { useSelector } from 'react-redux'
 import { Checkbox, Chip, FormGroup, FormHelperText, Grid, Stack, TextField } from '@mui/material'
 import { addShift } from 'src/store/apps/roster'
@@ -114,7 +114,6 @@ const AddEventSidebar = props => {
       });
       start.setDate(start.getDate() + 1);
     }
-    console.log('dateArray', dateArray);
     setWeekEvents(dateArray);
 
     // setSelectedDates(dateArray);
@@ -160,11 +159,9 @@ const AddEventSidebar = props => {
   } = useForm({ resolver: yupResolver(schema) });
 
   const handleSidebarClose = async () => {
-    // setValues(defaultState)
+    dispatch(resetUsers())
     clearErrors()
     reset()
-
-    // dispatch(handleSelectEvent(null))
     setSelectedUser('');
     setWeekEvents([]);
     handleAddEventSidebarToggle()
@@ -201,6 +198,12 @@ const AddEventSidebar = props => {
         })
       }
     })
+
+    newData.currentWeek = {
+      branchId: branch.id,
+      startDate: moment(calendarApi?.view?.currentStart).format('YYYY-MM-DD'),
+      endDate: moment(calendarApi?.view?.currentEnd).format('YYYY-MM-DD')
+    }
 
     console.log('newData', newData);
 

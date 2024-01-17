@@ -29,15 +29,17 @@ import {
     handleSelectEvent,
     handleAllCalendars,
     handleCalendarsUpdate,
-    getShifts
+    getShifts,
+    resetRoster
 } from 'src/store/apps/roster'
-import { Button, Card, CardContent, CardHeader, Divider, FormControl, Grid, InputLabel, MenuItem, Select, Typography } from '@mui/material'
+import { Button, Card, CardContent, CardHeader, Divider, FormControl, Grid, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import { getBranches } from 'src/store/apps/branch'
 import PageHeader from 'src/@core/components/page-header'
 import Link from 'next/link'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
 import toast from 'react-hot-toast'
 import { Roles } from 'src/Roles'
+import CardStatsHorizontalWithDetails from 'src/views/apps/roster/CardStatsHorizontalWithDetails'
 
 // ** CalendarColors
 const calendarsColor = {
@@ -77,6 +79,7 @@ const RosterPage = () => {
     // }, [dispatch, store.selectedCalendars])
     // const calendarRef = useRef(null)
     useEffect(() => {
+        dispatch(resetRoster())
         dispatch(getBranches())
     }, [dispatch])
 
@@ -101,6 +104,40 @@ const RosterPage = () => {
         setAddEventSidebarOpen(!addEventSidebarOpen)
     }
 
+    const calculateCurrentWeekWorkHours = () => {
+        const start = moment(calendarApi?.view.activeStart).format('YYYY-MM-DD')
+        const end = moment(calendarApi?.view.activeEnd).format('YYYY-MM-DD')
+        const shifts = storeRoster.shifts.filter(shift => moment(shift.start).isBetween(start, end, undefined, '[]'))
+
+        const totalHours = shifts.reduce((acc, shift) => {
+            const start = moment(shift.start)
+            const end = moment(shift.end)
+            const duration = moment.duration(end.diff(start))
+
+            return acc + duration.asHours()
+        }, 0)
+
+        return totalHours.toFixed(2) || 0
+    }
+
+    const cardObjects = [
+        {
+            title: 'Total Hours',
+            stats: calculateCurrentWeekWorkHours(),
+            icon: 'clarity:clock-line',
+            avatarColor: 'info',
+            subtitle: 'Total working hours for this week'
+
+        },
+        {
+            title: 'Branch Hours',
+            stats: branch?.limitWorkHours || 'No Limit',
+            icon: 'mdi:store-time',
+            avatarColor: 'success',
+            subtitle: 'Max working hours for this branch weekly'
+        }
+    ]
+
     return (
         <Grid container spacing={6.5}>
             <Grid item xs={6}>
@@ -123,17 +160,50 @@ const RosterPage = () => {
                     alignSelf: 'center',
                     textAlign: 'right'
                 }}>
-                    <Button onClick={handleAddEventSidebarToggle} variant="contained">
-                        Create Roster
-                    </Button>
-                    {/* <Link href='/users/add'>
-                        <Button variant="contained">
+                    <Stack direction="row" spacing={2} justifyContent={'flex-end'}>
+
+                        <FormControl>
+                            <InputLabel size='small' id='demo-simple-select-outlined-label'>
+                                {storeBranches.branchLoading ? 'Loading...' : 'Select Branch'}
+                            </InputLabel>
+                            <Select
+                                label='Select Branch'
+                                defaultValue=''
+                                id='select_branch'
+                                labelId='select_branch-label'
+                                onChange={selectBranch}
+                                disabled={storeBranches.branchLoading}
+                                sx={{
+                                    textAlign: 'left',
+                                    justifyContent: 'center',
+                                    alignContent: 'center',
+                                    alignItems: 'center',
+                                    display: 'flex'
+                                }}
+                                size='small'
+                            >
+                                {storeBranches.branches?.map((branch, index) => (
+                                    <MenuItem key={index} value={branch}>
+                                        {branch.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <Button onClick={handleAddEventSidebarToggle} variant="contained">
                             Create Roster
                         </Button>
-                    </Link> */}
+                    </Stack>
+
                 </Grid>
             }
             <Grid item xs={12}>
+                <Grid container spacing={3} sx={{ mb: 3 }}>
+                    {cardObjects.map((card, index) => (
+                        <Grid item xs={12} md={6} sm={6} key={index}>
+                            <CardStatsHorizontalWithDetails {...card} />
+                        </Grid>
+                    ))}
+                </Grid>
                 <CalendarWrapper
                     className='app-calendar'
                     sx={{
@@ -168,29 +238,6 @@ const RosterPage = () => {
                             backgroundColor: 'background.paper',
                         }}
                     >
-                        <FormControl sx={{ width: '100%' }}>
-                            <InputLabel id='demo-simple-select-outlined-label'>
-                                {storeBranches.branchLoading ? 'Loading...' : 'Select Branch'}
-                            </InputLabel>
-                            <Select
-                                label='Select Branch'
-                                defaultValue=''
-                                id='select_branch'
-                                labelId='select_branch-label'
-                                onChange={selectBranch}
-                                disabled={storeBranches.branchLoading}
-                            >
-                                {/* <MenuItem value='None'>
-                                    <em>None</em>
-                                </MenuItem> */}
-                                {storeBranches.branches?.map((branch, index) => (
-                                    <MenuItem key={index} value={branch}>
-                                        {branch.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <Divider variant={'fullWidth'} sx={{ mr: 0, mb: 6, mt: 6 }} />
                         <Calendar
                             can_create_roster={CAN_CREATE_ROSTER}
                             branch={branch}
