@@ -159,7 +159,12 @@ const Calendar = props => {
       eventDurationEditable: false,
       showNonCurrentDates: false,
       firstDay: 1,
-      eventOrder: 'sort,start,title,-duration',
+
+      // eventOrder: ["sort"],
+
+      // eventOrder: ["sort", "start", "title", "-duration"],
+
+      // eventOrderStrict: true,
 
       // eventDragStop: (info) => {
       //   console.log('stop', info.event.start)
