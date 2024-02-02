@@ -162,7 +162,7 @@ const Calendar = props => {
 
       // eventOrder: ["sort"],
 
-      // eventOrder: ["sort", "start", "title", "-duration"],
+      eventOrder: ["sort", "start", "title", "-duration"],
 
       // eventOrderStrict: true,
 

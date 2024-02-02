@@ -39,7 +39,8 @@ import Link from 'next/link'
 import { AbilityContext } from 'src/layouts/components/acl/Can'
 import toast from 'react-hot-toast'
 import { Roles } from 'src/Roles'
-import CardStatsHorizontalWithDetails from 'src/views/apps/roster/CardStatsHorizontalWithDetails'
+import CardStatisticsExpenses from 'src/views/apps/roster/CardStatisticsExpenses'
+import CardActiveProjects from 'src/views/apps/roster/CardActiveProjects'
 
 // ** CalendarColors
 const calendarsColor = {
@@ -120,6 +121,46 @@ const RosterPage = () => {
         return totalHours.toFixed(2) || 0
     }
 
+    const shiftTotalHours = (shift) => {
+        const start = moment(shift.start)
+        const end = moment(shift.end)
+        const duration = moment.duration(end.diff(start))
+        const hours = duration.asHours()
+
+        return hours.toFixed(2)
+    }
+
+    const calculateTotalHoursByUser = () => {
+        const start = moment(calendarApi?.view?.activeStart).format('YYYY-MM-DD');
+        const end = moment(calendarApi?.view?.activeEnd).format('YYYY-MM-DD');
+
+        const uniqueUserIds = [...new Set(storeRoster.shifts.map(shift => shift.extendedProps.userId))];
+
+        const totalHoursByUser = uniqueUserIds.map(userId => {
+            const shifts = storeRoster.shifts.filter(shift =>
+                shift.extendedProps.userId === userId && moment(shift.start).isBetween(start, end, undefined, '[]')
+            );
+
+            let totalHours = 0;
+            shifts.forEach(shift => {
+                totalHours += parseFloat(shiftTotalHours(shift));
+            });
+
+            // Assuming shift.title, shift.extendedProps.position are available
+            const userObj = {
+                title: shifts.length > 0 ? shifts[0].title : '', // Assuming title is the same for all shifts of a user
+                position: shifts.length > 0 ? shifts[0].extendedProps.position : '', // Assuming position is the same for all shifts of a user
+                totalHours: totalHours.toFixed(2),
+                color: shifts.length > 0 ? shifts[0].color : '',
+                sort: shifts.length > 0 ? shifts[0].sort : '',
+            };
+
+            return userObj;
+        });
+
+        return totalHoursByUser;
+    }
+
     const cardObjects = [
         {
             title: 'Total Hours',
@@ -137,6 +178,12 @@ const RosterPage = () => {
             subtitle: 'Max working hours for this branch weekly'
         }
     ]
+
+    const series = {
+        limitWorkHours: branch?.limitWorkHours || 0,
+        totalHours: calculateCurrentWeekWorkHours(),
+        storeBranches: storeBranches,
+    }
 
     return (
         <Grid container spacing={6.5}>
@@ -197,21 +244,20 @@ const RosterPage = () => {
                 </Grid>
             }
             <Grid item xs={12}>
-                <Grid container spacing={3} sx={{ mb: 3 }}>
-                    {cardObjects.map((card, index) => (
-                        <Grid item xs={12} md={6} sm={6} key={index}>
-                            <CardStatsHorizontalWithDetails {...card} />
-                        </Grid>
-                    ))}
-                </Grid>
-                <CalendarWrapper
-                    className='app-calendar'
-                    sx={{
-                        boxShadow: skin === 'bordered' ? 0 : 6,
-                        ...(skin === 'bordered' && { border: theme => `1px solid ${theme.palette.divider}` })
-                    }}
-                >
-                    {/* <SidebarLeft
+                <Grid container spacing={2} sx={{ mb: 3 }}>
+                    <Grid item xs={6} md={4} lg={2}>
+                        <CardStatisticsExpenses {...series} />
+                        <CardActiveProjects calculateTotalHoursByUser={calculateTotalHoursByUser} />
+                    </Grid>
+                    <Grid item xs={6} md={8} lg={10}>
+                        <CalendarWrapper
+                            className='app-calendar'
+                            sx={{
+                                boxShadow: skin === 'bordered' ? 0 : 6,
+                                ...(skin === 'bordered' && { border: theme => `1px solid ${theme.palette.divider}` })
+                            }}
+                        >
+                            {/* <SidebarLeft
                 store={store}
                 
                 // mdAbove={mdAbove}
@@ -228,50 +274,53 @@ const RosterPage = () => {
                 handleAddEventSidebarToggle={handleAddEventSidebarToggle}
             /> */}
 
-                    <Box
-                        sx={{
-                            p: 6,
-                            pb: 0,
-                            flexGrow: 1,
-                            borderRadius: 1,
-                            boxShadow: 'none',
-                            backgroundColor: 'background.paper',
-                        }}
-                    >
-                        <Calendar
-                            can_create_roster={CAN_CREATE_ROSTER}
-                            branch={branch}
-                            storeRoster={storeRoster}
-                            dispatch={dispatch}
-                            direction={direction}
-                            updateEvent={updateEvent}
-                            calendarApi={calendarApi}
-                            calendarsColor={calendarsColor}
-                            setCalendarApi={setCalendarApi}
-                            handleSelectEvent={handleSelectEvent}
-                            handleLeftSidebarToggle={handleLeftSidebarToggle}
-                            handleAddEventSidebarToggle={handleAddEventSidebarToggle}
-                        />
-                    </Box>
-                    <AddEventSidebar
+                            <Box
+                                sx={{
+                                    p: 6,
+                                    pb: 0,
+                                    flexGrow: 1,
+                                    borderRadius: 1,
+                                    boxShadow: 'none',
+                                    backgroundColor: 'background.paper',
+                                }}
+                            >
+                                <Calendar
+                                    can_create_roster={CAN_CREATE_ROSTER}
+                                    branch={branch}
+                                    storeRoster={storeRoster}
+                                    dispatch={dispatch}
+                                    direction={direction}
+                                    updateEvent={updateEvent}
+                                    calendarApi={calendarApi}
+                                    calendarsColor={calendarsColor}
+                                    setCalendarApi={setCalendarApi}
+                                    handleSelectEvent={handleSelectEvent}
+                                    handleLeftSidebarToggle={handleLeftSidebarToggle}
+                                    handleAddEventSidebarToggle={handleAddEventSidebarToggle}
+                                />
+                            </Box>
+                            <AddEventSidebar
 
-                        branch={branch}
+                                branch={branch}
 
-                        // store={store}
-                        dispatch={dispatch}
+                                // store={store}
+                                dispatch={dispatch}
 
-                        // addEvent={addEvent}
-                        // updateEvent={updateEvent}
-                        // deleteEvent={deleteEvent}
-                        calendarApi={calendarApi}
+                                // addEvent={addEvent}
+                                // updateEvent={updateEvent}
+                                // deleteEvent={deleteEvent}
+                                calendarApi={calendarApi}
 
-                        drawerWidth={addEventSidebarWidth}
+                                drawerWidth={addEventSidebarWidth}
 
-                        // handleSelectEvent={handleSelectEvent}
-                        addEventSidebarOpen={addEventSidebarOpen}
-                        handleAddEventSidebarToggle={handleAddEventSidebarToggle}
-                    />
-                </CalendarWrapper>
+                                // handleSelectEvent={handleSelectEvent}
+                                addEventSidebarOpen={addEventSidebarOpen}
+                                handleAddEventSidebarToggle={handleAddEventSidebarToggle}
+                            />
+                        </CalendarWrapper>
+                    </Grid>
+                </Grid>
+
             </Grid>
         </Grid>
 
