@@ -205,7 +205,6 @@ const AddEventSidebar = props => {
       endDate: moment(calendarApi?.view?.currentEnd).format('YYYY-MM-DD')
     }
 
-    console.log('newData', newData);
 
     dispatch(addShift(newData))
       .then((res) => {

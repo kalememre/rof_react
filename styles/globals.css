@@ -66,3 +66,7 @@ code[class*='language-'] {
   font-weight: normal;
   font-style: normal;
 }
+
+.fc-event {
+  cursor: pointer;
+}

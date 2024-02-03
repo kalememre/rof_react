@@ -63,6 +63,29 @@ export const addShift = createAsyncThunk('appRoster/addShift', async (data) => {
   }
 })
 
+// ** Unpublish Roaster
+export const unpublishRoster = createAsyncThunk('appRoster/unpublishRoster', async (shiftId) => {
+  try {
+    const response = await axiosInstance.put(`/roster/unpublish/${shiftId}`)
+
+    return response.data
+  } catch (error) {
+    throw error.response.data
+  }
+})
+
+// ** Delete Shift
+export const deleteShift = createAsyncThunk('appRoster/deleteShift', async (shiftId) => {
+  try {
+    await axiosInstance.delete(`/roster/${shiftId}`)
+
+    return shiftId
+  } catch (error) {
+    throw error.response.data
+  }
+})
+
+
 export const appRoseterSlice = createSlice({
   name: 'appRoster',
   initialState: {
@@ -127,7 +150,31 @@ export const appRoseterSlice = createSlice({
         state.shiftLoading = false
         state.error = action.payload
       })
-
+      .addCase(unpublishRoster.pending, (state) => {
+        state.shiftLoading = true
+      })
+      .addCase(unpublishRoster.fulfilled, (state, action) => {
+        state.shiftLoading = false
+        const index = state.shifts.findIndex(shift => shift.id === action.payload.id)
+        state.shifts[index] = action.payload
+        toast.success('Roster unpublished successfully')
+      })
+      .addCase(unpublishRoster.rejected, (state, action) => {
+        state.shiftLoading = false
+        state.error = action.payload
+      })
+      .addCase(deleteShift.pending, (state) => {
+        state.shiftLoading = true
+      })
+      .addCase(deleteShift.fulfilled, (state, action) => {
+        state.shiftLoading = false
+        state.shifts = state.shifts.filter(shift => shift.id !== action.payload)
+        toast.success('Shift deleted successfully')
+      })
+      .addCase(deleteShift.rejected, (state, action) => {
+        state.shiftLoading = false
+        state.error = action.payload
+      })
   }
 })
 

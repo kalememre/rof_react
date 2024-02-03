@@ -1,5 +1,5 @@
 // ** React Import
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // ** Full Calendar & it's Plugins
 import FullCalendar from '@fullcalendar/react'
@@ -17,6 +17,7 @@ import moment from 'moment';
 import toast from 'react-hot-toast'
 import { GridCheckCircleIcon, GridCheckIcon } from '@mui/x-data-grid'
 import { Icon } from '@iconify/react'
+import AmendShift from './AmendShift'
 
 const blankEvent = {
   title: '',
@@ -59,6 +60,13 @@ const Calendar = props => {
     }
   }, [calendarApi, setCalendarApi])
 
+  const [open, setOpen] = useState(false)
+  const [event, setEvent] = useState(null)
+
+  const handlerEventClick = (info) => {
+    setEvent(info.event)
+    setOpen(true)
+  }
 
   const handlerGetShifts = () => {
 
@@ -208,9 +216,7 @@ const Calendar = props => {
       //     `bg-${colorName}`
       //   ]
       // },
-      eventClick({ event: clickedEvent }) {
-        console.log(clickedEvent);
-      },
+      eventClick: handlerEventClick,
       customButtons: {
         excel: {
           text: 'Excel',
@@ -255,6 +261,7 @@ const Calendar = props => {
     return (
       <>
         <FullCalendar {...calendarOptions} />
+        <AmendShift open={open} event={event} setOpen={setOpen} />
         <Backdrop
           open={storeRoster.shiftLoading}
           sx={{

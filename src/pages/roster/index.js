@@ -180,7 +180,7 @@ const RosterPage = () => {
     ]
 
     const series = {
-        limitWorkHours: branch?.limitWorkHours || 0,
+        limitWorkHours: branch?.limitWorkHours.toFixed(2) || 0,
         totalHours: calculateCurrentWeekWorkHours(),
         storeBranches: storeBranches,
     }
