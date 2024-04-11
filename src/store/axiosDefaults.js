@@ -9,6 +9,8 @@ const axiosInstance = axios.create({
     baseURL: authConfig.apiEndpoint,
 });
 
+axiosInstance.defaults.withCredentials = true;
+
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {

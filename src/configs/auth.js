@@ -1,8 +1,9 @@
 export default {
-  meEndpoint: 'http://tenantb.localhost:5259/api/Auth/me',
-  loginEndpoint: 'http://tenantb.localhost:5259/api/Auth/login',
+  meEndpoint: 'https://rofnet.azurewebsites.net/api/Auth/me',
+  loginEndpoint: 'https://rofnet.azurewebsites.net/api/Auth/login',
   registerEndpoint: '/jwt/register',
-  apiEndpoint: 'http://tenantb.localhost:5259/api',
+  apiEndpoint: 'https://rofnet.azurewebsites.net/api',
   storageTokenKeyName: 'accessToken',
   onTokenExpiration: 'refreshToken' // logout | refreshToken
 }
+
